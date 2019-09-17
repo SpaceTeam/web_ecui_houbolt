@@ -1,20 +1,39 @@
+============Client-NodeServer=============
+
 Socket.io:
 connect
 disconnect
 
-Server and Client:
-checklist-get
+NodeServer and Client:
 abort
 
 Client:
+checklist-send
 checklist-tick
-sequence
-abort-sequence
+sequence-send
+abortSequence-send
 servo
 
-Server:
+NodeServer:
 sensor
 timer-start
 timer-sync
 timer-done
+
+============NodeServer-LLServer=============
+
+NodeServer and LLServer:
+abort
+
+NodeServer:
+action-exec
+sequence-send
+abortSequence-send
+
+LLServer:
+timer-start
+timer-sync
+timer-done
+action-done
+
 
