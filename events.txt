@@ -1,0 +1,20 @@
+Socket.io:
+connect
+disconnect
+
+Server and Client:
+checklist-get
+abort
+
+Client:
+checklist-tick
+sequence
+abort-sequence
+servo
+
+Server:
+sensor
+timer-start
+timer-sync
+timer-done
+
