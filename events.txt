@@ -6,6 +6,7 @@ disconnect
 
 NodeServer and Client:
 abort
+checklist-start
 
 Client:
 checklist-send
@@ -15,6 +16,9 @@ abortSequence-send
 servo
 
 NodeServer:
+checklist-update
+checklist-load
+checklist-done
 sensor
 timer-start
 timer-sync

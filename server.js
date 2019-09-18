@@ -54,9 +54,8 @@ var port = process.env.PORT || 3000;
 app.use(express.static(__dirname + '/client/'));
 
 var MCSocket = require('./server/ClientSocket');
-var socket = new MCSocket();
 var sm = require('./server/SequenceManager');
-var checklistMan = require('./server/ChecklistManager')
+var checklistManMod = require('./server/ChecklistManager')
 
 //console.log(checklistMan._loadChecklist());
 
@@ -65,9 +64,49 @@ var checklistMan = require('./server/ChecklistManager')
 // console.log(sm.loadAbortSequence());
 // sm.saveAbortSequence(sm.loadAbortSequence());
 
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
+
+//Create an event handler:
+var checklistMan = new checklistManMod();
+var onChecklistTick = function (ioClient, socket, id) {
+    let retTick = checklistMan.tick(id);
+    if (retTick === 1)
+    {
+        socket.broadcast.emit('checklist-update', id);
+        socket.broadcast.emit('chat message', 'Tick id: ' + id);
+        eventEmitter.emit('onChecklistDone', ioClient, socket);
+    }
+    else if (retTick === 0)
+    {
+        socket.broadcast.emit('checklist-update', id);
+        socket.broadcast.emit('chat message', 'Tick id: ' + id);
+    }
+}
+
+var onChecklistDone = function (ioClient, socket) {
+    console.log('checklist done');
+    ioClient.emit('checklist-done');
+    ioClient.emit('chat message', 'checklist done!');
+}
+
+//Assign the event handler to an event:
+eventEmitter.on('onChecklistDone', onChecklistDone);
+eventEmitter.on('onChecklistTick', onChecklistTick);
+
+
+var master = null;
+
 ioClient.on('connection', function(socket){
 
     console.log('userID: ' + socket.id + ' userAddress: ' + socket.handshake.address + ' connected');
+    // if (master == null)
+    // {
+    //     //TODO: change to ip address after development (socket.handshake.address)
+    //     master = socket.handshake.address;
+    // }
+    //choose last one connected for testing
+    master = socket.id;
 
     socket.on('chat message', function(msg){
         ioClient.emit('chat message', msg);
@@ -77,12 +116,24 @@ ioClient.on('connection', function(socket){
         console.log('abort');
     });
 
+    socket.on('checklist-start', function(msg){
+        console.log('checklist-start');
+        if (master === socket.id) {
+            eventEmitter.emit('onChecklistTick', ioClient, socket, 0);
+            eventEmitter.emit('onChecklistTick', ioClient, socket, 2);
+            eventEmitter.emit('onChecklistTick', ioClient, socket, 5);
+        }
+    });
+
     socket.on('checklist-send', function(msg){
         console.log('checklist-send');
     });
 
     socket.on('checklist-tick', function(msg){
         console.log('checklist-tick');
+        if (master === socket.id) {
+            eventEmitter.emit('onChecklistTick', ioClient, socket, msg)
+        }
     });
 
     socket.on('sequence-send', function(msg){

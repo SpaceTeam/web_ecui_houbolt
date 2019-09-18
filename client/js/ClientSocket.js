@@ -7,6 +7,7 @@ $(function () {
           $('#m').val('');
           return false;
         });
+        $('#tickButton').click(function(){socket.emit('checklist-start', "asdf")})
         socket.on('chat message', function(msg){
           $('#messages').append($('<li>').text(msg));
           $('#messages').append(new Date().getTime() - start.getTime() + "\n");
