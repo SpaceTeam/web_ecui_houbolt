@@ -54,8 +54,11 @@ var port = process.env.PORT || 3000;
 app.use(express.static(__dirname + '/client/'));
 
 var MCSocket = require('./server/ClientSocket');
-var sm = require('./server/SequenceManager');
+var sequenceManMod = require('./server/SequenceManager');
 var checklistManMod = require('./server/ChecklistManager')
+
+var sequenceMan = new sequenceManMod();
+var checklistMan = new checklistManMod();
 
 //console.log(checklistMan._loadChecklist());
 
@@ -67,8 +70,17 @@ var checklistManMod = require('./server/ChecklistManager')
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
-//Create an event handler:
-var checklistMan = new checklistManMod();
+
+var onChecklistStart = function (ioClient, socket) {
+    console.log('checklist start');
+    checklistMan = new checklistManMod();
+
+    //send everyone up to date checklist
+    let msg = checklistManMod.loadChecklist();
+    console.log(msg)
+    ioClient.emit('checklist-load', msg);
+}
+
 var onChecklistTick = function (ioClient, socket, id) {
     let retTick = checklistMan.tick(id);
     if (retTick === 1)
@@ -90,9 +102,30 @@ var onChecklistDone = function (ioClient, socket) {
     ioClient.emit('chat message', 'checklist done!');
 }
 
+var onSequenceStart = function (ioClient, socket) {
+    console.log('sequence start');
+    sequenceManMod.init();
+
+    //send everyone up to date checklist
+    let msg = sequenceManMod.loadSequence();
+    console.log(msg)
+    ioClient.emit('sequence-load', msg);
+
+    sequenceManMod.startSequence(onSequenceDone);
+}
+
+var onSequenceDone = function (ioClient, socket) {
+    console.log('sequence done');
+}
+
 //Assign the event handler to an event:
+//TODO: check if events slowing down process and instead emit messages of sockets directly inside incoming message events
+eventEmitter.on('onChecklistStart', onChecklistStart);
 eventEmitter.on('onChecklistDone', onChecklistDone);
 eventEmitter.on('onChecklistTick', onChecklistTick);
+
+eventEmitter.on('onSequenceStart', onSequenceStart);
+eventEmitter.on('onSequenceDone', onSequenceDone);
 
 
 var master = null;
@@ -119,14 +152,15 @@ ioClient.on('connection', function(socket){
     socket.on('checklist-start', function(msg){
         console.log('checklist-start');
         if (master === socket.id) {
-            eventEmitter.emit('onChecklistTick', ioClient, socket, 0);
-            eventEmitter.emit('onChecklistTick', ioClient, socket, 2);
-            eventEmitter.emit('onChecklistTick', ioClient, socket, 5);
+            eventEmitter.emit('onChecklistStart', ioClient, socket);
         }
     });
 
-    socket.on('checklist-send', function(msg){
-        console.log('checklist-send');
+    socket.on('checklist-save', function(msg){
+        console.log('checklist-save');
+        if (master === socket.id) {
+            checklistManMod.saveChecklist(msg);
+        }
     });
 
     socket.on('checklist-tick', function(msg){
@@ -136,12 +170,25 @@ ioClient.on('connection', function(socket){
         }
     });
 
-    socket.on('sequence-send', function(msg){
-        console.log('sequence-send');
+    socket.on('sequence-start', function(msg){
+        console.log('sequence-save');
+        if (master === socket.id) {
+            eventEmitter.emit('onSequenceStart', ioClient, socket);
+        }
     });
 
-    socket.on('abortSequence-send', function(msg){
-        console.log('abortSequence-send');
+    socket.on('sequence-save', function(msg){
+        console.log('sequence-save');
+        if (master === socket.id) {
+            sequenceManMod.saveSequence(msg);
+        }
+    });
+
+    socket.on('abortSequence-save', function(msg){
+        console.log('abortSequence-save');
+        if (master === socket.id) {
+            sequenceManMod.saveAbortSequence(msg);
+        }
     });
 
     socket.on('servo', function(msg){

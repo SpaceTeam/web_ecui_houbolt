@@ -6,13 +6,14 @@ disconnect
 
 NodeServer and Client:
 abort
-checklist-start
 
 Client:
-checklist-send
+checklist-start
+checklist-save
 checklist-tick
-sequence-send
-abortSequence-send
+sequence-save
+sequence-start
+abortSequence-save
 servo
 
 NodeServer:
@@ -20,9 +21,10 @@ checklist-update
 checklist-load
 checklist-done
 sensor
-timer-start
-timer-sync
-timer-done
+countdown-start
+countdown-sync
+sequence-load
+sequence-done
 
 ============NodeServer-LLServer=============
 

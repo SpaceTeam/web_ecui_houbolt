@@ -7,8 +7,9 @@ module.exports = class ChecklistManager {
     _ids = [];
     _tickedIds = [];
 
+    //TODO: make the start process in spereate start method so ChecklistManager becomes static (singleton) class
     constructor() {
-        console.log('created SequenceManager');
+        console.log('created ChecklistManager');
         this.init()
     }
 
@@ -17,10 +18,8 @@ module.exports = class ChecklistManager {
         this._ids = [];
 
         this._checklist = ChecklistManager.loadChecklist();
-        console.log(this._checklist);
         try {
             for (let item in this._checklist) {
-                console.log(this._checklist[item].id);
                 this._ids.push(this._checklist[item].id);
             }
         }
@@ -33,6 +32,11 @@ module.exports = class ChecklistManager {
     //returns true if checklist is completed
     tick(id)
     {
+        //cast
+        if (!Number.isInteger(id)) {
+            id = parseInt(id);
+        }
+        //process
         if (this._ids.includes(id)) //use tickedIds for untick functionality
         {
             if (!this._tickedIds.includes(id))
@@ -66,8 +70,14 @@ module.exports = class ChecklistManager {
 
     static saveChecklist(checklist)
     {
-        let data = JSON.stringify(checklist, null, 4);
-        fs.writeFileSync(checklistSavePath, data);
+        try
+        {
+            let data = JSON.stringify(checklist, null, 4);
+            fs.writeFileSync(checklistSavePath, data);
+        }
+        catch (e) {
+            console.error(e.message)
+        }
 
     }
 
