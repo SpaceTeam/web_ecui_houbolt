@@ -10,6 +10,9 @@ module.exports = class SequenceManager {
     static _abortSequence;
     static _timer;
     static _stopCallback;
+    static _syncCallback;
+    static _running = false;
+    static _syncInterval;
 
     static init() {
         console.log('initialized SequenceManager');
@@ -17,22 +20,36 @@ module.exports = class SequenceManager {
         SequenceManager._abortSequence = SequenceManager.loadAbortSequence();
     }
 
-    static startSequence(stopCallback) {
-        SequenceManager._stopCallback = stopCallback;
-        SequenceManager._timer = new timerMod(0.1, -5, 5, SequenceManager._timerTick, SequenceManager._timerDone);
-        SequenceManager._timer.start();
+    static startSequence(syncInterval, syncCallback, stopCallback) {
+        if (!SequenceManager._running) {
+            SequenceManager._running = true;
+            SequenceManager._syncInterval = syncInterval * 1000;
+            SequenceManager._syncCallback = syncCallback;
+            SequenceManager._stopCallback = stopCallback;
+
+            let seq = SequenceManager._sequence;
+
+            SequenceManager._timer = new timerMod(seq.globals.interval, seq.globals.startTime, seq.globals.endTime, SequenceManager._timerTick, SequenceManager._timerDone);
+            SequenceManager._timer.start();
+        }
     }
 
-    static _timerTick(timer, time)
+    static _timerTick(timer)
     {
+        if (timer.timeMillis % SequenceManager._syncInterval === 0)
+        {
+            SequenceManager._syncCallback(timer.time);
+        }
         console.log(timer.time);
     }
 
     static _timerDone()
     {
+        SequenceManager._running = false;
         SequenceManager._stopCallback();
     }
 
+    //TODO: maybe prohibit sequence writing when sequence is running
     static saveSequence(sequence)
     {
         try

@@ -36,19 +36,22 @@ module.exports = class Timer {
         if (thisTimer._timeMillis >= thisTimer._endTime * 1000)
         {
             thisTimer.stop();
-            thisTimer._timerTickCallback(thisTimer, thisTimer._timeMillis / 1000);
+            thisTimer._timerTickCallback(thisTimer);
             thisTimer._timerStopCallback();
         }
         else
         {
-            thisTimer._timerTickCallback(thisTimer, thisTimer._timeMillis / 1000);
+            thisTimer._timerTickCallback(thisTimer);
         }
     }
 
-    //WARNING: don't use in callbacks
     get time()
     {
         return this._timeMillis / 1000;
     }
 
+    get timeMillis()
+    {
+        return this._timeMillis;
+    }
 }

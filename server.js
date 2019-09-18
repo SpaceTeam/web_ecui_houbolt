@@ -76,9 +76,9 @@ var onChecklistStart = function (ioClient, socket) {
     checklistMan = new checklistManMod();
 
     //send everyone up to date checklist
-    let msg = checklistManMod.loadChecklist();
-    console.log(msg)
-    ioClient.emit('checklist-load', msg);
+    let jsonChecklist = checklistManMod.loadChecklist();
+    console.log(jsonChecklist)
+    ioClient.emit('checklist-load', jsonChecklist);
 }
 
 var onChecklistTick = function (ioClient, socket, id) {
@@ -104,18 +104,30 @@ var onChecklistDone = function (ioClient, socket) {
 
 var onSequenceStart = function (ioClient, socket) {
     console.log('sequence start');
-    sequenceManMod.init();
+
 
     //send everyone up to date checklist
-    let msg = sequenceManMod.loadSequence();
-    console.log(msg)
-    ioClient.emit('sequence-load', msg);
+    let jsonSeq = sequenceManMod.loadSequence();
+    console.log(jsonSeq)
+    ioClient.emit('sequence-load', jsonSeq);
 
-    sequenceManMod.startSequence(onSequenceDone);
+    sequenceManMod.init();
+    //TODO: maybe change so emitter is invoking event
+    sequenceManMod.startSequence(1.0,
+        function(time){onSequenceSync(ioClient,socket,time);},
+        function(){onSequenceDone(ioClient,socket);}
+        );
+}
+
+var onSequenceSync = function (ioClient, socket, time) {
+    console.log('sequence sync');
+    console.log(time)
+    ioClient.emit('sequence-sync', time);
 }
 
 var onSequenceDone = function (ioClient, socket) {
     console.log('sequence done');
+    ioClient.emit('sequence-done');
 }
 
 //Assign the event handler to an event:
@@ -125,6 +137,7 @@ eventEmitter.on('onChecklistDone', onChecklistDone);
 eventEmitter.on('onChecklistTick', onChecklistTick);
 
 eventEmitter.on('onSequenceStart', onSequenceStart);
+eventEmitter.on('onSequenceSync', onSequenceSync);
 eventEmitter.on('onSequenceDone', onSequenceDone);
 
 

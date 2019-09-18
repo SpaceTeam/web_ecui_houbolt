@@ -1,79 +1,60 @@
-[
-    {
-        "chamberPressureMin": 0,
-        "fuel": 0,
-        "igniter": 0,
-        "oxidizer": 0,
-        "timestamp": -1000000
+{
+    "globals": {
+        "startTime": -3,
+        "endTime": 2,
+        "interval": 0.1
     },
-    {
-        "chamberPressureMin": 0,
-        "fuel": 0,
-        "igniter": 0,
-        "oxidizer": 0,
-        "timestamp": 0.0
-    },
-    {
-        "chamberPressureMin": 0,
-        "fuel": 50,
-        "igniter": 0,
-        "oxidizer": 50,
-        "timestamp": 0.5
-    },
-    {
-        "chamberPressureMin": 0,
-        "fuel": 100,
-        "igniter": 100,
-        "oxidizer": 100,
-        "timestamp": 1.0
-    },
-    {
-        "chamberPressureMin": 5.0,
-        "fuel": 100,
-        "igniter": 0,
-        "oxidizer": 100,
-        "timestamp": 1.1
-    },
-    {
-        "chamberPressureMin": 5.0,
-        "fuel": 100,
-        "igniter": 0,
-        "oxidizer": 100,
-        "timestamp": 2.9
-    },
-    {
-        "chamberPressureMin": 0,
-        "fuel": 100,
-        "igniter": 0,
-        "oxidizer": 100,
-        "timestamp": 3.0
-    },
-    {
-        "chamberPressureMin": 0,
-        "fuel": 0,
-        "igniter": 0,
-        "oxidizer": 100,
-        "timestamp": 3.2
-    },
-    {
-        "chamberPressureMin": 0,
-        "fuel": 0,
-        "igniter": 0,
-        "oxidizer": 100,
-        "timestamp": 3.3
-    },
-    {
-        "chamberPressureMin": 0,
-        "fuel": 0,
-        "igniter": 0,
-        "oxidizer": 0,
-        "timestamp": 3.5
-    },
-    {
-        "chamberPressureMin": 0,
-        "fuel": 0,
-        "igniter": 0,
-        "oxidizer": 0,
-        "timestamp": 1000000
-    }
-]
+
+    "data": [
+            {
+                "timestamp": "START",
+                "name": "All to Zero",
+                "desc": "blah blah optional blah",
+                "actions" : [
+                    {
+                        "timestamp": "START",
+                        "fuel": 0,
+                        "igniter": 0,
+                        "oxidizer": 0
+                    },
+                    {
+                        "timestamp": 0.1,
+                        "fuel": 0,
+                        "igniter": 10,
+                        "oxidizer": 0
+                    },
+                    {
+                        "timestamp": 0.5,
+                        "fuel": 0,
+                        "igniter": 0,
+                        "oxidizer": 20
+                    }
+                ]
+            },
+            {
+                "timestamp": 0.6,
+                "name": "Engine Chill",
+                "desc": "pretty chilly in here",
+                "actions" : [
+                    {
+                        "timestamp": 0.6,
+                        "fuel": 0,
+                        "igniter": 0,
+                        "oxidizer": 0
+                    },
+                    {
+                        "timestamp": 0.7,
+                        "fuel": 0,
+                        "igniter": 10,
+                        "oxidizer": 0
+                    },
+                    {
+                        "timestamp": "END",
+                        "fuel": 0,
+                        "igniter": 0,
+                        "oxidizer": 20
+                    }
+                ]
+            }
+    ]
+}
