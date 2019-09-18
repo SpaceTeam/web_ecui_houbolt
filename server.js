@@ -217,14 +217,6 @@ app.get('/', function(req, res){
     res.sendFile(path + 'index.html');
 });
 
-app.get('/sharks', function(req,res){
-   res.sendFile(path + 'sharks.html');
- });
-
-app.get('/chat', function(req,res){
-   res.sendFile(path + 'chat.html');
- });
-
 http.listen(port, function(){
     console.log('listening on *:' + port);
 });
