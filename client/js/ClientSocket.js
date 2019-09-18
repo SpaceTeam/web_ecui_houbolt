@@ -20,7 +20,11 @@ var intervalDelegate;
 function timerTick()
 {
     timeMillis += intervalMillis;
-    $("#timer").text(timeMillis/1000);
+    $('#timer').text(timeMillis/1000);
+    if (Number.isInteger(timeMillis/1000))
+    {
+        $('#timer').append('.0')
+    }
 }
 
 socket.on('checklist-load', function(jsonChecklist) {
@@ -29,12 +33,37 @@ socket.on('checklist-load', function(jsonChecklist) {
     console.log(jsonChecklist)
 
     window.scrollTo(0, document.body.scrollHeight);
+
+
+    for (itemInd in jsonChecklist)
+    {
+        let currItem = jsonChecklist[itemInd];
+        let currId = currItem.id;
+        console.log(itemInd);
+        let newCard = $('#cardTemplate').children().first().clone();
+        newCard.find('#headingTemp').attr('id', 'checklistItemHeading' + currId)
+            .find('button').attr('data-target', '#checklistItemCollapse' + currId)
+            .attr('aria-controls', 'checklistItemCollapse' + currId);
+        newCard.find('#collapseTemp').attr('id', 'checklistItemCollapse' + currId)
+            .attr('aria-labelledby', 'checklistItemHeading' + currId);
+
+        newCard.find('button').text(currItem.name);
+
+        let notes = $('<ul>');
+        for (noteInd in currItem.notes)
+        {
+            notes.append($('<li>').text(currItem.notes[noteInd]));
+        }
+        newCard.find('.card-body').append(notes);
+
+        $('#checklist').append(newCard);
+    }
 });
 
 socket.on('sequence-load', function(jsonSeq) {
     $('#messages').append($('<li>').text('SEQUENCE-LOAD arrived: \n'));
     $('#timer').text(jsonSeq.globals.startTime);
-    $("#timer").css("color", "green");
+    $('#timer').css("color", "green");
     console.log('sequence-load:')
     console.log(jsonSeq)
 
@@ -57,9 +86,13 @@ socket.on('sequence-sync', function(time) {
 
 socket.on('sequence-done', function() {
     console.log('sequence-done:');
-    $("#timer").text(endTime);
+    $('#timer').text(endTime);
     clearInterval(intervalDelegate);
-    $("#timer").css("color", "red");
+    $('#timer').css("color", "red");
+    if (Number.isInteger(endTime))
+    {
+        $('#timer').append('.0');
+    }
 });
 
 socket.on('chat message', function(msg){

@@ -1,7 +1,7 @@
 [
     {
         "id": 0,
-        "desc": "Check Servos",
+        "name": "Check Servos",
         "notes": [
             "asdf",
             "asdf3",
@@ -10,7 +10,7 @@
     },
     {
         "id": 5,
-        "desc": "Check Valves",
+        "name": "Check Valves",
         "notes": [
             "asdf",
             "asdf3",
@@ -19,7 +19,7 @@
     },
     {
         "id": 2,
-        "desc": "Check Igniter",
+        "name": "Check Igniter",
         "notes": [
             "asdf",
             "asdf3",
