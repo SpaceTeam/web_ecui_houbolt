@@ -60,6 +60,8 @@ var checklistManMod = require('./server/ChecklistManager')
 var sequenceMan = new sequenceManMod();
 var checklistMan = new checklistManMod();
 
+var sequenceRunning = false;
+
 //console.log(checklistMan._loadChecklist());
 
 //test read-write
@@ -103,20 +105,27 @@ var onChecklistDone = function (ioClient, socket) {
 }
 
 var onSequenceStart = function (ioClient, socket) {
-    console.log('sequence start');
 
+    if (!sequenceRunning) {
+        sequenceRunning = true;
+        console.log('sequence start');
+        //send everyone up to date checklist
+        let jsonSeq = sequenceManMod.loadSequence();
+        console.log(jsonSeq)
+        ioClient.emit('sequence-load', jsonSeq);
 
-    //send everyone up to date checklist
-    let jsonSeq = sequenceManMod.loadSequence();
-    console.log(jsonSeq)
-    ioClient.emit('sequence-load', jsonSeq);
+        sequenceManMod.init();
+        //TODO: maybe change so emitter is invoking events
+        sequenceManMod.startSequence(1.0,
+            function(time){onSequenceSync(ioClient,socket,time);},
+            function(){onSequenceDone(ioClient,socket);}
+            );
 
-    sequenceManMod.init();
-    //TODO: maybe change so emitter is invoking event
-    sequenceManMod.startSequence(1.0,
-        function(time){onSequenceSync(ioClient,socket,time);},
-        function(){onSequenceDone(ioClient,socket);}
-        );
+    }
+    else
+    {
+        console.log("Can't start sequence, already running");
+    }
 }
 
 var onSequenceSync = function (ioClient, socket, time) {
@@ -128,6 +137,16 @@ var onSequenceSync = function (ioClient, socket, time) {
 var onSequenceDone = function (ioClient, socket) {
     console.log('sequence done');
     ioClient.emit('sequence-done');
+    sequenceRunning = false;
+}
+
+var onAbort = function (ioClient, socket) {
+    if (sequenceRunning) {
+        sequenceManMod.abortSequence();
+        socket.broadcast.emit('abort');
+        ioClient.emit('chat message', 'ABORT!!!!!');
+        sequenceRunning = false;
+    }
 }
 
 //Assign the event handler to an event:
@@ -140,6 +159,7 @@ eventEmitter.on('onSequenceStart', onSequenceStart);
 eventEmitter.on('onSequenceSync', onSequenceSync);
 eventEmitter.on('onSequenceDone', onSequenceDone);
 
+eventEmitter.on('onAbort', onAbort);
 
 var master = null;
 
@@ -160,6 +180,11 @@ ioClient.on('connection', function(socket){
 
     socket.on('abort', function(msg){
         console.log('abort');
+        //TODO: maybe change so everyone can abort
+        if (master === socket.id) {
+            //TODO: CAREFUL even if not running tell llServer from abort IN ANY CASE
+            eventEmitter.emit('onAbort', ioClient, socket);
+        }
     });
 
     socket.on('checklist-start', function(msg){
@@ -210,6 +235,12 @@ ioClient.on('connection', function(socket){
 
     socket.on('disconnect', function(msg){
         console.log('user disconnected');
+        if (master === socket.id) {
+            if (sequenceRunning)
+            {
+                eventEmitter.emit('onAbort', ioClient, socket);
+            }
+        }
     });
 });
 

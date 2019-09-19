@@ -9,9 +9,21 @@ $('form').submit(function(){
     return false;
 });
 
-$('#tickButton').click(function(){socket.emit('checklist-tick', $('#m').val())});
 $('#startChecklistButton').click(function(){socket.emit('checklist-start')});
-$('#startSequenceButton').click(function(){socket.emit('sequence-start')});
+$('#toggleSequenceButton').click(function()
+{
+    if ($(this).text() === 'Start Sequence')
+    {
+        socket.emit('sequence-start');
+        $(this).text('Abort Sequence');
+    }
+    else if ($(this).text() === 'Abort Sequence')
+    {
+        abortSequence();
+        $(this).text('Start Sequence');
+    }
+
+});
 
 var endTime;
 var timeMillis;
@@ -26,6 +38,29 @@ function timerTick()
         $('#timer').append('.0')
     }
 }
+
+function abortSequence()
+{
+    clearInterval(intervalDelegate);
+    $('#timer').css("color", "red");
+    socket.emit('abort');
+}
+
+function onChecklistTick(checkbox)
+{
+    let currId = checkbox.id.substr(14);
+    checkbox.setAttribute('disabled', '');
+
+    //TODO: with user authentification: check if user is master and only then send message (performance)
+    socket.emit('checklist-tick', currId);
+}
+
+socket.on('abort', function() {
+    console.log('abort');
+
+    abortSequence();
+
+});
 
 socket.on('checklist-load', function(jsonChecklist) {
     $('#messages').append($('<li>').text('CHECKLIST-LOAD arrived: \n'));
@@ -43,7 +78,9 @@ socket.on('checklist-load', function(jsonChecklist) {
         let newCard = $('#cardTemplate').children().first().clone();
         newCard.find('#headingTemp').attr('id', 'checklistItemHeading' + currId)
             .find('button').attr('data-target', '#checklistItemCollapse' + currId)
-            .attr('aria-controls', 'checklistItemCollapse' + currId);
+            .attr('aria-controls', 'checklistItemCollapse' + currId)
+            .attr('for', 'checklistCheck' + currId);
+        newCard.find('#checklistCheckTemp').attr('id', 'checklistCheck' + currId);
         newCard.find('#collapseTemp').attr('id', 'checklistItemCollapse' + currId)
             .attr('aria-labelledby', 'checklistItemHeading' + currId);
 
@@ -60,12 +97,26 @@ socket.on('checklist-load', function(jsonChecklist) {
     }
 });
 
+socket.on('checklist-update', function(id) {
+    console.log('checklist-update');
+    //onChecklistTick(id, true);
+    console.log(id);
+    $('#checklistCheck' + id).click();
+});
+
+socket.on('checklist-done', function() {
+    console.log('checklist-done');
+    $('#checklistCol').hide('slide', { direction: 'right' }, 300);
+    $('#startChecklistButton').attr('hidden', '');
+    $('#toggleSequenceButton').removeAttr('hidden');
+});
+
 socket.on('sequence-load', function(jsonSeq) {
     $('#messages').append($('<li>').text('SEQUENCE-LOAD arrived: \n'));
     $('#timer').text(jsonSeq.globals.startTime);
     $('#timer').css("color", "green");
-    console.log('sequence-load:')
-    console.log(jsonSeq)
+    console.log('sequence-load:');
+    console.log(jsonSeq);
 
     intervalMillis = jsonSeq.globals.interval * 1000;
     timeMillis = jsonSeq.globals.startTime * 1000;
@@ -88,7 +139,6 @@ socket.on('sequence-done', function() {
     console.log('sequence-done:');
     $('#timer').text(endTime);
     clearInterval(intervalDelegate);
-    $('#timer').css("color", "red");
     if (Number.isInteger(endTime))
     {
         $('#timer').append('.0');

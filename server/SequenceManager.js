@@ -34,6 +34,10 @@ module.exports = class SequenceManager {
         }
     }
 
+    static abortSequence() {
+        SequenceManager._timer.stop();
+    }
+
     static _timerTick(timer)
     {
         if (timer.timeMillis % SequenceManager._syncInterval === 0)

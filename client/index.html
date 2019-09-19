@@ -6,12 +6,11 @@
 
 <!--    <link href="css/styles.css" rel="stylesheet">-->
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body,html,.container-fluid {height: 100%;}
+      body,html,.container-fluid {height: 90%;}
       body { font: 13px Helvetica, Arial; background-color: white; color: #303030;}
       form input { border: 0; padding: 10px; border:solid;}
       .col {background-color: white;}
-      .row {height: 100%;}
+      .content {height: 100%;}
       .accordion {border: none; overflow: scroll; background-color: transparent; box-shadow: none; margin-top: 40px;}
       .card {padding-bottom: 20px; border: none; }
       .card-header {
@@ -24,6 +23,12 @@
       .footer {position: absolute; bottom: 0;}
       .btn-link {color: white; text-decoration: none;}
       .btn-link:hover {color: white; text-decoration: none;}
+      input[type='checkbox'] {
+          transform: scale(2);
+          top: 25%;
+          margin-top: 0px;
+      }
+
       #messages { list-style-type: none; margin: 0; padding: 0; }
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
@@ -35,9 +40,13 @@
       <div class="card">
         <div class="card-header" id="headingTemp">
           <h2 class="mb-0">
-            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTemp" aria-expanded="false" aria-controls="collapseTemp">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" onclick="onChecklistTick(this);" value="" id="checklistCheckTemp">
+              <button class="form-check-label btn btn-link collapsed" for="checklistCheckTemp" type="button" data-toggle="collapse" data-target="#collapseTemp" aria-expanded="false" aria-controls="collapseTemp">
 
             </button>
+            </div>
+
           </h2>
         </div>
         <div id="collapseTemp" class="collapse" aria-labelledby="headingTemp">
@@ -48,8 +57,16 @@
     </div>
     <div class="container-fluid">
         <div class="row">
-          <div class="col col-9">
-            <h1 id="timer">0.0</h1>
+                <div class="col">
+                  <h1 id="timer">0.0</h1>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-secondary" id="toggleSequenceButton" hidden>Start Sequence</button>
+                  <button class="btn btn-secondary" id="startChecklistButton">Start Checklist</button>
+                </div>
+        </div>
+        <div class="row content">
+          <div class="col">
             <ul id="messages"></ul>
             <div class="footer navbar-dark bg-dark">
               <form action="">
@@ -57,16 +74,11 @@
 
 
               </form>
-              <button class="btn btn-secondary" id="startChecklistButton">Start Checklist</button>
-              <button class="btn btn-secondary" id="startSequenceButton">Start Sequence</button>
             </div>
           </div>
-          <div class="col">
+          <div class="col col-3" id="checklistCol">
             <div class="accordion" id="checklist">
 
-            </div>
-            <div class="footer navbar-dark bg-dark">
-              <button class="btn btn-secondary" id="tickButton">Tick</button>
             </div>
           </div>
           </div>
@@ -75,9 +87,15 @@
 
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+    <script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+  integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
+  crossorigin="anonymous"></script>
     <script src="./js/ClientSocket.js"></script>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   </body>
