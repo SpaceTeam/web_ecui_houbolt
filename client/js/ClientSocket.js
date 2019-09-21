@@ -2,13 +2,6 @@
 var socket = io();
 var start = new Date();
 
-$('form').submit(function(){
-    start = new Date();
-    socket.emit('chat message', $('#m').val());
-    $('#m').val('');
-    return false;
-});
-
 $('#startChecklistButton').click(function(){socket.emit('checklist-start')});
 $('#toggleSequenceButton').click(function()
 {
@@ -25,6 +18,10 @@ $('#toggleSequenceButton').click(function()
 
 });
 
+var jsonSequence;
+
+var seqChart = new ClientChart();
+
 var endTime;
 var timeMillis;
 var intervalMillis;
@@ -37,6 +34,7 @@ function timerTick()
     {
         $('#timer').append('.0')
     }
+    seqChart.update(timeMillis);
 }
 
 function abortSequence()
@@ -68,7 +66,6 @@ socket.on('checklist-load', function(jsonChecklist) {
     console.log(jsonChecklist)
 
     window.scrollTo(0, document.body.scrollHeight);
-
 
     for (itemInd in jsonChecklist)
     {
@@ -106,21 +103,36 @@ socket.on('checklist-update', function(id) {
 
 socket.on('checklist-done', function() {
     console.log('checklist-done');
+
+    //TODO: check with user credentials and only display them when master
     $('#checklistCol').hide('slide', { direction: 'right' }, 300);
     $('#startChecklistButton').attr('hidden', '');
     $('#toggleSequenceButton').removeAttr('hidden');
 });
 
 socket.on('sequence-load', function(jsonSeq) {
+
+    jsonSequence = jsonSeq;
+
     $('#messages').append($('<li>').text('SEQUENCE-LOAD arrived: \n'));
     $('#timer').text(jsonSeq.globals.startTime);
     $('#timer').css("color", "green");
     console.log('sequence-load:');
     console.log(jsonSeq);
 
-    intervalMillis = jsonSeq.globals.interval * 1000;
-    timeMillis = jsonSeq.globals.startTime * 1000;
-    endTime = jsonSeq.globals.endTime;
+    loadSequenceChart(jsonSeq);
+    console.log(seqChart.chart.data);
+
+});
+
+socket.on('sequence-start', function() {
+    console.log('sequence-start:');
+
+    seqChart.start();
+
+    intervalMillis = jsonSequence.globals.interval * 1000;
+    timeMillis = jsonSequence.globals.startTime * 1000;
+    endTime = jsonSequence.globals.endTime;
     console.log(endTime);
     intervalDelegate = setInterval(timerTick, intervalMillis);
 });
@@ -137,12 +149,16 @@ socket.on('sequence-sync', function(time) {
 
 socket.on('sequence-done', function() {
     console.log('sequence-done:');
+
+    seqChart.stop();
+
     $('#timer').text(endTime);
     clearInterval(intervalDelegate);
     if (Number.isInteger(endTime))
     {
         $('#timer').append('.0');
     }
+    $('#toggleSequenceButton').text("Start Sequence");
 });
 
 socket.on('chat message', function(msg){

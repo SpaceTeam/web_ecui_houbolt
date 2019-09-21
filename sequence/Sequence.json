@@ -1,7 +1,7 @@
 {
     "globals": {
         "startTime": -3,
-        "endTime": 2,
+        "endTime": 4,
         "interval": 0.1
     },
 
@@ -12,47 +12,88 @@
                 "desc": "blah blah optional blah",
                 "actions" : [
                     {
-                        "timestamp": "START",
+                        "chamberPressureMin": 0,
                         "fuel": 0,
                         "igniter": 0,
-                        "oxidizer": 0
+                        "oxidizer": 0,
+                        "timestamp": "START"
                     },
                     {
-                        "timestamp": 0.1,
-                        "fuel": 0,
-                        "igniter": 10,
-                        "oxidizer": 0
-                    },
-                    {
-                        "timestamp": 0.5,
+                        "chamberPressureMin": 0,
                         "fuel": 0,
                         "igniter": 0,
-                        "oxidizer": 20
+                        "oxidizer": 0,
+                        "timestamp": 0.0
+                    },
+                    {
+                        "chamberPressureMin": 0,
+                        "fuel": 50,
+                        "igniter": 0,
+                        "oxidizer": 50,
+                        "timestamp": 0.5
+                    },
+                    {
+                        "chamberPressureMin": 0,
+                        "fuel": 100,
+                        "igniter": 100,
+                        "oxidizer": 100,
+                        "timestamp": 1.0
+                    },
+                    {
+                        "chamberPressureMin": 5.0,
+                        "fuel": 100,
+                        "igniter": 0,
+                        "oxidizer": 100,
+                        "timestamp": 1.1
+                    },
+                    {
+                        "chamberPressureMin": 5.0,
+                        "fuel": 100,
+                        "igniter": 0,
+                        "oxidizer": 100,
+                        "timestamp": 2.9
+                    },
+                    {
+                        "chamberPressureMin": 0,
+                        "fuel": 100,
+                        "igniter": 0,
+                        "oxidizer": 100,
+                        "timestamp": 3.0
+                    },
+                    {
+                        "chamberPressureMin": 0,
+                        "fuel": 0,
+                        "igniter": 0,
+                        "oxidizer": 100,
+                        "timestamp": 3.2
                     }
                 ]
             },
             {
-                "timestamp": 0.6,
+                "timestamp": 3.3,
                 "name": "Engine Chill",
                 "desc": "pretty chilly in here",
                 "actions" : [
                     {
-                        "timestamp": 0.6,
+                        "chamberPressureMin": 0,
                         "fuel": 0,
                         "igniter": 0,
-                        "oxidizer": 0
+                        "oxidizer": 100,
+                        "timestamp": 3.3
                     },
                     {
-                        "timestamp": 0.7,
-                        "fuel": 0,
-                        "igniter": 10,
-                        "oxidizer": 0
-                    },
-                    {
-                        "timestamp": "END",
+                        "chamberPressureMin": 0,
                         "fuel": 0,
                         "igniter": 0,
-                        "oxidizer": 20
+                        "oxidizer": 0,
+                        "timestamp": 3.5
+                    },
+                    {
+                        "chamberPressureMin": 0,
+                        "fuel": 0,
+                        "igniter": 0,
+                        "oxidizer": 0,
+                        "timestamp": "END"
                     }
                 ]
             }

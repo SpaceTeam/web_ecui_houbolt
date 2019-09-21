@@ -102,6 +102,11 @@ var onChecklistDone = function (ioClient, socket) {
     console.log('checklist done');
     ioClient.emit('checklist-done');
     ioClient.emit('chat message', 'checklist done!');
+
+    //send everyone up to date sequence
+    let jsonSeq = sequenceManMod.loadSequence();
+    console.log(jsonSeq)
+    ioClient.emit('sequence-load', jsonSeq);
 }
 
 var onSequenceStart = function (ioClient, socket) {
@@ -109,10 +114,7 @@ var onSequenceStart = function (ioClient, socket) {
     if (!sequenceRunning) {
         sequenceRunning = true;
         console.log('sequence start');
-        //send everyone up to date checklist
-        let jsonSeq = sequenceManMod.loadSequence();
-        console.log(jsonSeq)
-        ioClient.emit('sequence-load', jsonSeq);
+        ioClient.emit('sequence-start');
 
         sequenceManMod.init();
         //TODO: maybe change so emitter is invoking events
