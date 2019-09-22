@@ -26,6 +26,8 @@ module.exports = class Timer {
     stop() {
 
         clearInterval(this._intervalDelegate);
+        this._timerTickCallback(this);
+        this._timerStopCallback();
         console.log('Timer: end');
     }
 
@@ -36,8 +38,6 @@ module.exports = class Timer {
         if (thisTimer._timeMillis >= thisTimer._endTime * 1000)
         {
             thisTimer.stop();
-            thisTimer._timerTickCallback(thisTimer);
-            thisTimer._timerStopCallback();
         }
         else
         {

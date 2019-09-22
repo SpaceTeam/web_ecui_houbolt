@@ -11,7 +11,7 @@
 <!--    <link href="css/styles.css" rel="stylesheet">-->
     <style>
       body,html,.container-fluid {height: 90%;}
-      body { font: 13px Helvetica, Arial; background-color: white; color: #303030;}
+      body { font: 13px Helvetica, Arial; background-color: white; color: #303030; margin-top: -60px;}
       form input { border: 0; padding: 10px; border:solid;}
       .col {background-color: white;}
       .content {height: 100%;}
@@ -32,9 +32,14 @@
           top: 25%;
           margin-top: 0px;
       }
-      #chartdiv {
-        width: 100%;
-        height: 500px;
+      #sequenceChart {
+        width: 80%;
+        height: 400px;
+      }
+      .sensorChart {
+        width: 30%;
+        height: 200px;
+        display: inline-block;
       }
 
       #messages { list-style-type: none; margin: 0; padding: 0; }
@@ -44,7 +49,7 @@
     </style>
   </head>
   <body>
-    <div id="cardTemplate" style="visibility: hidden;">
+    <div id="templates" style="visibility: hidden;">
       <div class="card">
         <div class="card-header" id="headingTemp">
           <h2 class="mb-0">
@@ -61,7 +66,9 @@
           <div class="card-body">
           </div>
       </div>
-    </div>
+
+    </div><div id="tempChart" class="sensorChart" hidden></div>
+
     </div>
     <div class="container-fluid">
         <div class="row">
@@ -75,8 +82,8 @@
         </div>
         <div class="row content">
           <div class="col">
-            <div id="chartdiv"></div>
-
+            <div id="sequenceChart"></div>
+            <div id="sensorChartDiv"></div>
             <ul id="messages"></ul>
           </div>
           <div class="col col-3" id="checklistCol">
@@ -98,7 +105,8 @@
   src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
   integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
   crossorigin="anonymous"></script>
-    <script src="js/ClientChart.js"></script>
+    <script src="js/SequenceChart.js"></script>
+    <script src="js/SensorChart.js"></script>
     <script src="./js/ClientSocket.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>

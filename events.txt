@@ -43,3 +43,8 @@ timer-done
 action-done
 
 
+jsonSensor = {
+    "id" = 0,
+    "name" = chamber0,
+    "value" = 20,
+}

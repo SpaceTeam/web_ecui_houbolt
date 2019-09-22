@@ -151,6 +151,44 @@ var onAbort = function (ioClient, socket) {
     }
 }
 
+var senDataInterval;
+var sensorTime = 0;
+var onSendTestSensorData = function(ioClient)
+{
+    let jsonSensor0 = {
+        "id": 0,
+        "name": "Chamber",
+        "time": sensorTime,
+        "value": Math.random().toPrecision(3) * 2048
+    };
+
+    ioClient.emit('sensor', jsonSensor0);
+
+    let jsonSensor1 = {
+        "id": 1,
+        "name": "Injector",
+        "time": sensorTime,
+        "value": Math.random().toPrecision(3) * 2048
+    };
+
+    ioClient.emit('sensor', jsonSensor1);
+
+    let jsonSensor2 = {
+        "id": 2,
+        "name": "FuelTank",
+        "time": sensorTime,
+        "value": Math.random().toPrecision(3) * 2048
+    };
+
+    ioClient.emit('sensor', jsonSensor2);
+
+    if (sensorTime >= 10000)
+    {
+        clearInterval(senDataInterval);
+    }
+    sensorTime+=100;
+}
+
 //Assign the event handler to an event:
 //TODO: check if events slowing down process and instead emit messages of sockets directly inside incoming message events
 eventEmitter.on('onChecklistStart', onChecklistStart);
@@ -163,6 +201,8 @@ eventEmitter.on('onSequenceDone', onSequenceDone);
 
 eventEmitter.on('onAbort', onAbort);
 
+
+senDataInterval = setInterval(function(){onSendTestSensorData(ioClient)}, 100);
 var master = null;
 
 ioClient.on('connection', function(socket){
@@ -175,6 +215,10 @@ ioClient.on('connection', function(socket){
     // }
     //choose last one connected for testing
     master = socket.id;
+
+    //send everyone up to date sequence
+    let jsonSeq = sequenceManMod.loadSequence();
+    ioClient.emit('sequence-load', jsonSeq);
 
     socket.on('chat message', function(msg){
         ioClient.emit('chat message', msg);

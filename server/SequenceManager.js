@@ -32,6 +32,10 @@ module.exports = class SequenceManager {
             SequenceManager._timer = new timerMod(seq.globals.interval, seq.globals.startTime, seq.globals.endTime, SequenceManager._timerTick, SequenceManager._timerDone);
             SequenceManager._timer.start();
         }
+        else
+        {
+            console.error("can't start sequence, already running");
+        }
     }
 
     static abortSequence() {
