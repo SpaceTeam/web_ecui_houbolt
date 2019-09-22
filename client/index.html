@@ -65,11 +65,13 @@
         <div id="collapseTemp" class="collapse" aria-labelledby="headingTemp">
           <div class="card-body">
           </div>
-      </div>
+        </div>
 
-    </div><div id="tempChart" class="sensorChart" hidden></div>
+      </div>
+      <div id="tempChart" class="sensorChart" hidden></div>
 
     </div>
+
     <div class="container-fluid">
         <div class="row">
                 <div class="col">
@@ -82,6 +84,18 @@
         </div>
         <div class="row content">
           <div class="col">
+            <ul class="nav nav-tabs justify-content-end" id="myTab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="monitor-tab-button" data-toggle="tab" href="#sequence-tab" role="tab" aria-controls="sequence-tab" aria-selected="true">Monitor</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="control-tab-button" data-toggle="tab" href="#control-tab" role="tab" aria-controls="control-tab" aria-selected="false">Control</a>
+              </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+              <div class="tab-pane fade show active" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">...</div>
+              <div class="tab-pane fade" id="control-tab" role="tabpanel" aria-labelledby="monitor-tab-button">...</div>
+            </div>
             <div id="sequenceChart"></div>
             <div id="sensorChartDiv"></div>
             <ul id="messages"></ul>
