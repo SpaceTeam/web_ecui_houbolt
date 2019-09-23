@@ -14,7 +14,8 @@ checklist-tick
 sequence-save
 sequence-start
 abortSequence-save
-servo
+servos-set
+servos-calibrate
 
 NodeServer:
 checklist-update
@@ -25,6 +26,7 @@ countdown-start
 countdown-sync
 sequence-load
 sequence-done
+servos-load
 
 ============NodeServer-LLServer=============
 
@@ -43,8 +45,41 @@ timer-done
 action-done
 
 
-jsonSensor = {
+sensor = {
     "id" = 0,
     "name" = chamber0,
     "value" = 20,
 }
+set-servos = [{
+    "id": 0,
+    "name": "fuelServo",
+    "value": 20
+}]
+
+calibrate-servos = [
+    {
+        "id": 0,
+        "min": 20,
+        "max": 1900
+    },
+    {
+        "id": 1,
+        "min": 0,
+        "max": 2000
+    }
+]
+
+load-servos = [
+    {
+        "id": 0,
+        "name": "Fuel Servo",
+        "min": 20,
+        "max": 1900
+    },
+    {
+        "id": 1,
+        "name": "Oxidizer Servo",
+        "min": 0,
+        "max": 2000
+    }
+]

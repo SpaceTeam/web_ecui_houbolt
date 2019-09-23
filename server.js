@@ -62,6 +62,7 @@ var checklistMan = new checklistManMod();
 
 var sequenceRunning = false;
 
+
 //console.log(checklistMan._loadChecklist());
 
 //test read-write
@@ -77,11 +78,10 @@ var onChecklistStart = function (ioClient, socket) {
     console.log('checklist start');
     checklistMan = new checklistManMod();
 
-    //send everyone up to date checklist
+    //send new socket up to date checklist
     let jsonChecklist = checklistManMod.loadChecklist();
-    console.log(jsonChecklist)
-    ioClient.emit('checklist-load', jsonChecklist);
-}
+    socket.emit('checklist-load', jsonChecklist);
+};
 
 var onChecklistTick = function (ioClient, socket, id) {
     let retTick = checklistMan.tick(id);
@@ -216,9 +216,26 @@ ioClient.on('connection', function(socket){
     //choose last one connected for testing
     master = socket.id;
 
-    //send everyone up to date sequence
+    //send new socket up to date sequence
     let jsonSeq = sequenceManMod.loadSequence();
-    ioClient.emit('sequence-load', jsonSeq);
+    socket.emit('sequence-load', jsonSeq);
+
+    //send new socket up to date servo end positions
+    let jsonServos = [
+        {
+            "id": 0,
+            "name": "Fuel Servo",
+            "min": 20,
+            "max": 1900
+        },
+        {
+            "id": 1,
+            "name": "Oxidizer Servo",
+            "min": 0,
+            "max": 2000
+        }
+    ];
+    socket.emit('servos-load', jsonServos);
 
     socket.on('chat message', function(msg){
         ioClient.emit('chat message', msg);
@@ -275,8 +292,20 @@ ioClient.on('connection', function(socket){
         }
     });
 
-    socket.on('servo', function(msg){
-        console.log('servo');
+    socket.on('servos-calibrate', function(jsonServos){
+        console.log('servos-calibrate');
+        for (let i in jsonServos)
+        {
+            console.log(jsonServos[i]);
+        }
+    });
+
+    socket.on('servos-set', function(jsonServos){
+        console.log('servos-set');
+        for (let i in jsonServos)
+        {
+            console.log(jsonServos[i]);
+        }
     });
 
     socket.on('disconnect', function(msg){

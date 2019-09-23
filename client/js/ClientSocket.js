@@ -2,21 +2,149 @@
 var socket = io();
 var start = new Date();
 
-$('#startChecklistButton').click(function(){socket.emit('checklist-start')});
+socket.on('connect', function() {socket.emit('checklist-start')});
 $('#toggleSequenceButton').click(function()
 {
     if ($(this).text() === 'Start Sequence')
     {
         socket.emit('sequence-start');
         $(this).text('Abort Sequence');
+        $('.tab-button').each(function () {
+            if ($(this).id !== "monitor-tab-button")
+            {
+                $(this).prop('disabled', true);
+            }
+        });
     }
     else if ($(this).text() === 'Abort Sequence')
     {
         abortSequence();
         $(this).text('Start Sequence');
+        $('.tab-button').each(function () {
+            if ($(this).id !== "monitor-tab-button")
+            {
+                $(this).prop('disabled', false);
+            }
+        });
     }
 
 });
+$('#saftlButton').click(function() {
+    $('.servo-slider').each(function () {
+        let slider = $(this);
+        let lastVal = slider.val();
+        slider.val(slider.attr('max')).trigger('input');
+        setTimeout(function () {
+            slider.val(lastVal).trigger('input');
+        }, 2000);
+    })
+});
+
+
+function onServoSpinnerChange(spinner) {
+
+    let spinnerId = spinner.attr('id');
+    let sliderId = spinnerId.substr(0, spinnerId.length-3);
+    let id = parseInt($('#' + sliderId).attr('idNum'));
+    let val = parseFloat(spinner.val());
+    sendServo(id, val);
+}
+
+function onServoSliderInput(servoSlider)
+{
+    let id = parseInt(servoSlider.attr('idNum'));
+    let val = parseFloat(servoSlider.val());
+    if (isNaN(id))
+    {
+        id = -1;
+    }
+
+    sendServo(id, val);
+}
+
+function sendServo(servoId, servoValue)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.value = servoValue;
+    socket.emit('servos-set', [jsonServo]);
+}
+
+function sendServoMin(servoId, newServoMin)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.min = newServoMin;
+    socket.emit('servos-calibrate', [jsonServo]);
+}
+
+function sendServoMax(servoId, newServoMax)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.max = newServoMax;
+    socket.emit('servos-calibrate', [jsonServo]);
+}
+
+function onCalibrateMin(button) {
+
+    let buttonId = button.attr('id');
+    let sliderId = buttonId.substr(0, buttonId.length-3);
+
+    let id = parseInt($('#' + sliderId).attr('idNum'));
+    let min = parseFloat($('#' + sliderId + 'Cal').val());
+
+    sendServoMin(id, min);
+}
+
+function onCalibrateMax(button) {
+
+    let buttonId = button.attr('id');
+    let sliderId = buttonId.substr(0, buttonId.length-3);
+    let id = parseInt($('#' + sliderId).attr('idNum'));
+    let max = parseFloat($('#' + sliderId + 'Cal').val());
+    sendServoMax(id, max);
+}
+
+function onServoEnable(checkbox) {
+    console.log(checkbox.checked);
+    if (checkbox.checked)
+    {
+        $('#servoEnableCheck').prop('checked', true);
+        $('#servoEnableCheck1').prop('checked', true);
+
+        $('#toggleSequenceButton').prop('disabled', true);
+
+        $('.range-slider__value').each(function () {
+            $(this).attr('disabled', false);
+        });
+
+        $('.manual-obj').each(function () {
+            $(this).prop('disabled', false);
+        });
+    }
+    else
+    {
+        $('#servoEnableCheck').prop('checked', false);
+        $('#servoEnableCheck1').prop('checked', false);
+
+        $('#toggleSequenceButton').prop('disabled', false);
+
+        $('.range-slider__range').each(function () {
+            //$(this).val(0).trigger('input');
+        });
+        $('.range-slider__value').each(function () {
+            $(this).attr('disabled', true);
+        });
+
+        $('.manual-obj').each(function () {
+            $(this).prop('disabled', true);
+        });
+    }
+}
 
 var jsonSequence;
 var jsonSensors = {};
@@ -61,6 +189,12 @@ socket.on('abort', function() {
     console.log('abort');
 
     abortSequence();
+
+});
+
+socket.on('servos-load', function(jsonServos) {
+    console.log('servos-load');
+    console.log(jsonServos);
 
 });
 
@@ -134,6 +268,8 @@ socket.on('sequence-load', function(jsonSeq) {
 
 socket.on('sequence-start', function() {
     console.log('sequence-start:');
+
+    $('#toggleSequenceButton').text("Abort Sequence");
     $('#timer').css("color", "green");
 
     if (wasRunning) {
@@ -176,6 +312,14 @@ socket.on('sequence-done', function() {
         $('#timer').append('.0');
     }
     $('#toggleSequenceButton').text("Start Sequence");
+
+    //disable all other tabs
+    $('.tab-button').each(function () {
+        if ($(this).id !== "monitor-tab-button")
+        {
+            $(this).prop('disabled', false);
+        }
+    });
 });
 
 socket.on('sensor', function(jsonSen) {
