@@ -1,6 +1,6 @@
 {
     "globals": {
-        "startTime": -3,
+        "startTime": -10,
         "endTime": 4,
         "interval": 0.1
     },

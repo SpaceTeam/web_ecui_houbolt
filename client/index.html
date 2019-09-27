@@ -235,7 +235,7 @@
                   <div class="row control-row">
                     <div class="col col-3 spinner">
                       <label class="input-label" for="fuelServoCal">Fuel Servo</label>
-                      <input id="fuelServoCal" class="manual-obj" type="number" value="0" min="0" step="1" onchange="onServoSpinnerChange($(this));" disabled/>
+                      <input id="fuelServoCal" class="manual-obj" type="number" value="0" data-decimals="0" min="0" step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                       </div>
                       <div class="col col-5">
                         <button class="btn btn-secondary cal-btn manual-obj" id="fuelServoMin" onclick="onCalibrateMin($(this));" disabled>Set Min</button>
@@ -279,6 +279,7 @@
     <script src="js/SequenceChart.js"></script>
     <script src="js/SensorChart.js"></script>
     <script src="./js/ClientSocket.js"></script>
+    <script src="./lib/responsivevoice.js?key=1KDoRqPO"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   </body>

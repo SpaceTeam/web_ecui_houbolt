@@ -34,11 +34,13 @@ NodeServer and LLServer:
 abort
 
 NodeServer:
-action-exec
+abort
+sequence-start
 sequence-send
 abortSequence-send
 
 LLServer:
+abort
 timer-start
 timer-sync
 timer-done

@@ -160,9 +160,18 @@ function timerTick()
 {
     timeMillis += intervalMillis;
     $('#timer').text(timeMillis/1000);
+
     if (Number.isInteger(timeMillis/1000))
     {
-        $('#timer').append('.0')
+        if (timeMillis/1000 < 0)
+        {
+            responsiveVoice.speak(Math.abs(timeMillis/1000).toString(), "US English Female", {rate: 1.2});
+        }
+        else if (timeMillis/1000 === 0)
+        {
+            responsiveVoice.speak("Hans, get the Bunsenbrenner", "Deutsch Male", {rate: 1.2});
+        }
+        $('#timer').append('.0');
     }
     seqChart.update(timeMillis);
 }
@@ -286,18 +295,28 @@ socket.on('sequence-start', function() {
     intervalMillis = jsonSequence.globals.interval * 1000;
     timeMillis = jsonSequence.globals.startTime * 1000;
     endTime = jsonSequence.globals.endTime;
-    console.log(endTime);
+    responsiveVoice.enableEstimationTimeout = false;
+
+    if (timeMillis/1000 === 0)
+    {
+        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+    }
+    else {
+        responsiveVoice.speak(Math.abs(timeMillis / 1000).toString(), "US English Female", {rate: 1.2});
+    }
+
     intervalDelegate = setInterval(timerTick, intervalMillis);
 });
 
 socket.on('sequence-sync', function(time) {
     console.log('sequence-sync:');
-    timeMillis = time * 1000;
+    //timeMillis = time * 1000;
     console.log(timeMillis);
     // clearInterval(intervalDelegate);
     // if (timeMillis < endTime*1000) {
-    //     intervalDelegate = setInterval(timerTick, intervalMillis);
+    //      intervalDelegate = setInterval(timerTick, intervalMillis);
     // }
+    // timerTick();
 });
 
 socket.on('sequence-done', function() {

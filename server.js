@@ -1,48 +1,3 @@
-// 'use strict';
-//
-// const express = require('express');
-//
-// // Constants
-// const PORT = 8080;
-// const HOST = '0.0.0.0';
-//
-// // App
-// const app = express();
-// app.get('/', (req, res) => {
-//   res.send('Hello world\n');
-// });
-//
-// app.listen(PORT, HOST);
-// console.log(`Running on http://${HOST}:${PORT}`);
-
-
-// const express = require('express');
-// const app = express();
-// const router = express.Router();
-//
-// const path = __dirname + '/views/';
-// const port = 8080;
-//
-// router.use(function (req,res,next) {
-//   console.log('/' + req.method);
-//   next();
-// });
-//
-// router.get('/', function(req,res){
-//   res.sendFile(path + 'index.html');
-// });
-//
-// router.get('/sharks', function(req,res){
-//   res.sendFile(path + 'sharks.html');
-// });
-//
-// app.use(express.static(path));
-// app.use('/', router);
-//
-// app.listen(port, function () {
-//   console.log('Example app listening on port 8080!')
-// })
-
 const express = require('express');
 const path = __dirname + '/client/';
 
@@ -62,6 +17,17 @@ var checklistMan = new checklistManMod();
 
 var sequenceRunning = false;
 
+// Import net module.
+var net = require('net');
+var llServerMod = require('./server/LLServerSocket');
+
+console.log(llServerMod);
+// Create and return a net.Server object, the function will be invoked when client connect to this server.
+var llServer;
+var server = net.createServer(function(client){llServer = llServerMod.onLLServerConnect(client, processLLServerMessage);});
+
+// Make the server a TCP server listening on port 5555.
+server.listen(5555, function(){ llServerMod.onCreateTCP(server)});
 
 //console.log(checklistMan._loadChecklist());
 
@@ -272,9 +238,12 @@ ioClient.on('connection', function(socket){
     });
 
     socket.on('sequence-start', function(msg){
-        console.log('sequence-save');
+        console.log('sequence-start');
         if (master === socket.id) {
             eventEmitter.emit('onSequenceStart', ioClient, socket);
+
+            //send llserver
+            llServerMod.sendMessage(llServer, 'sequence-start')
         }
     });
 
@@ -318,6 +287,28 @@ ioClient.on('connection', function(socket){
         }
     });
 });
+
+function processLLServerMessage(data)
+{
+    // Print received client data and length.
+    // let testmsg = {};
+    // testmsg.type = "success";
+    // testmsg.content = {};
+    // llServer.write(JSON.stringify(testmsg));
+    data = JSON.parse(data);
+    console.log(data);
+
+    let type = data.type;
+
+    switch (type) {
+        case "TEST":
+            console.log("hello");
+            break;
+        case "countdown-start":
+            console.log("countdown-start");
+            break;
+    }
+}
 
 app.get('/', function(req, res){
     res.sendFile(path + 'index.html');
