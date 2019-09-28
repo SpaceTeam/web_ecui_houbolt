@@ -169,7 +169,7 @@ function timerTick()
         }
         else if (timeMillis/1000 === 0)
         {
-            responsiveVoice.speak("Hans, get the Bunsenbrenner", "Deutsch Male", {rate: 1.2});
+            responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
         }
         $('#timer').append('.0');
     }

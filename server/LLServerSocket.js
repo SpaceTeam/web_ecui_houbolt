@@ -3,13 +3,14 @@ module.exports = {
 
         console.log('Client connect. Client local address : ' + client.localAddress + ':' + client.localPort + '. client remote address : ' + client.remoteAddress + ':' + client.remotePort);
 
-        client.setEncoding('utf-8');
+        client.setEncoding('ascii');
 
         client.setTimeout(1000);
 
         // When receive client data.
         client.on('data', function (data) {
 
+            console.log('client message');
             msgRecvCallback(data);
         });
 
@@ -33,7 +34,7 @@ module.exports = {
 
         // When client timeout.
         client.on('timeout', function () {
-            //console.log('Client request time out. ');
+            console.log('Client request time out. ');
         })
 
         return client;
@@ -76,7 +77,8 @@ module.exports = {
 
         if (correct)
         {
-            client.write(JSON.stringify(msg));
+            let strMsg = JSON.stringify(msg);
+            client.write(strMsg + '\0');
         }
     }
 };

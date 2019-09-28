@@ -88,7 +88,7 @@ var onSequenceStart = function (ioClient, socket) {
             function(time){onSequenceSync(ioClient,socket,time);},
             function(){onSequenceDone(ioClient,socket);}
             );
-
+        llServerMod.sendMessage(llServer, 'sequence-start', [sequenceManMod.loadSequence(), sequenceManMod.loadAbortSequence()]);
     }
     else
     {
@@ -114,6 +114,8 @@ var onAbort = function (ioClient, socket) {
         socket.broadcast.emit('abort');
         ioClient.emit('chat message', 'ABORT!!!!!');
         sequenceRunning = false;
+
+        llServerMod.sendMessage(llServer, 'abort');
     }
 }
 
@@ -242,8 +244,6 @@ ioClient.on('connection', function(socket){
         if (master === socket.id) {
             eventEmitter.emit('onSequenceStart', ioClient, socket);
 
-            //send llserver
-            llServerMod.sendMessage(llServer, 'sequence-start')
         }
     });
 
@@ -291,12 +291,12 @@ ioClient.on('connection', function(socket){
 function processLLServerMessage(data)
 {
     // Print received client data and length.
-    // let testmsg = {};
-    // testmsg.type = "success";
-    // testmsg.content = {};
-    // llServer.write(JSON.stringify(testmsg));
-    data = JSON.parse(data);
+    let testmsg = {};
+    testmsg.type = "success";
+    testmsg.content = {};
+
     console.log(data);
+    //data = JSON.parse(data);
 
     let type = data.type;
 
@@ -308,6 +308,7 @@ function processLLServerMessage(data)
             console.log("countdown-start");
             break;
     }
+    //llServer.write(JSON.stringify(testmsg));
 }
 
 app.get('/', function(req, res){

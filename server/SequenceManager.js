@@ -48,7 +48,7 @@ module.exports = class SequenceManager {
         {
             SequenceManager._syncCallback(timer.time);
         }
-        console.log(timer.time);
+        //console.log(timer.time);
     }
 
     static _timerDone()

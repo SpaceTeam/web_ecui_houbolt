@@ -28,25 +28,6 @@ sequence-load
 sequence-done
 servos-load
 
-============NodeServer-LLServer=============
-
-NodeServer and LLServer:
-abort
-
-NodeServer:
-abort
-sequence-start
-sequence-send
-abortSequence-send
-
-LLServer:
-abort
-timer-start
-timer-sync
-timer-done
-action-done
-
-
 sensor = {
     "id" = 0,
     "name" = chamber0,
@@ -85,3 +66,27 @@ load-servos = [
         "max": 2000
     }
 ]
+
+============NodeServer-LLServer=============
+
+NodeServer and LLServer:
+abort
+
+NodeServer:
+abort
+sequence-start
+sequence-send
+abortSequence-send
+
+LLServer:
+abort
+timer-start
+timer-sync
+timer-done
+action-done
+
+sequence-start =
+{
+    "type" : "sequence-start",
+    "content" : [<sequence json>, <abort sequence json>]
+}
