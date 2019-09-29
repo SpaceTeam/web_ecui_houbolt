@@ -10,7 +10,7 @@ module.exports = {
         // When receive client data.
         client.on('data', function (data) {
 
-            console.log('client message');
+            //console.log('client message');
             msgRecvCallback(data);
         });
 
@@ -60,25 +60,30 @@ module.exports = {
 
     sendMessage: function(client, type, content={})
     {
-        let msg = {};
-        msg.type = type;
-        msg.content = content;
+        if (client !== undefined) {
+            let msg = {};
+            msg.type = type;
+            msg.content = content;
 
-        let correct = true;
-        switch (type) {
-            case 'abort':
-                break;
-            case 'sequence-start':
-                break;
-            default:
-                console.error("message not supported");
-                correct = false;
+            let correct = true;
+            switch (type) {
+                case 'abort':
+                    break;
+                case 'sequence-start':
+                    break;
+                default:
+                    console.error("message not supported");
+                    correct = false;
+            }
+
+            if (correct) {
+                let strMsg = JSON.stringify(msg);
+                client.write(strMsg + '\0');
+            }
         }
-
-        if (correct)
+        else
         {
-            let strMsg = JSON.stringify(msg);
-            client.write(strMsg + '\0');
+            console.error("cannot send to llserver, no connection established");
         }
     }
 };

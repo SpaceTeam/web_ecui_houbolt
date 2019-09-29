@@ -1,286 +1,383 @@
 <!doctype html>
 <html>
-  <head>
+<head>
     <title>ECUI-WEB</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://www.amcharts.com/lib/4/core.js"></script>
     <script src="https://www.amcharts.com/lib/4/charts.js"></script>
     <script src="https://www.amcharts.com/lib/4/themes/material.js"></script>
     <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
 
-<!--    <link href="css/styles.css" rel="stylesheet">-->
+    <!--    <link href="css/styles.css" rel="stylesheet">-->
     <link href="css/Slider.css" rel="stylesheet"></link>
     <style>
-      body,html {height: 100%;}
-      .tab-content {height: 70%;}
-      body { font: 13px Helvetica, SansSerif; background-color: white; color: #303030; margin-top: -60px;}
-      form input { border: 0; padding: 10px; border:solid;}
-      .col {background-color: white;}
-      .content {
-        height: 100%;
-      }
-      #checklistCol {
-        border-left: 1px solid #C0C0C0;
-        margin-right: 2rem;
-      }
-      .accordion {
-        border: none;
-        overflow: scroll;
-        background-color: transparent;
-        box-shadow: none;
-        margin-top: 40px;
-        margin-left: 2rem;
-      }
-      .card {padding-bottom: 20px; border: none; }
-      .card-header {
-        transition: 250ms; border: 1px solid #F0F0F0; background-color: #522e63;
-      }
-      .card-header:hover {
-        transition: 250ms; background-color: #714187;
-      }
-      .card-body { background-color: #F0F0F0;}
-      .footer {position: absolute; bottom: 0;}
-      .btn-link {color: white; text-decoration: none;}
-      .btn-link:hover {color: white; text-decoration: none;}
-      .ckbx {
-          transform: scale(2) !important;
-          top: 25%;
-          margin-top: 0px;
-      }
-      .ckbx-label {
-          padding-left: 2rem;
-      }
-
-      #sequenceChart {
-        width: 80%;
-        height: 400px;
-      }
-      .sensorChart {
-        width: 30%;
-        height: 200px;
-        display: inline-block;
-      }
-      #servo-container, #calibration-container {
-        display: block !important;
-        margin-left: 40px;
-        font-family: sans-serif;
-        padding: 60px 20px;
-        width: 80%;
-      }
-      @media (min-width: 600px) {
-        #servo-container, #calibration-container {
-          padding: 60px;
+        body, html {
+            height: 100%;
         }
-      }
 
-      .custom-control-label::before,
-      .custom-control-label::after {
-        top: 0rem;
-        left: -1.4rem;
-        width: 1.5rem;
-        height: 1.5rem;
-      }
+        .tab-content {
+            height: 70%;
+        }
 
-      .input-label {
-        font-size: 18px;
-      }
+        body {
+            font: 13px Helvetica, SansSerif;
+            background-color: white;
+            color: #303030;
+            margin-top: -60px;
+        }
 
-      .btn-secondary
-      {
-          background: #522e63;
-          margin-top: 20px;
-      }
+        form input {
+            border: 0;
+            padding: 10px;
+            border: solid;
+        }
 
-      .btn-secondary:hover
-      {
-         background-color: #714187;
-      }
+        .col {
+            background-color: white;
+        }
 
-      #timer
-      {
-          margin-top: 20px;
-      }
+        .content {
+            height: 100%;
+        }
+
+        #checklistCol {
+            border-left: 1px solid #C0C0C0;
+            margin-right: 2rem;
+            overflow: auto;
+            height: 25rem;
+        }
+
+        .accordion {
+            border: none;
+            background-color: transparent;
+            box-shadow: none;
+            margin-left: 2rem;
+        }
+
+        .card {
+            padding-bottom: 20px;
+            border: none;
+        }
+
+        .card-header {
+            transition: 250ms;
+            border: 1px solid #F0F0F0;
+            background-color: #522e63;
+        }
+
+        .card-header:hover {
+            transition: 250ms;
+            background-color: #714187;
+        }
+
+        .card-body {
+            background-color: #F0F0F0;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+        }
+
+        .btn-link {
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-link:hover {
+            color: white;
+            text-decoration: none;
+        }
+
+        .ckbx {
+            transform: scale(2) !important;
+            top: 25%;
+            margin-top: 0px;
+        }
+
+        .ckbx-label {
+            padding-left: 2rem;
+        }
+
+        #sequenceChart {
+            width: 80%;
+            height: 400px;
+        }
+
+        .sensorChart {
+            width: 30%;
+            height: 200px;
+            display: inline-block;
+        }
+
+        .sequence-fluid
+        {
+            height: 100%;
+        }
+
+        #myTabContent
+        {
+            height: 35rem;
+        }
+
+        #servo-container, #calibration-container {
+            display: block !important;
+            margin-left: 40px;
+            font-family: sans-serif;
+            padding: 60px 20px;
+            width: 80%;
+        }
+
+        @media (min-width: 600px) {
+            #servo-container, #calibration-container {
+                padding: 60px;
+            }
+        }
+
+        .custom-control-label::before,
+        .custom-control-label::after {
+            top: 0rem;
+            left: -1.4rem;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .input-label {
+            font-size: 18px;
+        }
+
+        .btn-secondary {
+            background: #522e63;
+            margin-top: 20px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #714187;
+        }
+
+        #timer {
+            margin-top: 20px;
+        }
 
 
-      .header {
-          height: 80px;
-      }
+        .header {
+            height: 80px;
+        }
 
-      .control-row {
-        margin-top: 60px;
-      }
+        .control-row {
+            margin-top: 60px;
+        }
 
-      .spinner
-      {
-        margin-top: -0.55rem;
-      }
+        .spinner {
+            margin-top: -0.55rem;
+        }
 
-      .cal-btn
-      {
-        width: 7rem;
-        margin-right: 1rem;
-      }
+        .cal-btn {
+            width: 7rem;
+            margin-right: 1rem;
+        }
 
-      .custom-control-input:checked~.custom-control-label::before {
-          color: #fff;
-          border-color: #522e63;
-          background-color: #522e63;
-      }
+        .custom-control-input:checked ~ .custom-control-label::before {
+            color: #fff;
+            border-color: #522e63;
+            background-color: #522e63;
+        }
 
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-      #messages { margin-bottom: 40px }
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #messages li {
+            padding: 5px 10px;
+        }
+
+        #messages li:nth-child(odd) {
+            background: #eee;
+        }
+
+        #messages {
+            margin-bottom: 40px
+        }
     </style>
-  </head>
-  <body>
-    <div id="templates" style="visibility: hidden;">
-      <div class="card">
+</head>
+<body>
+<div id="templates" style="visibility: hidden;">
+    <div class="card">
         <div class="card-header" id="headingTemp">
-          <h2 class="mb-0">
-            <div class="form-check">
-              <input class="form-check-input ckbx" type="checkbox" onclick="onChecklistTick(this);" value="" id="checklistCheckTemp">
-              <button class="form-check-label btn btn-link collapsed" for="checklistCheckTemp" type="button" data-toggle="collapse" data-target="#collapseTemp" aria-expanded="false" aria-controls="collapseTemp">
+            <h2 class="mb-0">
+                <div class="form-check">
+                    <input class="form-check-input ckbx" type="checkbox" onclick="onChecklistTick(this);" value=""
+                           id="checklistCheckTemp">
+                    <button class="form-check-label btn btn-link collapsed" for="checklistCheckTemp" type="button"
+                            data-toggle="collapse" data-target="#collapseTemp" aria-expanded="false"
+                            aria-controls="collapseTemp">
 
-            </button>
-            </div>
-<!--            <div class="form-control-lg custom-control custom-checkbox checklist-header-container">-->
-<!--                <input class="custom-control-input " type="checkbox" onclick="onChecklistTick(this);" id="checklistCheckTemp">-->
-<!--                <button class="custom-control-label btn btn-link collapsed ckbx-label" for="checklistCheckTemp" type="button" data-toggle="collapse" data-target="#collapseTemp" aria-expanded="false" aria-controls="collapseTemp">-->
-<!--                </button>-->
-<!--            </div>-->
-          </h2>
+                    </button>
+                </div>
+                <!--            <div class="form-control-lg custom-control custom-checkbox checklist-header-container">-->
+                <!--                <input class="custom-control-input " type="checkbox" onclick="onChecklistTick(this);" id="checklistCheckTemp">-->
+                <!--                <button class="custom-control-label btn btn-link collapsed ckbx-label" for="checklistCheckTemp" type="button" data-toggle="collapse" data-target="#collapseTemp" aria-expanded="false" aria-controls="collapseTemp">-->
+                <!--                </button>-->
+                <!--            </div>-->
+            </h2>
         </div>
         <div id="collapseTemp" class="collapse" aria-labelledby="headingTemp">
-          <div class="card-body">
-          </div>
+            <div class="card-body">
+            </div>
         </div>
 
-      </div>
-      <div id="tempChart" class="sensorChart" hidden></div>
-
     </div>
+    <div id="tempChart" class="sensorChart" hidden></div>
 
-    <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
-              <li class="nav-item">
-                <a class="nav-link active tab-button" id="monitor-tab-button" data-toggle="tab" href="#sequence-tab" role="tab" aria-controls="sequence-tab" aria-selected="true">Monitor</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link tab-button" id="control-tab-button" data-toggle="tab" href="#control-tab" role="tab" aria-controls="control-tab" aria-selected="false">Control</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link tab-button" id="calibration-tab-button" data-toggle="tab" href="#calibration-tab" role="tab" aria-controls="calibration-tab" aria-selected="false">Calibrate</a>
-              </li>
-            </ul>
-            <div class="tab-content" id="myTabContent">
-              <div class="tab-pane fade show active" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
-                <div class="container-fluid">
-                  <div class="row header">
-                          <div class="col col-5">
-                            <h1 id="timer">0.0</h1>
-                          </div>
-                          <div class="col">
-                            <button class="btn btn-secondary" id="toggleSequenceButton" hidden>Start Sequence</button>
-                          </div>
-                  </div>
-                  <div class="row content">
-                    <div class="col">
-                      <div id="sequenceChart"></div>
-                    </div>
-                    <div class="col col-4" id="checklistCol">
-                      <div class="accordion" id="checklist">
+</div>
 
-                      </div>
-                    </div>
-                    </div>
+<div>
+<ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active tab-button" id="monitor-tab-button" data-toggle="tab" href="#sequence-tab" role="tab"
+           aria-controls="sequence-tab" aria-selected="true">Monitor</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link tab-button" id="control-tab-button" data-toggle="tab" href="#control-tab" role="tab"
+           aria-controls="control-tab" aria-selected="false">Control</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link tab-button" id="calibration-tab-button" data-toggle="tab" href="#calibration-tab" role="tab"
+           aria-controls="calibration-tab" aria-selected="false">Calibrate</a>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
+        <div class="container-fluid sequence-fluid">
+            <div class="row header">
+                <div class="col col-5">
+                    <h1 id="timer">0.0</h1>
                 </div>
-              </div>
-              <div class="tab-pane fade" id="control-tab" role="tabpanel" aria-labelledby="control-tab-button">
-                <div id="servo-container" class="container-fluid">
-                  <div class="form-control-lg custom-control custom-checkbox servo-enable-container row control-row">
-                    <input type="checkbox" class="custom-control-input ckbx" id="servoEnableCheck" onclick="onServoEnable(this);">
-                    <label class="custom-control-label ckbx-label" for="servoEnableCheck">Enable Manual Control</label>
-                  </div>
-
-                  <div class="row control-row">
-                    <div class="range-slider col">
-                      <label class="range-slider-label input-label">Fuel Servo</label><br>
-                      <input class="range-slider__range servo-slider manual-obj" id="fuelServo" idNum="0" oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1" disabled>
-                      <span class="range-slider__value" disabled>0</span>
-
-                    </div>
-
-                  </div>
-
-                  <div class="row control-row">
-                    <div class="range-slider col">
-                      <label class="range-slider-label input-label">Oxidizer Servo</label><br>
-                      <input class="range-slider__range servo-slider manual-obj" id="oxidizerServo" idNum="1" oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1" disabled>
-                      <span class="range-slider__value" disabled>0</span>
-                    </div>
-
-                  </div>
-
-                  <button class="btn btn-secondary cal-btn manual-obj" id="saftlButton" disabled>Saftl</button>
+                <div class="col">
+                    <button class="btn btn-secondary" id="toggleSequenceButton" hidden>Start Sequence</button>
                 </div>
-
-              </div>
-              <div class="tab-pane fade" id="calibration-tab" role="tabpanel" aria-labelledby="calibration-tab-button">
-                <div id="calibration-container" class="container-fluid">
-                  <div class="form-control-lg custom-control custom-checkbox servo-enable-container row control-row">
-                    <input type="checkbox" class="custom-control-input ckbx" id="servoEnableCheck1" onclick="onServoEnable(this);">
-                    <label class="custom-control-label ckbx-label" for="servoEnableCheck1">Enable Manual Control</label>
-                  </div>
-
-                  <div class="row control-row">
-                    <div class="col col-3 spinner">
-                      <label class="input-label" for="fuelServoCal">Fuel Servo</label>
-                      <input id="fuelServoCal" class="manual-obj" type="number" value="0" data-decimals="0" min="0" step="1" onchange="onServoSpinnerChange($(this));" disabled/>
-                      </div>
-                      <div class="col col-5">
-                        <button class="btn btn-secondary cal-btn manual-obj" id="fuelServoMin" onclick="onCalibrateMin($(this));" disabled>Set Min</button>
-                        <button class="btn btn-secondary cal-btn manual-obj" id="fuelServoMax" onclick="onCalibrateMax($(this));" disabled>Set Max</button>
-                      </div>
-                  </div>
-
-                  <div class="row control-row">
-
-                    <div class="col col-3 spinner">
-                      <label class="input-label" for="oxidizerServoCal">Oxidizer Servo</label>
-                      <input id="oxidizerServoCal" class="manual-obj" type="number" value="0" min="0" step="1" onchange="onServoSpinnerChange($(this));" disabled/>
-                    </div>
-                    <div class="col col-5">
-                      <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerServoMin" onclick="onCalibrateMin($(this));" disabled>Set Min</button>
-                      <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerServoMax" onclick="onCalibrateMax($(this));" disabled>Set Max</button>
-                    </div>
-                  </div>
-
-                  </div>
-
-                </div>
-
-              </div>
             </div>
-      <div id="sensorChartDiv"></div>
+            <div class="row content">
+                <div class="col">
+                    <div id="sequenceChart"></div>
+                </div>
+                <div class="col col-4" id="checklistCol">
+                    <div class="accordion" id="checklist">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="control-tab" role="tabpanel" aria-labelledby="control-tab-button">
+        <div id="servo-container" class="container-fluid">
+            <div class="form-control-lg custom-control custom-checkbox servo-enable-container row control-row">
+                <input type="checkbox" class="custom-control-input ckbx" id="servoEnableCheck"
+                       onclick="onServoEnable(this);">
+                <label class="custom-control-label ckbx-label" for="servoEnableCheck">Enable Manual Control</label>
+            </div>
+
+            <div class="row control-row">
+                <div class="range-slider col">
+                    <label class="range-slider-label input-label">Fuel Servo</label><br>
+                    <input class="range-slider__range servo-slider manual-obj" id="fuelServo" idNum="0"
+                           oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
+                           disabled>
+                    <span class="range-slider__value" disabled>0</span>
+
+                </div>
+
+            </div>
+
+            <div class="row control-row">
+                <div class="range-slider col">
+                    <label class="range-slider-label input-label">Oxidizer Servo</label><br>
+                    <input class="range-slider__range servo-slider manual-obj" id="oxidizerServo" idNum="1"
+                           oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
+                           disabled>
+                    <span class="range-slider__value" disabled>0</span>
+                </div>
+
+            </div>
+
+            <button class="btn btn-secondary cal-btn manual-obj" id="saftlButton" disabled>Saftl</button>
+        </div>
+
+    </div>
+    <div class="tab-pane fade" id="calibration-tab" role="tabpanel" aria-labelledby="calibration-tab-button">
+        <div id="calibration-container" class="container-fluid">
+            <div class="form-control-lg custom-control custom-checkbox servo-enable-container row control-row">
+                <input type="checkbox" class="custom-control-input ckbx" id="servoEnableCheck1"
+                       onclick="onServoEnable(this);">
+                <label class="custom-control-label ckbx-label" for="servoEnableCheck1">Enable Manual Control</label>
+            </div>
+
+            <div class="row control-row">
+                <div class="col col-3 spinner">
+                    <label class="input-label" for="fuelServoCal">Fuel Servo</label>
+                    <input id="fuelServoCal" class="manual-obj" type="number" value="0" data-decimals="0" min="0"
+                           step="1" onchange="onServoSpinnerChange($(this));" disabled/>
+                </div>
+                <div class="col col-5">
+                    <button class="btn btn-secondary cal-btn manual-obj" id="fuelServoMin"
+                            onclick="onCalibrateMin($(this));" disabled>Set Min
+                    </button>
+                    <button class="btn btn-secondary cal-btn manual-obj" id="fuelServoMax"
+                            onclick="onCalibrateMax($(this));" disabled>Set Max
+                    </button>
+                </div>
+            </div>
+
+            <div class="row control-row">
+
+                <div class="col col-3 spinner">
+                    <label class="input-label" for="oxidizerServoCal">Oxidizer Servo</label>
+                    <input id="oxidizerServoCal" class="manual-obj" type="number" value="0" min="0" step="1"
+                           onchange="onServoSpinnerChange($(this));" disabled/>
+                </div>
+                <div class="col col-5">
+                    <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerServoMin"
+                            onclick="onCalibrateMin($(this));" disabled>Set Min
+                    </button>
+                    <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerServoMax"
+                            onclick="onCalibrateMax($(this));" disabled>Set Max
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
+</div>
+</div>
+<div id="sensorChartDiv"></div>
 
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script
-  src="https://code.jquery.com/jquery-3.4.1.js"
-  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
-  crossorigin="anonymous"></script>
-    <script
-  src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
-  integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
-  crossorigin="anonymous"></script>
-    <script src="lib/bootstrap-input-spinner.js"></script>
-    <script src="js/Slider.js"></script>
-    <script src="js/SequenceChart.js"></script>
-    <script src="js/SensorChart.js"></script>
-    <script src="./js/ClientSocket.js"></script>
-    <script src="./lib/responsivevoice.js?key=1KDoRqPO"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  </body>
+
+
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script
+        src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+        crossorigin="anonymous"></script>
+<script
+        src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+        integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
+        crossorigin="anonymous"></script>
+<script src="lib/bootstrap-input-spinner.js"></script>
+<script src="js/Slider.js"></script>
+<script src="js/SequenceChart.js"></script>
+<script src="js/SensorChart.js"></script>
+<script src="./js/ClientSocket.js"></script>
+<script src="./lib/responsivevoice.js?key=1KDoRqPO"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
 </html>

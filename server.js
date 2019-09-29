@@ -78,16 +78,15 @@ var onChecklistDone = function (ioClient, socket) {
 var onSequenceStart = function (ioClient, socket) {
 
     if (!sequenceRunning) {
-        sequenceRunning = true;
         console.log('sequence start');
         ioClient.emit('sequence-start');
 
-        sequenceManMod.init();
-        //TODO: maybe change so emitter is invoking events
-        sequenceManMod.startSequence(1.0,
-            function(time){onSequenceSync(ioClient,socket,time);},
-            function(){onSequenceDone(ioClient,socket);}
-            );
+        // sequenceManMod.init();
+        // //TODO: maybe change so emitter is invoking events
+        // sequenceManMod.startSequence(1.0,
+        //     function(time){onSequenceSync(ioClient,socket,time);},
+        //     function(){onSequenceDone(ioClient,socket);}
+        //     );
         llServerMod.sendMessage(llServer, 'sequence-start', [sequenceManMod.loadSequence(), sequenceManMod.loadAbortSequence()]);
     }
     else
@@ -96,13 +95,15 @@ var onSequenceStart = function (ioClient, socket) {
     }
 }
 
-var onSequenceSync = function (ioClient, socket, time) {
+var onSequenceSync = function (ioClient, time) {
     console.log('sequence sync');
-    console.log(time)
+
+    //TODO: INCREDIBLY TERRIBLE FIX: client is exactly one second ahead of timer (find cause)
+    time += 1;
     ioClient.emit('sequence-sync', time);
 }
 
-var onSequenceDone = function (ioClient, socket) {
+var onSequenceDone = function (ioClient) {
     console.log('sequence done');
     ioClient.emit('sequence-done');
     sequenceRunning = false;
@@ -110,13 +111,32 @@ var onSequenceDone = function (ioClient, socket) {
 
 var onAbort = function (ioClient, socket) {
     if (sequenceRunning) {
-        sequenceManMod.abortSequence();
+        //sequenceManMod.abortSequence();
         socket.broadcast.emit('abort');
         ioClient.emit('chat message', 'ABORT!!!!!');
         sequenceRunning = false;
 
         llServerMod.sendMessage(llServer, 'abort');
     }
+}
+
+var onAbortAll = function(ioClient)
+{
+    if (sequenceRunning) {
+        ioClient.emit('abort');
+        sequenceRunning = false;
+
+    }
+}
+
+var onTimerStart = function (ioClient) {
+
+    if (!sequenceRunning) {
+        sequenceRunning = true;
+        console.log('timer start');
+        ioClient.emit('timer-start');
+    }
+
 }
 
 var senDataInterval;
@@ -150,6 +170,15 @@ var onSendTestSensorData = function(ioClient)
 
     ioClient.emit('sensor', jsonSensor2);
 
+    let jsonSensor3 = {
+        "id": 3,
+        "name": "digital test",
+        "time": sensorTime,
+        "value": Math.round(Math.random())
+    };
+
+    ioClient.emit('sensor', jsonSensor3);
+
     if (sensorTime >= 10000)
     {
         clearInterval(senDataInterval);
@@ -168,6 +197,9 @@ eventEmitter.on('onSequenceSync', onSequenceSync);
 eventEmitter.on('onSequenceDone', onSequenceDone);
 
 eventEmitter.on('onAbort', onAbort);
+eventEmitter.on('onAbortAll', onAbortAll);
+
+eventEmitter.on('onTimerStart', onTimerStart);
 
 
 senDataInterval = setInterval(function(){onSendTestSensorData(ioClient)}, 100);
@@ -296,7 +328,7 @@ function processLLServerMessage(data)
     testmsg.content = {};
 
     console.log(data);
-    //data = JSON.parse(data);
+    data = JSON.parse(data);
 
     let type = data.type;
 
@@ -304,9 +336,25 @@ function processLLServerMessage(data)
         case "TEST":
             console.log("hello");
             break;
-        case "countdown-start":
-            console.log("countdown-start");
+        case "timer-start":
+            console.log("timer-start");
+            eventEmitter.emit('onTimerStart', ioClient);
             break;
+        case "timer-sync":
+            console.log("timer-sync");
+            let time = Math.round(data.content.toPrecision(3) * 100) / 100;
+            console.log(data.content.toPrecision(3));
+            console.log(time);
+            eventEmitter.emit('onSequenceSync', ioClient, time);
+            break;
+        case "timer-done":
+            console.log("timer-done");
+            eventEmitter.emit('onSequenceDone', ioClient);
+            break;
+        case "abort":
+            eventEmitter.emit('onAbortAll', ioClient);
+            break;
+
     }
     //llServer.write(JSON.stringify(testmsg));
 }

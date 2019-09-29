@@ -148,7 +148,7 @@ function onServoEnable(checkbox) {
 
 var jsonSequence;
 var jsonSensors = {};
-var wasRunning = false;
+var checklistLoaded = false;
 
 var seqChart = new SequenceChart("sequenceChart", "Sequence");
 
@@ -158,7 +158,7 @@ var intervalMillis;
 var intervalDelegate;
 function timerTick()
 {
-    timeMillis += intervalMillis;
+    console.log(timeMillis);
     $('#timer').text(timeMillis/1000);
 
     if (Number.isInteger(timeMillis/1000))
@@ -169,11 +169,14 @@ function timerTick()
         }
         else if (timeMillis/1000 === 0)
         {
-            responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
+            //responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
+            responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
         }
         $('#timer').append('.0');
     }
     seqChart.update(timeMillis);
+
+    timeMillis += intervalMillis;
 }
 
 function abortSequence()
@@ -212,30 +215,33 @@ socket.on('checklist-load', function(jsonChecklist) {
     console.log('checklist-load:');
     console.log(jsonChecklist);
 
-    for (itemInd in jsonChecklist)
-    {
-        let currItem = jsonChecklist[itemInd];
-        let currId = currItem.id;
-        console.log(itemInd);
-        let newCard = $('#templates').children().first().clone();
-        newCard.find('#headingTemp').attr('id', 'checklistItemHeading' + currId)
-            .find('button').attr('data-target', '#checklistItemCollapse' + currId)
-            .attr('aria-controls', 'checklistItemCollapse' + currId)
-            .attr('for', 'checklistCheck' + currId);
-        newCard.find('#checklistCheckTemp').attr('id', 'checklistCheck' + currId);
-        newCard.find('#collapseTemp').attr('id', 'checklistItemCollapse' + currId)
-            .attr('aria-labelledby', 'checklistItemHeading' + currId);
-
-        newCard.find('button').text(currItem.name);
-
-        let notes = $('<ul>');
-        for (noteInd in currItem.notes)
+    if (!checklistLoaded) {
+        checklistLoaded = true;
+        for (itemInd in jsonChecklist)
         {
-            notes.append($('<li>').text(currItem.notes[noteInd]));
-        }
-        newCard.find('.card-body').append(notes);
+            let currItem = jsonChecklist[itemInd];
+            let currId = currItem.id;
+            console.log(itemInd);
+            let newCard = $('#templates').children().first().clone();
+            newCard.find('#headingTemp').attr('id', 'checklistItemHeading' + currId)
+                .find('button').attr('data-target', '#checklistItemCollapse' + currId)
+                .attr('aria-controls', 'checklistItemCollapse' + currId)
+                .attr('for', 'checklistCheck' + currId);
+            newCard.find('#checklistCheckTemp').attr('id', 'checklistCheck' + currId);
+            newCard.find('#collapseTemp').attr('id', 'checklistItemCollapse' + currId)
+                .attr('aria-labelledby', 'checklistItemHeading' + currId);
 
-        $('#checklist').append(newCard);
+            newCard.find('button').text(currItem.name);
+
+            let notes = $('<ul>');
+            for (noteInd in currItem.notes)
+            {
+                notes.append($('<li>').text(currItem.notes[noteInd]));
+            }
+            newCard.find('.card-body').append(notes);
+
+            $('#checklist').append(newCard);
+        }
     }
 });
 
@@ -281,18 +287,15 @@ socket.on('sequence-start', function() {
     $('#toggleSequenceButton').text("Abort Sequence");
     $('#timer').css("color", "green");
 
-    if (wasRunning) {
-        seqChart.reset();
-        seqChart.loadSequenceChart(jsonSequence);
-        console.log(seqChart.chart.data);
-    }
-    else
-    {
-        wasRunning = true;
-    }
+
     seqChart.start();
 
-    intervalMillis = jsonSequence.globals.interval * 1000;
+
+});
+
+socket.on('timer-start', function () {
+
+    intervalMillis = 100; //hard code timer step to 100 for client
     timeMillis = jsonSequence.globals.startTime * 1000;
     endTime = jsonSequence.globals.endTime;
     responsiveVoice.enableEstimationTimeout = false;
@@ -310,7 +313,7 @@ socket.on('sequence-start', function() {
 
 socket.on('sequence-sync', function(time) {
     console.log('sequence-sync:');
-    //timeMillis = time * 1000;
+    timeMillis = time * 1000;
     console.log(timeMillis);
     // clearInterval(intervalDelegate);
     // if (timeMillis < endTime*1000) {
@@ -339,6 +342,11 @@ socket.on('sequence-done', function() {
             $(this).prop('disabled', false);
         }
     });
+
+    seqChart.reset();
+    seqChart.loadSequenceChart(jsonSequence);
+    console.log(seqChart.chart.data);
+
 });
 
 socket.on('sensor', function(jsonSen) {
