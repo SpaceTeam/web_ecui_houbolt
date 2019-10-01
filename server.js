@@ -98,8 +98,7 @@ var onSequenceStart = function (ioClient, socket) {
 var onSequenceSync = function (ioClient, time) {
     console.log('sequence sync');
 
-    //TODO: INCREDIBLY TERRIBLE FIX: client is exactly one second ahead of timer (find cause)
-    time += 1;
+
     ioClient.emit('sequence-sync', time);
 }
 

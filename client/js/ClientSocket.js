@@ -45,14 +45,14 @@ function onServoSpinnerChange(spinner) {
 
     let spinnerId = spinner.attr('id');
     let sliderId = spinnerId.substr(0, spinnerId.length-3);
-    let id = parseInt($('#' + sliderId).attr('idNum'));
+    let id = parseInt($('#' + sliderId).attr('id'));
     let val = parseFloat(spinner.val());
-    sendServo(id, val);
+    sendServoRaw(id, val);
 }
 
 function onServoSliderInput(servoSlider)
 {
-    let id = parseInt(servoSlider.attr('idNum'));
+    let id = parseInt(servoSlider.attr('id'));
     let val = parseFloat(servoSlider.val());
     if (isNaN(id))
     {
@@ -69,6 +69,15 @@ function sendServo(servoId, servoValue)
     jsonServo.id = servoId;
     jsonServo.value = servoValue;
     socket.emit('servos-set', [jsonServo]);
+}
+
+function sendServoRaw(servoId, rawValue)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.value = rawValue;
+    socket.emit('servos-set-raw', [jsonServo]);
 }
 
 function sendServoMin(servoId, newServoMin)
@@ -94,7 +103,7 @@ function onCalibrateMin(button) {
     let buttonId = button.attr('id');
     let sliderId = buttonId.substr(0, buttonId.length-3);
 
-    let id = parseInt($('#' + sliderId).attr('idNum'));
+    let id = parseInt($('#' + sliderId).attr('id'));
     let min = parseFloat($('#' + sliderId + 'Cal').val());
 
     sendServoMin(id, min);
@@ -104,7 +113,7 @@ function onCalibrateMax(button) {
 
     let buttonId = button.attr('id');
     let sliderId = buttonId.substr(0, buttonId.length-3);
-    let id = parseInt($('#' + sliderId).attr('idNum'));
+    let id = parseInt($('#' + sliderId).attr('id'));
     let max = parseFloat($('#' + sliderId + 'Cal').val());
     sendServoMax(id, max);
 }
@@ -186,6 +195,10 @@ function abortSequence()
     clearInterval(intervalDelegate);
     $('#timer').css("color", "red");
     socket.emit('abort');
+
+    seqChart.reset();
+    seqChart.loadSequenceChart(jsonSequence);
+    console.log(seqChart.chart.data);
 }
 
 function onChecklistTick(checkbox)

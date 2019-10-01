@@ -22,8 +22,6 @@ checklist-update
 checklist-load
 checklist-done
 sensor
-countdown-start
-countdown-sync
 sequence-load
 sequence-done
 servos-load
