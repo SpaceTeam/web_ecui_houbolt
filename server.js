@@ -138,52 +138,43 @@ var onTimerStart = function (ioClient) {
 
 }
 
-var senDataInterval;
-var sensorTime = 0;
-var onSendTestSensorData = function(ioClient)
-{
-    let jsonSensor0 = {
-        "id": 0,
-        "name": "Chamber",
-        "time": sensorTime,
-        "value": Math.random().toPrecision(3) * 2048
-    };
-
-    ioClient.emit('sensor', jsonSensor0);
-
-    let jsonSensor1 = {
-        "id": 1,
-        "name": "Injector",
-        "time": sensorTime,
-        "value": Math.random().toPrecision(3) * 2048
-    };
-
-    ioClient.emit('sensor', jsonSensor1);
-
-    let jsonSensor2 = {
-        "id": 2,
-        "name": "FuelTank",
-        "time": sensorTime,
-        "value": Math.random().toPrecision(3) * 2048
-    };
-
-    ioClient.emit('sensor', jsonSensor2);
-
-    let jsonSensor3 = {
-        "id": 3,
-        "name": "digital test",
-        "time": sensorTime,
-        "value": Math.round(Math.random())
-    };
-
-    ioClient.emit('sensor', jsonSensor3);
-
-    if (sensorTime >= 10000)
-    {
-        clearInterval(senDataInterval);
-    }
-    sensorTime+=100;
-}
+// var senDataInterval;
+// var sensorTime = 0;
+// var onSendTestSensorData = function(ioClient)
+// {
+//     let jsonSensor0 = {
+//         "name": "Chamber",
+//         "time": sensorTime,
+//         "value": Math.random().toPrecision(3) * 2048
+//     };
+//
+//     let jsonSensor1 = {
+//         "name": "Injector",
+//         "time": sensorTime,
+//         "value": Math.random().toPrecision(3) * 2048
+//     };
+//
+//     let jsonSensor2 = {
+//         "name": "FuelTank",
+//         "time": sensorTime,
+//         "value": Math.random().toPrecision(3) * 2048
+//     };
+//
+//
+//     let jsonSensor3 = {
+//         "name": "digital test",
+//         "time": sensorTime,
+//         "value": Math.round(Math.random())
+//     };
+//
+//     ioClient.emit('sensors', [jsonSensor0, jsonSensor1, jsonSensor2, jsonSensor3]);
+//
+//     if (sensorTime >= 10000)
+//     {
+//         clearInterval(senDataInterval);
+//     }
+//     sensorTime+=100;
+// }
 
 //Assign the event handler to an event:
 //TODO: check if events slowing down process and instead emit messages of sockets directly inside incoming message events
@@ -201,7 +192,7 @@ eventEmitter.on('onAbortAll', onAbortAll);
 eventEmitter.on('onTimerStart', onTimerStart);
 
 
-senDataInterval = setInterval(function(){onSendTestSensorData(ioClient)}, 100);
+//senDataInterval = setInterval(function(){onSendTestSensorData(ioClient)}, 100);
 var master = null;
 
 ioClient.on('connection', function(socket){
@@ -350,7 +341,12 @@ function processLLServerMessage(data)
             console.log("timer-done");
             eventEmitter.emit('onSequenceDone', ioClient);
             break;
+        case "sensors":
+            console.log("sensors");
+            ioClient.emit('sensors', data.content);
+            break;
         case "abort":
+            console.log("abort from llserver");
             eventEmitter.emit('onAbortAll', ioClient);
             break;
 

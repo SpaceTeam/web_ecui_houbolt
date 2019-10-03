@@ -362,41 +362,45 @@ socket.on('sequence-done', function() {
 
 });
 
-socket.on('sensor', function(jsonSen) {
-    console.log('sensor');
+socket.on('sensors', function(jsonSens) {
+    console.log('sensors');
 
-
-    let sensor;
-    if (jsonSen.id in jsonSensors)
+    for (let sensorInd in jsonSens)
     {
-        sensor = jsonSensors[jsonSen.id];
-    }
-    else
-    {
-        sensor = {};
-        let newChartDiv = $('#tempChart').clone();
-        newChartDiv.attr("id", jsonSen.name + jsonSen.id);
-        newChartDiv.removeAttr("hidden");
-        $('#sensorChartDiv').append(newChartDiv);
-
-        if ("chartTitle" in jsonSen)
+        let jsonSen = jsonSens[sensorInd];
+        let sensor;
+        if (jsonSen.name in jsonSensors)
         {
-            sensor.chartTitle = jsonSen.chartTitle;
+            sensor = jsonSensors[jsonSen.name];
         }
         else
         {
-            sensor.chartTitle = jsonSen.name;
+            sensor = {};
+            let newChartDiv = $('#tempChart').clone();
+            newChartDiv.attr("id", jsonSen.name + "Chart");
+            newChartDiv.removeAttr("hidden");
+            $('#sensorChartDiv').append(newChartDiv);
+
+            if ("chartTitle" in jsonSen)
+            {
+                sensor.chartTitle = jsonSen.chartTitle;
+            }
+            else
+            {
+                sensor.chartTitle = jsonSen.name;
+            }
+
+            sensor.div = newChartDiv;
+            sensor.chart = new SensorChart(jsonSen.name + "Chart", sensor.chartTitle);
+            sensor.series = sensor.chart.addSeries(jsonSen.name, jsonSen.name);
+            sensor.name = jsonSen.name;
+
+            jsonSensors[jsonSen.name] = sensor;
+
         }
-
-        sensor.div = newChartDiv;
-        sensor.chart = new SensorChart(jsonSen.name + jsonSen.id, sensor.chartTitle);
-        sensor.series = sensor.chart.addSeries(jsonSen.name, jsonSen.name);
-        sensor.name = jsonSen.name;
-
-        jsonSensors[jsonSen.id] = sensor;
-
+        sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value);
     }
-    sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value);
+
 });
 
 socket.on('chat message', function(msg){
