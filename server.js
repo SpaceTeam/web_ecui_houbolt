@@ -283,20 +283,29 @@ ioClient.on('connection', function(socket){
         }
     });
 
+    socket.on('servos-enable', function(){
+        console.log('servos-enable');
+        llServerMod.sendMessage(llServer, 'servos-enable');
+    });
+
+    socket.on('servos-disable', function(){
+        console.log('servos-disable');
+        llServerMod.sendMessage(llServer, 'servos-disable');
+    });
+
     socket.on('servos-calibrate', function(jsonServos){
         console.log('servos-calibrate');
-        for (let i in jsonServos)
-        {
-            console.log(jsonServos[i]);
-        }
+        llServerMod.sendMessage(llServer, 'servos-calibrate', jsonServos);
     });
 
     socket.on('servos-set', function(jsonServos){
         console.log('servos-set');
-        for (let i in jsonServos)
-        {
-            console.log(jsonServos[i]);
-        }
+        llServerMod.sendMessage(llServer, 'servos-set', jsonServos);
+    });
+
+    socket.on('servos-set-raw', function(jsonServos){
+        console.log('servos-set-raw');
+        llServerMod.sendMessage(llServer, 'servos-set-raw', jsonServos);
     });
 
     socket.on('disconnect', function(msg){
@@ -310,46 +319,57 @@ ioClient.on('connection', function(socket){
     });
 });
 
-function processLLServerMessage(data)
-{
+function processLLServerMessage(data) {
     // Print received client data and length.
     let testmsg = {};
     testmsg.type = "success";
     testmsg.content = {};
 
-    console.log(data);
-    data = JSON.parse(data);
+    dataArr = data.split("\n");
 
-    let type = data.type;
+    if (dataArr.length > 2)
+    {
+        console.log("multiple messages detected");
 
-    switch (type) {
-        case "TEST":
-            console.log("hello");
-            break;
-        case "timer-start":
-            console.log("timer-start");
-            eventEmitter.emit('onTimerStart', ioClient);
-            break;
-        case "timer-sync":
-            console.log("timer-sync");
-            let time = Math.round(data.content.toPrecision(3) * 100) / 100;
-            console.log(data.content.toPrecision(3));
-            console.log(time);
-            eventEmitter.emit('onSequenceSync', ioClient, time);
-            break;
-        case "timer-done":
-            console.log("timer-done");
-            eventEmitter.emit('onSequenceDone', ioClient);
-            break;
-        case "sensors":
-            console.log("sensors");
-            ioClient.emit('sensors', data.content);
-            break;
-        case "abort":
-            console.log("abort from llserver");
-            eventEmitter.emit('onAbortAll', ioClient);
-            break;
+    }
 
+    let jsonData;
+    for (let dataInd = 0; dataInd < dataArr.length-1; dataInd++) // ignore last empty string
+    {
+        //console.log(dataArr[dataInd]);
+        jsonData = JSON.parse(dataArr[dataInd]);
+
+        let type = jsonData.type;
+
+        switch (type) {
+            case "TEST":
+                console.log("hello");
+                break;
+            case "timer-start":
+                console.log("timer-start");
+                eventEmitter.emit('onTimerStart', ioClient);
+                break;
+            case "timer-sync":
+                console.log("timer-sync");
+                let time = Math.round(jsonData.content.toPrecision(3) * 100) / 100;
+                console.log(jsonData.content.toPrecision(3));
+                console.log(time);
+                eventEmitter.emit('onSequenceSync', ioClient, time);
+                break;
+            case "timer-done":
+                console.log("timer-done");
+                eventEmitter.emit('onSequenceDone', ioClient);
+                break;
+            case "sensors":
+                console.log("sensors");
+                ioClient.emit('sensors', jsonData.content);
+                break;
+            case "abort":
+                console.log("abort from llserver");
+                eventEmitter.emit('onAbortAll', ioClient);
+                break;
+
+        }
     }
     //llServer.write(JSON.stringify(testmsg));
 }

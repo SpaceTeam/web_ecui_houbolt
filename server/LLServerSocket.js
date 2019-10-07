@@ -65,21 +65,22 @@ module.exports = {
             msg.type = type;
             msg.content = content;
 
-            let correct = true;
-            switch (type) {
-                case 'abort':
-                    break;
-                case 'sequence-start':
-                    break;
-                default:
-                    console.error("message not supported");
-                    correct = false;
-            }
-
-            if (correct) {
+            console.log(msg);
+            // let correct = true;
+            // switch (type) {
+            //     case 'abort':
+            //         break;
+            //     case 'sequence-start':
+            //         break;
+            //     default:
+            //         console.error("message not supported");
+            //         correct = false;
+            // }
+            //
+            // if (correct) {
                 let strMsg = JSON.stringify(msg);
                 client.write(strMsg + '\0');
-            }
+            // }
         }
         else
         {

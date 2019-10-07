@@ -14,6 +14,8 @@ checklist-tick
 sequence-save
 sequence-start
 abortSequence-save
+servos-disable
+servos-enable
 servos-set
 servos-calibrate
 

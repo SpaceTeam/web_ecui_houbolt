@@ -160,6 +160,11 @@
             margin-top: 20px;
         }
 
+        #versionLabel {
+            float: right;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
 
         .header {
             height: 80px;
@@ -259,6 +264,9 @@
                 <div class="col">
                     <button class="btn btn-secondary" id="toggleSequenceButton" hidden>Start Sequence</button>
                 </div>
+                <div class="col col-3">
+                    <h3 id="versionLabel">ECUI - Version <span id="version">0.9</span></h3>
+                </div>
             </div>
             <div class="row content">
                 <div class="col">
@@ -283,7 +291,7 @@
             <div class="row control-row">
                 <div class="range-slider col">
                     <label class="range-slider-label input-label">Fuel Servo</label><br>
-                    <input class="range-slider__range servo-slider manual-obj" id="fuelServo" idNum="0"
+                    <input class="range-slider__range servo-slider manual-obj" id="fuel" idNum="0"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
@@ -295,7 +303,7 @@
             <div class="row control-row">
                 <div class="range-slider col">
                     <label class="range-slider-label input-label">Oxidizer Servo</label><br>
-                    <input class="range-slider__range servo-slider manual-obj" id="oxidizerServo" idNum="1"
+                    <input class="range-slider__range servo-slider manual-obj" id="oxidizer" idNum="1"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
@@ -317,15 +325,15 @@
 
             <div class="row control-row">
                 <div class="col col-3 spinner">
-                    <label class="input-label" for="fuelServoCal">Fuel Servo</label>
-                    <input id="fuelServoCal" class="manual-obj" type="number" value="0" data-decimals="0" min="0"
+                    <label class="input-label" for="fuelCal">Fuel Servo</label>
+                    <input id="fuelCal" class="manual-obj" type="number" value="0" data-decimals="0" min="0"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
-                    <button class="btn btn-secondary cal-btn manual-obj" id="fuelServoMin"
+                    <button class="btn btn-secondary cal-btn manual-obj" id="fuelMin"
                             onclick="onCalibrateMin($(this));" disabled>Set Min
                     </button>
-                    <button class="btn btn-secondary cal-btn manual-obj" id="fuelServoMax"
+                    <button class="btn btn-secondary cal-btn manual-obj" id="fuelMax"
                             onclick="onCalibrateMax($(this));" disabled>Set Max
                     </button>
                 </div>
@@ -334,15 +342,15 @@
             <div class="row control-row">
 
                 <div class="col col-3 spinner">
-                    <label class="input-label" for="oxidizerServoCal">Oxidizer Servo</label>
-                    <input id="oxidizerServoCal" class="manual-obj" type="number" value="0" min="0" step="1"
+                    <label class="input-label" for="oxidizerCal">Oxidizer Servo</label>
+                    <input id="oxidizerCal" class="manual-obj" type="number" value="0" min="0" step="1"
                            onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
-                    <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerServoMin"
+                    <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerMin"
                             onclick="onCalibrateMin($(this));" disabled>Set Min
                     </button>
-                    <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerServoMax"
+                    <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerMax"
                             onclick="onCalibrateMax($(this));" disabled>Set Max
                     </button>
                 </div>

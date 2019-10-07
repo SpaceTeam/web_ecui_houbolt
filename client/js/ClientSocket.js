@@ -30,7 +30,7 @@ $('#toggleSequenceButton').click(function()
 
 });
 $('#saftlButton').click(function() {
-    $('.servo-slider').each(function () {
+    $('#fuel').each(function () {
         let slider = $(this);
         let lastVal = slider.val();
         slider.val(slider.attr('max')).trigger('input');
@@ -45,20 +45,15 @@ function onServoSpinnerChange(spinner) {
 
     let spinnerId = spinner.attr('id');
     let sliderId = spinnerId.substr(0, spinnerId.length-3);
-    let id = parseInt($('#' + sliderId).attr('id'));
+    let id = $('#' + sliderId).attr('id');
     let val = parseFloat(spinner.val());
     sendServoRaw(id, val);
 }
 
 function onServoSliderInput(servoSlider)
 {
-    let id = parseInt(servoSlider.attr('id'));
+    let id = servoSlider.attr('id');
     let val = parseFloat(servoSlider.val());
-    if (isNaN(id))
-    {
-        id = -1;
-    }
-
     sendServo(id, val);
 }
 
@@ -103,7 +98,7 @@ function onCalibrateMin(button) {
     let buttonId = button.attr('id');
     let sliderId = buttonId.substr(0, buttonId.length-3);
 
-    let id = parseInt($('#' + sliderId).attr('id'));
+    let id = $('#' + sliderId).attr('id');
     let min = parseFloat($('#' + sliderId + 'Cal').val());
 
     sendServoMin(id, min);
@@ -113,7 +108,7 @@ function onCalibrateMax(button) {
 
     let buttonId = button.attr('id');
     let sliderId = buttonId.substr(0, buttonId.length-3);
-    let id = parseInt($('#' + sliderId).attr('id'));
+    let id = $('#' + sliderId).attr('id');
     let max = parseFloat($('#' + sliderId + 'Cal').val());
     sendServoMax(id, max);
 }
@@ -134,6 +129,8 @@ function onServoEnable(checkbox) {
         $('.manual-obj').each(function () {
             $(this).prop('disabled', false);
         });
+
+        socket.emit('servos-enable');
     }
     else
     {
@@ -152,6 +149,8 @@ function onServoEnable(checkbox) {
         $('.manual-obj').each(function () {
             $(this).prop('disabled', true);
         });
+
+        socket.emit('servos-disable');
     }
 }
 
@@ -174,12 +173,12 @@ function timerTick()
     {
         if (timeMillis/1000 < 0)
         {
-            responsiveVoice.speak(Math.abs(timeMillis/1000).toString(), "US English Female", {rate: 1.2});
+            //responsiveVoice.speak(Math.abs(timeMillis/1000).toString(), "US English Female", {rate: 1.2});
         }
         else if (timeMillis/1000 === 0)
         {
-            //responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
-            responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+            ////responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
+            //responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
         }
         $('#timer').append('.0');
     }
@@ -315,10 +314,10 @@ socket.on('timer-start', function () {
 
     if (timeMillis/1000 === 0)
     {
-        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+        //responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
     }
     else {
-        responsiveVoice.speak(Math.abs(timeMillis / 1000).toString(), "US English Female", {rate: 1.2});
+        //responsiveVoice.speak(Math.abs(timeMillis / 1000).toString(), "US English Female", {rate: 1.2});
     }
 
     intervalDelegate = setInterval(timerTick, intervalMillis);
