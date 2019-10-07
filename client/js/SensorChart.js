@@ -5,7 +5,7 @@ class SensorChart
     {
         // Themes begin
         am4core.useTheme(am4themes_material);
-        am4core.useTheme(am4themes_animated);
+        //am4core.useTheme(am4themes_animated);
         // Themes end
 
         this.amColorSet = new am4core.ColorSet();
@@ -116,6 +116,11 @@ class SensorChart
         // this.chart.events.on("ready", function () {
         //     this.xAxis.zoom({start:0, end:1});
         // });
+    }
+
+    removeContent()
+    {
+        this.chart.data = [];
     }
 
     addSingleData(series, valueX, valueY)

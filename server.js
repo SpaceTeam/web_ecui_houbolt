@@ -211,21 +211,7 @@ ioClient.on('connection', function(socket){
     socket.emit('sequence-load', jsonSeq);
 
     //send new socket up to date servo end positions
-    let jsonServos = [
-        {
-            "id": 0,
-            "name": "Fuel Servo",
-            "min": 20,
-            "max": 1900
-        },
-        {
-            "id": 1,
-            "name": "Oxidizer Servo",
-            "min": 0,
-            "max": 2000
-        }
-    ];
-    socket.emit('servos-load', jsonServos);
+    llServerMod.sendMessage(llServer, 'servos-load');
 
     socket.on('chat message', function(msg){
         ioClient.emit('chat message', msg);
@@ -285,27 +271,41 @@ ioClient.on('connection', function(socket){
 
     socket.on('servos-enable', function(){
         console.log('servos-enable');
-        llServerMod.sendMessage(llServer, 'servos-enable');
+        if (master === socket.id) {
+            llServerMod.sendMessage(llServer, 'servos-enable');
+        }
+
     });
 
     socket.on('servos-disable', function(){
         console.log('servos-disable');
-        llServerMod.sendMessage(llServer, 'servos-disable');
+        if (master === socket.id) {
+            llServerMod.sendMessage(llServer, 'servos-disable');
+        }
+
     });
 
     socket.on('servos-calibrate', function(jsonServos){
         console.log('servos-calibrate');
-        llServerMod.sendMessage(llServer, 'servos-calibrate', jsonServos);
+        if (master === socket.id) {
+            llServerMod.sendMessage(llServer, 'servos-calibrate', jsonServos);
+        }
+
     });
 
     socket.on('servos-set', function(jsonServos){
         console.log('servos-set');
-        llServerMod.sendMessage(llServer, 'servos-set', jsonServos);
+        if (master === socket.id) {
+            llServerMod.sendMessage(llServer, 'servos-set', jsonServos);
+        }
+
     });
 
     socket.on('servos-set-raw', function(jsonServos){
         console.log('servos-set-raw');
-        llServerMod.sendMessage(llServer, 'servos-set-raw', jsonServos);
+        if (master === socket.id) {
+            llServerMod.sendMessage(llServer, 'servos-set-raw', jsonServos);
+        }
     });
 
     socket.on('disconnect', function(msg){
@@ -363,6 +363,10 @@ function processLLServerMessage(data) {
             case "sensors":
                 console.log("sensors");
                 ioClient.emit('sensors', jsonData.content);
+                break;
+            case "servos-load":
+                console.log("servos-load");
+                ioClient.emit('servos-load', jsonData.content);
                 break;
             case "abort":
                 console.log("abort from llserver");

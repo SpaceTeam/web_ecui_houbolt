@@ -145,6 +145,7 @@
 
         .input-label {
             font-size: 18px;
+            width: 100%;
         }
 
         .btn-secondary {
@@ -205,6 +206,29 @@
 
         #messages {
             margin-bottom: 40px
+        }
+
+        .minLabel {
+            text-align: left;
+        }
+
+        .maxLabel {
+            text-align: right;
+        }
+
+        .minLabel, .maxLabel {
+            font-weight: lighter;
+        }
+
+        .centerLabel {
+            text-align: center;
+        }
+
+        .calLabel-container {
+            margin: 0;
+            padding: 0;
+            float: left;
+            width: 100%;
         }
     </style>
 </head>
@@ -325,7 +349,15 @@
 
             <div class="row control-row">
                 <div class="col col-3 spinner">
-                    <label class="input-label" for="fuelCal">Fuel Servo</label>
+                    <label class="input-label" for="fuelCal" style="width: 100%;">
+                        <div class="container-fluid calLabel-container">
+                            <div class="row">
+                                <div id="fuelMinLabel" class="col col-3 minLabel">1200</div>
+                                <div id="fuelLabel" class="col centerLabel">Fuel</div>
+                                <div id="fuelMaxLabel" class="col col-3 maxLabel">2000</div>
+                            </div>
+                        </div>
+                    </label>
                     <input id="fuelCal" class="manual-obj" type="number" value="0" data-decimals="0" min="0"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
@@ -342,7 +374,15 @@
             <div class="row control-row">
 
                 <div class="col col-3 spinner">
-                    <label class="input-label" for="oxidizerCal">Oxidizer Servo</label>
+                    <label class="input-label" for="oxidizerCal">
+                        <div class="container-fluid calLabel-container">
+                            <div class="row">
+                                <div id="oxidizerMinLabel" class="col col-3 minLabel">1200</div>
+                                <div id="oxidizerLabel" class="col centerLabel">Oxidizer</div>
+                                <div id="oxidizerMaxLabel" class="col col-3 maxLabel">2000</div>
+                            </div>
+                        </div>
+                    </label>
                     <input id="oxidizerCal" class="manual-obj" type="number" value="0" min="0" step="1"
                            onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>

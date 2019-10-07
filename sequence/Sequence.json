@@ -2,7 +2,7 @@
     "globals": {
         "startTime": -4,
         "endTime": 4,
-        "interval": 0.001
+        "interval": 0.01
     },
     "data": [
         {

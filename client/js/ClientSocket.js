@@ -113,6 +113,17 @@ function onCalibrateMax(button) {
     sendServoMax(id, max);
 }
 
+function onServosLoad(jsonServosData)
+{
+    for (let dataInd in jsonServosData)
+    {
+        let dataItem = jsonServosData[dataInd];
+
+        $('#' + dataItem.name + 'MinLabel').text(dataItem.endpoints[0]);
+        $('#' + dataItem.name + 'MaxLabel').text(dataItem.endpoints[1]);
+    }
+}
+
 function onServoEnable(checkbox) {
     console.log(checkbox.checked);
     if (checkbox.checked)
@@ -216,9 +227,10 @@ socket.on('abort', function() {
 
 });
 
-socket.on('servos-load', function(jsonServos) {
+socket.on('servos-load', function(jsonServosData) {
     console.log('servos-load');
-    console.log(jsonServos);
+    console.log(jsonServosData);
+    onServosLoad(jsonServosData);
 
 });
 
@@ -296,13 +308,17 @@ socket.on('sequence-load', function(jsonSeq) {
 socket.on('sequence-start', function() {
     console.log('sequence-start:');
 
+    //empty sensor chart div first
+    for (let sensorName in jsonSensors)
+    {
+        jsonSensors[sensorName].chart.removeContent();
+    }
+
     $('#toggleSequenceButton').text("Abort Sequence");
     $('#timer').css("color", "green");
 
 
     seqChart.start();
-
-
 });
 
 socket.on('timer-start', function () {
