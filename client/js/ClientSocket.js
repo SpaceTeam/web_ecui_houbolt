@@ -3,6 +3,10 @@ var socket = io();
 var start = new Date();
 
 socket.on('connect', function() {socket.emit('checklist-start')});
+
+socket.on('connect_timeout', function() {console.log('connect-timeout')});
+socket.on('connect_error', function() {console.log('connect-error')});
+
 $('#toggleSequenceButton').click(function()
 {
     if ($(this).text() === 'Start Sequence')
