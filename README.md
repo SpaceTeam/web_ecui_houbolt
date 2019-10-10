@@ -1,3 +1,4 @@
+
 # ECUI (Engine Control Unit Interface)
 
 This project was originally developed to construct a user interface for the development of a Rocket Engine at a testing facility. It represents a foundation for a future Project which enables full control for a rocket launch procedure, like "Mission Control". There are three main design goals which had been followed during development:
@@ -12,24 +13,83 @@ To enable all of these features, multiple Software Layers have been developed.
 ## Table of Contents
 
 1. [Architecture](#architecture)
+2. [Web-Client](#web-client)
+3. [Web-Server](#web-server)
+4. [LLServer](#llserver)
 
 
 ## Architecture
 
+The user interface is written in HTML, CSS and JavaScript. This approach helps to generate a dynamic GUI and 
+and provides Tablet and Smartphone support built in. In addition a **Web-Server** is running in the background, so the user interface can be opened with multiple devices at the same time. Currently the last user who connected to the server functions as the **master**. This means that only that user is able to control the test stand, while all others are only **watchers** and cannot manipulate or interfere any ongoing process.
+The communication Protocol used between Web-Client and Web-Server is called Socket.io. 
+
+The **LLServer** functions mainly as an accurate Timer and sends commands defined by the Sequence-File
+to the **Hedgehog-Controller**
+
 ![ECUI Architecture](https://github.com/SpaceTeam/TXV_ECUI_WEB/blob/dev/ECUI.png)
 
 
-## Create files and folders
+## Web-Client
 
-The file explorer is accessible using the button in left corner of the navigation bar. You can create a new file by clicking the **New file** button in the file explorer. You can also create folders by clicking the **New folder** button.
+The Web-Client provides the interface between the end user and the ECUI System. When the Raspberry-Pi
+is connected to the same network, it can be accessed in Chrome, Firefox or Safari via the URL: 
 
-## Switch to another file
+[raspberrypi.local:3000](http://raspberrypi.local:3000)
 
-All your files and folders are presented as a tree in the file explorer. You can switch from one to another by clicking a file in the tree.
+If multiple Clients are connected to the Server it automatically syncs any changes on one client to the others.
+There are 3 tabs located at the top of the Webpage: the Monitor-Tab, the Control-Tab and the Calibration-Tab. 
 
-## Rename a file
+### Monitor Tab
 
-You can rename the current file by clicking the file name in the navigation bar or by clicking the **Rename** button in the file explorer.
+When the Webpage has been loaded, it first displays the **Checklist** on the right side of the display, and the 
+**Sequence Chart** on the left side. When all Items in the Checklist have been ticked, an Start Sequence button 
+appears. Clicking it starts the Countdown and displays live data on the bottom of the screen.
+
+### Control Tab
+
+In this view the "Enable Manual Control" Checkbox can be clicked to enable manual servo and motor (used for Igniter) control.
+Each Servo can be moved with the sliders between 0% and 100%. The Igniter can be enabled via a Checkbox.
+The Saftl button sets the Fuel servo to 100% for 2 seconds.
+
+### Calibration Tab
+
+Here manual control has to be enabled first. Then the raw value of a servo can be set by writing a number in the
+text box. By clicking the Set Min/Set Max button, the minimum/maximum position of the servo can be set. This is used to map the percentage value in the sequence file to the actual servo position.
+
+> **CAREFUL:** SERVOS CAN BE DESTROYED WHEN VALUE IS TOO HIGH OR TOO LOW
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ask for help, when you're not sure about the safe range of the servo
+
+## Web-Server
+
+The Web-Server is written in JavaScript with Node.js. On one hand it manages synchronization tasks between
+each client, on the other it also communicates with the LLServer and hands messages over to the client.
+
+The Web-Server represents the Server for the Web-Client and at the same time the Server for the TCP Socket
+communication with the LLServer. When the server is started, it waits for the LLServer to connect. 
+**If the Web-Client connects and clicks on the Start Sequence button before the LLServer is connected, it won't start the Sequence.** The Sequence File is located in the Web-Servers local directory.
+
+## LLServer (low-level Server) {#llserver}
+
+The LLServer is mainly responsible for coordinating the timing between the Sequence and the actual
+execution of each command. When the program is started, it waits for a server to connect to (Web-Server)
+After that the Web-Server needs to send the LLServer it's current Sequence and Abort Sequence which shall be executed. If there's
+any other event before that, it may result in a **crash** of the LLServer! 
+
+ - **Timer** is managing high resolution Clock and fires an event after a specific tick interval
+ - **SequenceManager** is responsible to start the timer and handles actions on abort. 
+ - **HcpManager** represents an abstract version of the Serial communication with the Hedgehog-Controller  
+ - **HcpCommands** defines all Messages there can be sent or received over the HCP Protocol
+ - **Serial** is responsible for communicating with the Controller on byte level
+ - **Debug** prints to the console and can be enabled or disabled 
+ - **utils** provides general tools for the Application
+ - **Logging** manages Sensor logging during a test run
+ - **config** config variables for the program
+
+Whenever the Sequence is started the server creates a Log file with the current Timestamp as name and logs
+sensor data in a specific sample rate, which can be specified in the config file.
+
+
 
 ## Delete a file
 
