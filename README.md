@@ -16,7 +16,7 @@ To enable all of these features, multiple Software Layers have been developed.
 
 ## Architecture
 
-https://github.com/SpaceTeam/TXV_ECUI_WEB/blob/dev/ECUI.png
+![ECUI Architecture](https://github.com/SpaceTeam/TXV_ECUI_WEB/blob/dev/ECUI.png)
 
 
 ## Create files and folders
