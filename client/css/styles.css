@@ -1,49 +1,218 @@
-.navbar {
-    margin-bottom: 0;
+body, html {
+    height: 100%;
+}
+
+.tab-content {
+    height: 70%;
 }
 
 body {
-    background: #020A1B;
-    color: #ffffff;
-    font-family: 'Merriweather', sans-serif;
+    font: 13px Helvetica, SansSerif;
+    background-color: white;
+    color: #303030;
+    margin-top: -60px;
 }
 
-h1,
-h2 {
-    font-weight: bold;
+form input {
+    border: 0;
+    padding: 10px;
+    border: solid;
 }
 
-p {
-    font-size: 16px;
-    color: #ffffff;
+.col {
+    background-color: white;
 }
 
-.jumbotron {
-    background: #0048CD;
+.content {
+    height: 100%;
+}
+
+#checklistCol {
+    border-left: 1px solid #C0C0C0;
+    margin-right: 2rem;
+    overflow: auto;
+    height: 25rem;
+}
+
+.accordion {
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+    margin-left: 2rem;
+}
+
+.card {
+    padding-bottom: 20px;
+    border: none;
+}
+
+.card-header {
+    transition: 250ms;
+    border: 1px solid #F0F0F0;
+    background-color: #522e63;
+}
+
+.card-header:hover {
+    transition: 250ms;
+    background-color: #714187;
+}
+
+.card-body {
+    background-color: #F0F0F0;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+}
+
+.btn-link {
     color: white;
+    text-decoration: none;
+}
+
+.btn-link:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.ckbx {
+    transform: scale(2) !important;
+    top: 25%;
+    margin-top: 0px;
+}
+
+.ckbx-label {
+    padding-left: 2rem;
+}
+
+#sequenceChart {
+    width: 80%;
+    height: 400px;
+}
+
+.sensorChart {
+    width: 30%;
+    height: 200px;
+    display: inline-block;
+}
+
+.sequence-fluid
+{
+    height: 100%;
+}
+
+#myTabContent
+{
+    height: 35rem;
+}
+
+#servo-container, #calibration-container {
+    display: block !important;
+    margin-left: 40px;
+    font-family: sans-serif;
+    padding: 60px 20px;
+    width: 80%;
+}
+
+@media (min-width: 600px) {
+    #servo-container, #calibration-container {
+        padding: 60px;
+    }
+}
+
+.custom-control-label::before,
+.custom-control-label::after {
+    top: 0rem;
+    left: -1.4rem;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.input-label {
+    font-size: 18px;
+    width: 100%;
+}
+
+.btn-secondary {
+    background: #522e63;
+    margin-top: 20px;
+}
+
+.btn-secondary:hover {
+    background-color: #714187;
+}
+
+#timer {
+    margin-top: 20px;
+}
+
+#versionLabel {
+    float: right;
+    font-size: 1rem;
+    margin-top: 20px;
+}
+
+.header {
+    height: 80px;
+}
+
+.control-row {
+    margin-top: 60px;
+}
+
+.spinner {
+    margin-top: -0.55rem;
+}
+
+.cal-btn {
+    width: 7rem;
+    margin-right: 1rem;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    color: #fff;
+    border-color: #522e63;
+    background-color: #522e63;
+}
+
+#messages {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#messages li {
+    padding: 5px 10px;
+}
+
+#messages li:nth-child(odd) {
+    background: #eee;
+}
+
+#messages {
+    margin-bottom: 40px
+}
+
+.minLabel {
+    text-align: left;
+}
+
+.maxLabel {
+    text-align: right;
+}
+
+.minLabel, .maxLabel {
+    font-weight: lighter;
+}
+
+.centerLabel {
     text-align: center;
 }
 
-.jumbotron p {
-    color: white;
-    font-size: 26px;
-}
-
-.btn-primary {
-    color: #fff;
-    text-color: #000000;
-    border-color: white;
-    margin-bottom: 5px;
-}
-
-img,
-video,
-audio {
-    margin-top: 20px;
-    max-width: 80%;
-}
-
-div.caption: {
+.calLabel-container {
+    margin: 0;
+    padding: 0;
     float: left;
-    clear: both;
+    width: 100%;
 }

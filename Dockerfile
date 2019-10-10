@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 #RUN apk add g++ make python nodejs
 RUN npm install       # Install required NPM modules
+RUN npm install socket.io --save
 # Bundle app source
 COPY . .
 # Exports

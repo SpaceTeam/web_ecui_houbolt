@@ -239,7 +239,6 @@ socket.on('servos-load', function(jsonServosData) {
 });
 
 socket.on('checklist-load', function(jsonChecklist) {
-    $('#messages').append($('<li>').text('CHECKLIST-LOAD arrived: \n'));
     console.log('checklist-load:');
     console.log(jsonChecklist);
 
@@ -293,7 +292,6 @@ socket.on('sequence-load', function(jsonSeq) {
 
     jsonSequence = jsonSeq;
 
-    $('#messages').append($('<li>').text('SEQUENCE-LOAD arrived: \n'));
     $('#timer').text(jsonSeq.globals.startTime);
     if (Number.isInteger(jsonSeq.globals.startTime))
     {
@@ -420,10 +418,4 @@ socket.on('sensors', function(jsonSens) {
         sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value);
     }
 
-});
-
-socket.on('chat message', function(msg){
-    $('#messages').append($('<li>').text(msg));
-    $('#messages').append(new Date().getTime() - start.getTime() + "ms elapsed\n");
-    //window.scrollTo(0, document.body.scrollHeight);
 });
