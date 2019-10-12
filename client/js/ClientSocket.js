@@ -61,6 +61,15 @@ function onServoSliderInput(servoSlider)
     sendServo(id, val);
 }
 
+function sendDigitalOut(doId, doValue)
+{
+    let jsonDigitalOut = {};
+
+    jsonDigitalOut.id = doId;
+    jsonDigitalOut.value = doValue;
+    socket.emit('digital-outs-set', [jsonDigitalOut]);
+}
+
 function sendServo(servoId, servoValue)
 {
     let jsonServo = {};
@@ -126,6 +135,21 @@ function onServosLoad(jsonServosData)
         $('#' + dataItem.name + 'MinLabel').text(dataItem.endpoints[0]);
         $('#' + dataItem.name + 'MaxLabel').text(dataItem.endpoints[1]);
     }
+}
+
+function onIgniterCheck(checkbox)
+{
+    let id = $(checkbox).attr('id');
+
+    if (checkbox.checked)
+    {
+        sendDigitalOut(id, true);
+    }
+    else
+    {
+        sendDigitalOut(id, false);
+    }
+
 }
 
 function onServoEnable(checkbox) {

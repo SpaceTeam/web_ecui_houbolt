@@ -70,7 +70,7 @@
                     <button class="btn btn-secondary" id="toggleSequenceButton" hidden>Start Sequence</button>
                 </div>
                 <div class="col col-3">
-                    <h3 id="versionLabel">ECUI - Version <span id="version">0.9</span></h3>
+                    <h3 id="versionLabel">ECUI - Version <span id="version">1.0.0</span></h3>
                 </div>
             </div>
             <div class="row content">
@@ -114,6 +114,11 @@
                     <span class="range-slider__value" disabled>0</span>
                 </div>
 
+            </div>
+            <div class="form-control-lg custom-control custom-checkbox digitalOut-div row control-row">
+                <input type="checkbox" class="custom-control-input ckbx manual-obj" id="igniter"
+                       onclick="onIgniterCheck(this);">
+                <label class="custom-control-label ckbx-label" for="igniter">Igniter</label>
             </div>
 
             <button class="btn btn-secondary cal-btn manual-obj" id="saftlButton" disabled>Saftl</button>
@@ -186,7 +191,6 @@
 <div id="sensorChartDiv"></div>
 
 
-
 <script src="/socket.io/socket.io.js"></script>
 <script
         src="https://code.jquery.com/jquery-3.4.1.js"
@@ -196,6 +200,13 @@
         src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
         integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
         crossorigin="anonymous"></script>
+
+<script>
+    $("#version").load( "version.txt", function() {
+
+    });
+</script>
+
 <script src="lib/bootstrap-input-spinner.js"></script>
 <script src="js/Slider.js"></script>
 <script src="js/SequenceChart.js"></script>

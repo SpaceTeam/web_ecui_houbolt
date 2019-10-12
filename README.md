@@ -18,6 +18,7 @@ To enable all of these features, multiple Software Layers have been developed.
 4. [LLServer](#llserver-low-level-server)
 5. [ECUI-Protocols](#ecui-protocols)
 6. [JSON-Formats](#json-formats)
+7. [Appendix](#appendix)
 
 
 ## Architecture
@@ -396,14 +397,3 @@ The Mapping is necessary to map each Device to a port on the Hedgehog Controller
 
 The LLServer is designed to enable a switch of any Micro-Controller, but the Interface has to be implemented first.
 
-
-
-## TODO
-
-**Web-Client**
-- Checklist not synchronized when client connects after item has already been ticked
-
-**Web-Server**
-
-**LLServer** 
-- at servos-calibrate message: allow both min and max in the same servo object

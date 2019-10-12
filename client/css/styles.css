@@ -86,6 +86,14 @@ form input {
     padding-left: 2rem;
 }
 
+.digitalOut-div {
+    margin-left: -0.1rem;
+}
+
+div#servo-container > button {
+    margin-top: 60px;
+}
+
 #sequenceChart {
     width: 80%;
     height: 400px;
@@ -111,14 +119,8 @@ form input {
     display: block !important;
     margin-left: 40px;
     font-family: sans-serif;
-    padding: 60px 20px;
+    padding: 0px 20px 0px 60px;
     width: 80%;
-}
-
-@media (min-width: 600px) {
-    #servo-container, #calibration-container {
-        padding: 60px;
-    }
 }
 
 .custom-control-label::before,
@@ -158,7 +160,7 @@ form input {
 }
 
 .control-row {
-    margin-top: 60px;
+    padding-top: 60px;
 }
 
 .spinner {

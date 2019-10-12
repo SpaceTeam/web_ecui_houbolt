@@ -54,20 +54,17 @@ var onChecklistTick = function (ioClient, socket, id) {
     if (retTick === 1)
     {
         socket.broadcast.emit('checklist-update', id);
-        socket.broadcast.emit('chat message', 'Tick id: ' + id);
         eventEmitter.emit('onChecklistDone', ioClient, socket);
     }
     else if (retTick === 0)
     {
         socket.broadcast.emit('checklist-update', id);
-        socket.broadcast.emit('chat message', 'Tick id: ' + id);
     }
 }
 
 var onChecklistDone = function (ioClient, socket) {
     console.log('checklist done');
     ioClient.emit('checklist-done');
-    ioClient.emit('chat message', 'checklist done!');
 
     //send everyone up to date sequence
     let jsonSeq = sequenceManMod.loadSequence();
@@ -82,7 +79,7 @@ var onSequenceStart = function (ioClient, socket) {
         ioClient.emit('sequence-start');
 
         // sequenceManMod.init();
-        // //TODO: maybe change so emitter is invoking events
+        // //start timer on this server instead of LLServer
         // sequenceManMod.startSequence(1.0,
         //     function(time){onSequenceSync(ioClient,socket,time);},
         //     function(){onSequenceDone(ioClient,socket);}
@@ -112,7 +109,6 @@ var onAbort = function (ioClient, socket) {
     if (sequenceRunning) {
         //sequenceManMod.abortSequence();
         socket.broadcast.emit('abort');
-        ioClient.emit('chat message', 'ABORT!!!!!');
         sequenceRunning = false;
 
         llServerMod.sendMessage(llServer, 'abort');
@@ -137,44 +133,6 @@ var onTimerStart = function (ioClient) {
     }
 
 }
-
-// var senDataInterval;
-// var sensorTime = 0;
-// var onSendTestSensorData = function(ioClient)
-// {
-//     let jsonSensor0 = {
-//         "name": "Chamber",
-//         "time": sensorTime,
-//         "value": Math.random().toPrecision(3) * 2048
-//     };
-//
-//     let jsonSensor1 = {
-//         "name": "Injector",
-//         "time": sensorTime,
-//         "value": Math.random().toPrecision(3) * 2048
-//     };
-//
-//     let jsonSensor2 = {
-//         "name": "FuelTank",
-//         "time": sensorTime,
-//         "value": Math.random().toPrecision(3) * 2048
-//     };
-//
-//
-//     let jsonSensor3 = {
-//         "name": "digital test",
-//         "time": sensorTime,
-//         "value": Math.round(Math.random())
-//     };
-//
-//     ioClient.emit('sensors', [jsonSensor0, jsonSensor1, jsonSensor2, jsonSensor3]);
-//
-//     if (sensorTime >= 10000)
-//     {
-//         clearInterval(senDataInterval);
-//     }
-//     sensorTime+=100;
-// }
 
 //Assign the event handler to an event:
 //TODO: check if events slowing down process and instead emit messages of sockets directly inside incoming message events
@@ -212,10 +170,6 @@ ioClient.on('connection', function(socket){
 
     //send new socket up to date servo end positions
     llServerMod.sendMessage(llServer, 'servos-load');
-
-    socket.on('chat message', function(msg){
-        ioClient.emit('chat message', msg);
-    });
 
     socket.on('abort', function(msg){
         console.log('abort');
@@ -308,6 +262,15 @@ ioClient.on('connection', function(socket){
         }
     });
 
+    socket.on('digital-outs-set', function(jsonDigitalOutputs){
+        console.log('digital-outs-set');
+        console.log(jsonDigitalOutputs)
+        if (master === socket.id) {
+            llServerMod.sendMessage(llServer, 'digital-outs-set', jsonDigitalOutputs);
+        }
+
+    });
+
     socket.on('disconnect', function(msg){
         console.log('user disconnected');
         if (master === socket.id) {
@@ -321,10 +284,6 @@ ioClient.on('connection', function(socket){
 
 function processLLServerMessage(data) {
     // Print received client data and length.
-    let testmsg = {};
-    testmsg.type = "success";
-    testmsg.content = {};
-
     dataArr = data.split("\n");
 
     if (dataArr.length > 2)
@@ -375,7 +334,6 @@ function processLLServerMessage(data) {
 
         }
     }
-    //llServer.write(JSON.stringify(testmsg));
 }
 
 app.get('/', function(req, res){
