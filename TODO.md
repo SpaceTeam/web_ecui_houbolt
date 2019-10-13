@@ -12,3 +12,5 @@
 **LLServer** 
 - at servos-calibrate message: allow both min and max in the same servo object
 - support negative percentage if required
+- make config file txt
+- send battery level to webserver
