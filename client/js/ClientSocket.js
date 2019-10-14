@@ -226,6 +226,19 @@ function timerTick()
     timeMillis += intervalMillis;
 }
 
+function sequenceButtonStop()
+{
+    $('#toggleSequenceButton').text("Start Sequence");
+
+    //disable all other tabs
+    $('.tab-button').each(function () {
+        if ($(this).id !== "monitor-tab-button")
+        {
+            $(this).prop('disabled', false);
+        }
+    });
+}
+
 function abortSequence()
 {
     seqChart.stop();
@@ -233,6 +246,8 @@ function abortSequence()
     clearInterval(intervalDelegate);
     $('#timer').css("color", "red");
     socket.emit('abort');
+
+    sequenceButtonStop();
 
     seqChart.reset();
     seqChart.loadSequenceChart(jsonSequence);
@@ -387,15 +402,7 @@ socket.on('sequence-done', function() {
     {
         $('#timer').append('.0');
     }
-    $('#toggleSequenceButton').text("Start Sequence");
-
-    //disable all other tabs
-    $('.tab-button').each(function () {
-        if ($(this).id !== "monitor-tab-button")
-        {
-            $(this).prop('disabled', false);
-        }
-    });
+    sequenceButtonStop();
 
     seqChart.reset();
     seqChart.loadSequenceChart(jsonSequence);

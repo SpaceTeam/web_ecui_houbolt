@@ -14,3 +14,4 @@
 - support negative percentage if required
 - make config file txt
 - send battery level to webserver
+- new class for managing mapping and i2c

@@ -11,56 +11,63 @@
             "desc": "blah blah optional blah",
             "actions": [
                 {
-                    "chamberPressureMin": 0,
                     "fuel": 0,
                     "igniter": 0,
                     "oxidizer": 0,
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [0, 20000]
+                    },
                     "timestamp": "START"
                 },
                 {
-                    "chamberPressureMin": 0,
                     "fuel": 0,
                     "igniter": 0,
                     "oxidizer": 0,
                     "timestamp": 0.0
                 },
                 {
-                    "chamberPressureMin": 0,
                     "fuel": 50,
                     "igniter": 0,
                     "oxidizer": 50,
                     "timestamp": 0.5
                 },
                 {
-                    "chamberPressureMin": 0,
                     "fuel": 100,
                     "igniter": 100,
                     "oxidizer": 100,
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [0, 20000]
+                    },
                     "timestamp": 1.0
                 },
                 {
-                    "chamberPressureMin": 5.0,
                     "fuel": 100,
                     "igniter": 0,
                     "oxidizer": 100,
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [5.0, 20000]
+                    },
                     "timestamp": 1.1
                 },
                 {
-                    "chamberPressureMin": 5.0,
                     "fuel": 100,
                     "igniter": 0,
                     "oxidizer": 100,
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [5.0, 20000]
+                    },
                     "timestamp": 2.9
                 },
                 {
-                    "chamberPressureMin": 0,
                     "fuel": 100,
                     "igniter": 0,
                     "oxidizer": 100,
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [0, 20000]
+                    },
                     "timestamp": 3.0
                 },
                 {
-                    "chamberPressureMin": 0,
                     "fuel": 0,
                     "igniter": 0,
                     "oxidizer": 100,
@@ -74,21 +81,18 @@
             "desc": "pretty chilly in here",
             "actions": [
                 {
-                    "chamberPressureMin": 0,
                     "fuel": 0,
                     "igniter": 0,
                     "oxidizer": 100,
                     "timestamp": 3.3
                 },
                 {
-                    "chamberPressureMin": 0,
                     "fuel": 0,
                     "igniter": 0,
                     "oxidizer": 0,
                     "timestamp": 3.5
                 },
                 {
-                    "chamberPressureMin": 0,
                     "fuel": 0,
                     "igniter": 0,
                     "oxidizer": 0,
