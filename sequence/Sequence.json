@@ -32,9 +32,8 @@
                     "timestamp": 0.5
                 },
                 {
-                    "fuel": 50,
                     "igniter": 0,
-                    "timestamp": 1.0
+                    "timestamp": 0.9
                 },
                 {
                     "fuel": 100,
@@ -60,7 +59,7 @@
                 },
                 {
                     "igniter": 0,
-                    "timestamp": 1.51
+                    "timestamp": 1.6
                 },
                 {
                     "fuel": 100,
