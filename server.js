@@ -115,10 +115,17 @@ var onAbort = function (ioClient, socket) {
     }
 }
 
-var onAbortAll = function(ioClient)
+var onAbortAll = function(ioClient, abortMsg)
 {
     if (sequenceRunning) {
-        ioClient.emit('abort');
+        if (abortMsg !== undefined && abortMsg !== "")
+        {
+            ioClient.emit('abort', abortMsg);
+        }
+        else
+        {
+            ioClient.emit('abort');
+        }
         sequenceRunning = false;
 
     }
@@ -329,7 +336,7 @@ function processLLServerMessage(data) {
                 break;
             case "abort":
                 console.log("abort from llserver");
-                eventEmitter.emit('onAbortAll', ioClient);
+                eventEmitter.emit('onAbortAll', ioClient, jsonData.content);
                 break;
 
         }

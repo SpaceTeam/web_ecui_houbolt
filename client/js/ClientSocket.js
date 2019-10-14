@@ -212,12 +212,12 @@ function timerTick()
     {
         if (timeMillis/1000 < 0)
         {
-            //responsiveVoice.speak(Math.abs(timeMillis/1000).toString(), "US English Female", {rate: 1.2});
+            responsiveVoice.speak(Math.abs(timeMillis/1000).toString(), "US English Female", {rate: 1.2});
         }
         else if (timeMillis/1000 === 0)
         {
             ////responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
-            //responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+            responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
         }
         $('#timer').append('.0');
     }
@@ -263,8 +263,16 @@ function onChecklistTick(checkbox)
     socket.emit('checklist-tick', currId);
 }
 
-socket.on('abort', function() {
+socket.on('abort', function(abortMsg) {
     console.log('abort');
+
+    if (abortMsg !== undefined && abortMsg !== "")
+    {
+        setTimeout(function () {
+            responsiveVoice.speak(abortMsg, "US English Female", {rate: 1.0});
+        }, 2000);
+
+    }
 
     abortSequence();
 
@@ -371,10 +379,10 @@ socket.on('timer-start', function () {
 
     if (timeMillis/1000 === 0)
     {
-        //responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
     }
     else {
-        //responsiveVoice.speak(Math.abs(timeMillis / 1000).toString(), "US English Female", {rate: 1.2});
+        responsiveVoice.speak(Math.abs(timeMillis / 1000).toString(), "US English Female", {rate: 1.2});
     }
 
     intervalDelegate = setInterval(timerTick, intervalMillis);
