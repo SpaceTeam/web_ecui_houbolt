@@ -22,7 +22,7 @@ $('#toggleSequenceButton').click(function()
     }
     else if ($(this).text() === 'Abort Sequence')
     {
-        abortSequence();
+        abortSequence("abort from user");
         $(this).text('Start Sequence');
         $('.tab-button').each(function () {
             if ($(this).id !== "monitor-tab-button")
@@ -239,7 +239,7 @@ function sequenceButtonStop()
     });
 }
 
-function abortSequence()
+function abortSequence(abortMsg)
 {
     seqChart.stop();
 
@@ -248,6 +248,10 @@ function abortSequence()
     socket.emit('abort');
 
     sequenceButtonStop();
+
+    setTimeout(function () {
+            responsiveVoice.speak(abortMsg, "US English Female", {rate: 1.0});
+        }, 1000);
 
     seqChart.reset();
     seqChart.loadSequenceChart(jsonSequence);
@@ -266,15 +270,7 @@ function onChecklistTick(checkbox)
 socket.on('abort', function(abortMsg) {
     console.log('abort');
 
-    if (abortMsg !== undefined && abortMsg !== "")
-    {
-        setTimeout(function () {
-            responsiveVoice.speak(abortMsg, "US English Female", {rate: 1.0});
-        }, 2000);
-
-    }
-
-    abortSequence();
+    abortSequence(abortMsg);
 
 });
 
