@@ -1,6 +1,6 @@
 {
     "globals": {
-        "startTime": -4,
+        "startTime": -10,
         "endTime": 4,
         "interval": 0.01
     },
@@ -15,7 +15,7 @@
                     "igniter": 0,
                     "oxidizer": 0,
                     "sensorsNominalRange" : {
-                        "chamberPressure" : [0, 20]
+                        "chamberPressure" : [-5000, 20000]
                     },
                     "timestamp": "START"
                 },
@@ -23,16 +23,32 @@
                     "fuel": 0,
                     "igniter": 0,
                     "oxidizer": 0,
+                    "timestamp": -1.1
+                },
+		{
+                    "fuel": 0,
+                    "igniter": 0,
+                    "oxidizer": 0,
+                    "timestamp": -1.0
+		},
+		{
+                    "fuel": 0,
+                    "igniter": 0,
+                    "oxidizer": 0,
                     "timestamp": 0.0
+                },
+		{
+                    "igniter": 100,
+                    "timestamp": 0.1
                 },
                 {
                     "fuel": 50,
-                    "igniter": 0,
+                    "igniter": 100,
                     "oxidizer": 50,
                     "timestamp": 0.5
                 },
                 {
-                    "igniter": 0,
+                    "igniter": 100,
                     "timestamp": 0.9
                 },
                 {
@@ -40,7 +56,7 @@
                     "igniter": 100,
                     "oxidizer": 100,
                     "sensorsNominalRange" : {
-                        "chamberPressure" : [0, 20]
+                        "chamberPressure" : [-5000, 20000]
                     },
                     "timestamp": 1.0
                 },
@@ -49,7 +65,7 @@
                     "igniter": 100,
                     "oxidizer": 100,
                     "sensorsNominalRange" : {
-                        "chamberPressure" : [5.0, 20]
+                        "chamberPressure" : [5000, 20000]
                     },
                     "timestamp": 1.1
                 },
@@ -66,7 +82,7 @@
                     "igniter": 0,
                     "oxidizer": 100,
                     "sensorsNominalRange" : {
-                        "chamberPressure" : [5.0, 20]
+                        "chamberPressure" : [5000, 20000]
                     },
                     "timestamp": 2.9
                 },
@@ -75,7 +91,7 @@
                     "igniter": 0,
                     "oxidizer": 100,
                     "sensorsNominalRange" : {
-                        "chamberPressure" : [0, 20]
+                        "chamberPressure" : [-5000, 20000]
                     },
                     "timestamp": 3.0
                 },

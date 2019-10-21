@@ -252,6 +252,9 @@ function abortSequence(abortMsg)
     setTimeout(function () {
             responsiveVoice.speak(abortMsg, "US English Female", {rate: 1.0});
         }, 1000);
+    setTimeout(function () {
+            emptySensorCharts();
+        }, 3000);
 
     seqChart.reset();
     seqChart.loadSequenceChart(jsonSequence);
@@ -267,11 +270,18 @@ function onChecklistTick(checkbox)
     socket.emit('checklist-tick', currId);
 }
 
+function emptySensorCharts()
+{
+    for (let sensorName in jsonSensors)
+    {
+        jsonSensors[sensorName].chart.removeContent();
+    }
+}
+
 socket.on('abort', function(abortMsg) {
     console.log('abort');
 
     abortSequence(abortMsg);
-
 });
 
 socket.on('servos-load', function(jsonServosData) {
@@ -354,10 +364,7 @@ socket.on('sequence-start', function() {
     console.log('sequence-start:');
 
     //empty sensor chart div first
-    for (let sensorName in jsonSensors)
-    {
-        jsonSensors[sensorName].chart.removeContent();
-    }
+    emptySensorCharts();
 
     $('#toggleSequenceButton').text("Abort Sequence");
     $('#timer').css("color", "green");
@@ -411,6 +418,10 @@ socket.on('sequence-done', function() {
     seqChart.reset();
     seqChart.loadSequenceChart(jsonSequence);
     console.log(seqChart.chart.data);
+
+    setTimeout(function () {
+            emptySensorCharts();
+        }, 3000);
 
 });
 

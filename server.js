@@ -4,6 +4,7 @@ const path = __dirname + '/client/';
 var app = express();
 var http = require('http').Server(app);
 var ioClient = require('socket.io')(http);
+var clientsCount = 0;
 var port = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/client/'));
@@ -103,6 +104,10 @@ var onSequenceDone = function (ioClient) {
     console.log('sequence done');
     ioClient.emit('sequence-done');
     sequenceRunning = false;
+
+    setTimeout(function () {
+            llServerMod.sendMessage(llServer, 'sensors-start');
+        }, 3500);
 }
 
 var onAbort = function (ioClient, socket) {
@@ -112,6 +117,10 @@ var onAbort = function (ioClient, socket) {
         sequenceRunning = false;
 
         llServerMod.sendMessage(llServer, 'abort');
+
+        setTimeout(function () {
+            llServerMod.sendMessage(llServer, 'sensors-start');
+        }, 3500);
     }
 }
 
@@ -128,6 +137,9 @@ var onAbortAll = function(ioClient, abortMsg)
         }
         sequenceRunning = false;
 
+        setTimeout(function () {
+            llServerMod.sendMessage(llServer, 'sensors-start');
+        }, 3500);
     }
 }
 
@@ -162,6 +174,11 @@ var master = null;
 
 ioClient.on('connection', function(socket){
 
+    clientsCount++;
+    if (clientsCount === 1)
+    {
+        llServerMod.sendMessage(llServer, 'sensors-start');
+    }
     console.log('userID: ' + socket.id + ' userAddress: ' + socket.handshake.address + ' connected');
     // if (master == null)
     // {
@@ -286,6 +303,11 @@ ioClient.on('connection', function(socket){
                 eventEmitter.emit('onAbort', ioClient, socket);
             }
         }
+        clientsCount--;
+        if (clientsCount === 0)
+        {
+            llServerMod.sendMessage(llServer, 'sensors-stop');
+        }
     });
 });
 
@@ -327,7 +349,6 @@ function processLLServerMessage(data) {
                 eventEmitter.emit('onSequenceDone', ioClient);
                 break;
             case "sensors":
-                console.log("sensors");
                 ioClient.emit('sensors', jsonData.content);
                 break;
             case "servos-load":
