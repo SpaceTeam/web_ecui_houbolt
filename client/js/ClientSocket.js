@@ -44,6 +44,9 @@ $('#saftlButton').click(function() {
     })
 });
 
+$('#resetButton').click(function() {
+    emptySensorCharts();
+});
 
 function onServoSpinnerChange(spinner) {
 
