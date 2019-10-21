@@ -123,7 +123,7 @@ class SensorChart
         this.chart.data = [];
     }
 
-    addSingleData(series, valueX, valueY)
+    addSingleData(series, valueX, valueY, removeFirstItem=false)
     {
         var foundIndex = this.chart.data.findIndex(function(element) {
               return (element.time === valueX);
@@ -142,10 +142,20 @@ class SensorChart
         }
         dataObj[series.dataFields.valueY] = valueY;
 
-        this.chart.addData(
+        if (removeFirstItem && this.chart.data.length > 100)
+        {
+            this.chart.addData(
+                    dataObj,
+                    1
+                );
+        }
+        else
+        {
+            this.chart.addData(
                     dataObj,
                     0
                 );
+        }
     }
 
     addData(dataObj)

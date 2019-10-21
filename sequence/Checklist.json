@@ -1,29 +1,44 @@
 [
     {
-        "id": 0,
-        "name": "Check Servos",
+        "id": 5,
+        "name": "Venturi",
         "notes": [
-            "asdf",
-            "asdf3",
-            "dosomethings"
         ]
     },
     {
-        "id": 5,
-        "name": "Check Valves",
+        "id": 6,
+        "name": "Injector",
         "notes": [
-            "asdf",
-            "asdf3",
-            "dosomethings"
         ]
     },
     {
         "id": 2,
-        "name": "Check Igniter",
+        "name": "Igniter",
         "notes": [
-            "asdf",
-            "asdf3",
-            "dosomethings"
+        ]
+    },
+    {
+        "id": 0,
+        "name": "Fuel Pressure",
+        "notes": [
+        ]
+    },
+    {
+        "id": 1,
+        "name": "Oxidizer Pressure",
+        "notes": [
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Camera",
+        "notes": [
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Thrust Sensors",
+        "notes": [
         ]
     }
 

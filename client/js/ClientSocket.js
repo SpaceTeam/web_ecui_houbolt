@@ -199,6 +199,7 @@ function onServoEnable(checkbox) {
 var jsonSequence;
 var jsonSensors = {};
 var checklistLoaded = false;
+var isContinousTransmission = true;
 
 var seqChart = new SequenceChart("sequenceChart", "Sequence");
 
@@ -257,6 +258,7 @@ function abortSequence(abortMsg)
         }, 1000);
     setTimeout(function () {
             emptySensorCharts();
+            isContinousTransmission = true;
         }, 3000);
 
     seqChart.reset();
@@ -368,6 +370,7 @@ socket.on('sequence-start', function() {
 
     //empty sensor chart div first
     emptySensorCharts();
+    isContinousTransmission = false;
 
     $('#toggleSequenceButton').text("Abort Sequence");
     $('#timer').css("color", "green");
@@ -424,6 +427,7 @@ socket.on('sequence-done', function() {
 
     setTimeout(function () {
             emptySensorCharts();
+            isContinousTransmission = true;
         }, 3000);
 
 });
@@ -464,7 +468,7 @@ socket.on('sensors', function(jsonSens) {
             jsonSensors[jsonSen.name] = sensor;
 
         }
-        sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value);
+        sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value, isContinousTransmission);
     }
 
 });
