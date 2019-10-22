@@ -4,42 +4,5 @@
         "name": "Venturi",
         "notes": [
         ]
-    },
-    {
-        "id": 6,
-        "name": "Injector",
-        "notes": [
-        ]
-    },
-    {
-        "id": 2,
-        "name": "Igniter",
-        "notes": [
-        ]
-    },
-    {
-        "id": 0,
-        "name": "Fuel Pressure",
-        "notes": [
-        ]
-    },
-    {
-        "id": 1,
-        "name": "Oxidizer Pressure",
-        "notes": [
-        ]
-    },
-    {
-        "id": 3,
-        "name": "Camera",
-        "notes": [
-        ]
-    },
-    {
-        "id": 4,
-        "name": "Thrust Sensors",
-        "notes": [
-        ]
     }
-
 ]

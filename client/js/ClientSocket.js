@@ -210,21 +210,23 @@ var intervalDelegate;
 function timerTick()
 {
     console.log(timeMillis);
-    $('#timer').text(timeMillis/1000);
+    let time = timeMillis/1000;
+    $('#timer').text(time);
 
-    if (Number.isInteger(timeMillis/1000))
+    if (Number.isInteger(time))
     {
-        if (timeMillis/1000 < 0)
-        {
-            responsiveVoice.speak(Math.abs(timeMillis/1000).toString(), "US English Female", {rate: 1.2});
-        }
-        else if (timeMillis/1000 === 0)
-        {
-            ////responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
-            responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-        }
+        // if (time < 0 && time >= -5)
+        // {
+        //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.2});
+        // }
+        // else if (time === 0)
+        // {
+        //     ////responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
+        //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+        // }
         $('#timer').append('.0');
     }
+
     seqChart.update(timeMillis);
 
     timeMillis += intervalMillis;
@@ -372,9 +374,10 @@ socket.on('sequence-start', function() {
     emptySensorCharts();
     isContinousTransmission = false;
 
+    responsiveVoice.speak("starting sequence", "US English Female", {rate: 1});
+
     $('#toggleSequenceButton').text("Abort Sequence");
     $('#timer').css("color", "green");
-
 
     seqChart.start();
 });
@@ -386,14 +389,6 @@ socket.on('timer-start', function () {
     endTime = jsonSequence.globals.endTime;
     responsiveVoice.enableEstimationTimeout = false;
 
-    if (timeMillis/1000 === 0)
-    {
-        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-    }
-    else {
-        responsiveVoice.speak(Math.abs(timeMillis / 1000).toString(), "US English Female", {rate: 1.2});
-    }
-
     intervalDelegate = setInterval(timerTick, intervalMillis);
 });
 
@@ -401,6 +396,15 @@ socket.on('sequence-sync', function(time) {
     console.log('sequence-sync:');
     timeMillis = time * 1000;
     console.log(timeMillis);
+
+    if (time < 0 && time >= -5)
+    {
+        responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.2});
+    }
+    else if (time === 0)
+    {
+        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+    }
     // clearInterval(intervalDelegate);
     // if (timeMillis < endTime*1000) {
     //      intervalDelegate = setInterval(timerTick, intervalMillis);
