@@ -1,7 +1,7 @@
 {
     "globals": {
         "startTime": -10,
-        "endTime": 4,
+        "endTime": 7,
         "interval": 0.01
     },
     "data": [
@@ -71,11 +71,11 @@
                 },
                 {
                     "igniter": 100,
-                    "timestamp": 1.5
+                    "timestamp": 2.5
                 },
                 {
                     "igniter": 0,
-                    "timestamp": 1.6
+                    "timestamp": 2.6
                 },
                 {
                     "fuel": 100,
@@ -84,7 +84,7 @@
                     "sensorsNominalRange" : {
                         "chamberPressure" : [5000, 20000]
                     },
-                    "timestamp": 2.9
+                    "timestamp": 5.9
                 },
                 {
                     "fuel": 100,
@@ -93,13 +93,13 @@
                     "sensorsNominalRange" : {
                         "chamberPressure" : [-5000, 20000]
                     },
-                    "timestamp": 3.0
+                    "timestamp": 6.0
                 },
                 {
                     "fuel": 0,
                     "igniter": 0,
                     "oxidizer": 100,
-                    "timestamp": 3.2
+                    "timestamp": 6.2
                 }
             ]
         },
@@ -112,13 +112,13 @@
                     "fuel": 0,
                     "igniter": 0,
                     "oxidizer": 100,
-                    "timestamp": 3.3
+                    "timestamp": 6.3
                 },
                 {
                     "fuel": 0,
                     "igniter": 0,
                     "oxidizer": 0,
-                    "timestamp": 3.5
+                    "timestamp": 6.5
                 },
                 {
                     "fuel": 0,
