@@ -5,7 +5,7 @@ class SensorChart
     {
         // Themes begin
         am4core.useTheme(am4themes_material);
-        //am4core.useTheme(am4themes_animated);
+        am4core.useTheme(am4themes_animated);
         // Themes end
 
         this.amColorSet = new am4core.ColorSet();
