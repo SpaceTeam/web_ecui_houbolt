@@ -325,23 +325,23 @@ class SequenceChart
                 {
                     if (cmd === "sensorsNominalRange")
                     {
-                        for (let sensorName in action[cmd])
-                        {
-                            let sensorNameMin = sensorName + "Min";
-                            let sensorNameMax = sensorName + "Max";
-                            if (!(sensorNameMin in serObj) && !(sensorNameMax in serObj))
-                            {
-                                let newSerMin = this.addSeries(sensorNameMin, sensorNameMin);
-                                serObj[sensorNameMin] = newSerMin;
-                                newSerMin.hide();
-
-                                let newSerMax = this.addSeries(sensorNameMax, sensorNameMax);
-                                serObj[sensorNameMax] = newSerMax;
-                                newSerMax.hide();
-                            }
-                            this.addSingleData(serObj[sensorNameMin], time, action[cmd][sensorName][0]);
-                            this.addSingleData(serObj[sensorNameMax], time, action[cmd][sensorName][1]);
-                        }
+                        // for (let sensorName in action[cmd])
+                        // {
+                        //     let sensorNameMin = sensorName + "Min";
+                        //     let sensorNameMax = sensorName + "Max";
+                        //     if (!(sensorNameMin in serObj) && !(sensorNameMax in serObj))
+                        //     {
+                        //         let newSerMin = this.addSeries(sensorNameMin, sensorNameMin);
+                        //         serObj[sensorNameMin] = newSerMin;
+                        //         newSerMin.hide();
+                        //
+                        //         let newSerMax = this.addSeries(sensorNameMax, sensorNameMax);
+                        //         serObj[sensorNameMax] = newSerMax;
+                        //         newSerMax.hide();
+                        //     }
+                        //     this.addSingleData(serObj[sensorNameMin], time, action[cmd][sensorName][0]);
+                        //     this.addSingleData(serObj[sensorNameMax], time, action[cmd][sensorName][1]);
+                        // }
                     }
                     else if (cmd !== "timestamp")
                     {
