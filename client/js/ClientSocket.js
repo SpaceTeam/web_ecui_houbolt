@@ -207,6 +207,10 @@ var endTime;
 var timeMillis;
 var intervalMillis;
 var intervalDelegate;
+
+var countdownTime;
+var countdownIntervalDelegate;
+
 function timerTick()
 {
     console.log(timeMillis);
@@ -247,9 +251,12 @@ function sequenceButtonStop()
 
 function abortSequence(abortMsg)
 {
+    clearInterval(countdownIntervalDelegate);
+
     seqChart.stop();
 
     clearInterval(intervalDelegate);
+
     $('#timer').css("color", "red");
     socket.emit('abort');
 
@@ -283,6 +290,20 @@ function emptySensorCharts()
     {
         jsonSensors[sensorName].chart.removeContent();
     }
+}
+
+function countdownTimerTick()
+{
+    if (countdownTime < 0 && countdownTime >= -10)
+    {
+        responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
+    }
+    else if (countdownTime === 0)
+    {
+        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+        clearInterval(countdownIntervalDelegate);
+    }
+    countdownTime += 1;
 }
 
 socket.on('abort', function(abortMsg) {
@@ -374,7 +395,7 @@ socket.on('sequence-start', function() {
     emptySensorCharts();
     isContinousTransmission = false;
 
-    responsiveVoice.speak("starting sequence", "US English Female", {rate: 1});
+    //responsiveVoice.speak("starting sequence", "US English Female", {rate: 1});
 
     $('#toggleSequenceButton').text("Abort Sequence");
     $('#timer').css("color", "green");
@@ -389,6 +410,11 @@ socket.on('timer-start', function () {
     endTime = jsonSequence.globals.endTime;
     responsiveVoice.enableEstimationTimeout = false;
 
+    countdownTime = jsonSequence.globals.startTime;
+    countdownTimerTick();
+    countdownIntervalDelegate = setInterval(countdownTimerTick, 1000);
+
+    timerTick();
     intervalDelegate = setInterval(timerTick, intervalMillis);
 });
 
@@ -397,14 +423,14 @@ socket.on('sequence-sync', function(time) {
     timeMillis = time * 1000;
     console.log(timeMillis);
 
-    if (time < 0 && time >= -5)
-    {
-        responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.2});
-    }
-    else if (time === 0)
-    {
-        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-    }
+    // if (time < 0 && time >= -5)
+    // {
+    //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.4});
+    // }
+    // else if (time === 0)
+    // {
+    //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.4});
+    // }
     // clearInterval(intervalDelegate);
     // if (timeMillis < endTime*1000) {
     //      intervalDelegate = setInterval(timerTick, intervalMillis);
