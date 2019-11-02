@@ -138,7 +138,10 @@ var onAbortAll = function(ioClient, abortMsg)
         sequenceRunning = false;
 
         setTimeout(function () {
-            llServerMod.sendMessage(llServer, 'sensors-start');
+            if (!sequenceRunning)
+            {
+                llServerMod.sendMessage(llServer, 'sensors-start');
+            }
         }, 3500);
     }
 }
