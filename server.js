@@ -106,7 +106,10 @@ var onSequenceDone = function (ioClient) {
     sequenceRunning = false;
 
     setTimeout(function () {
-            llServerMod.sendMessage(llServer, 'sensors-start');
+            if (!sequenceRunning)
+            {
+                llServerMod.sendMessage(llServer, 'sensors-start');
+            }
         }, 3500);
 }
 
@@ -119,7 +122,10 @@ var onAbort = function (ioClient, socket) {
         llServerMod.sendMessage(llServer, 'abort');
 
         setTimeout(function () {
-            llServerMod.sendMessage(llServer, 'sensors-start');
+            if (!sequenceRunning)
+            {
+                llServerMod.sendMessage(llServer, 'sensors-start');
+            }
         }, 3500);
     }
 }
