@@ -7,6 +7,14 @@ socket.on('connect', function() {socket.emit('checklist-start')});
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
 socket.on('connect_error', function(error) {console.log(error)});
 
+document.onkeydown = function () {
+    var seqButton = $('#toggleSequenceButton');
+    if (seqButton.text() === 'Abort Sequence')
+    {
+        seqButton.click();
+    }
+};
+
 $('#toggleSequenceButton').click(function()
 {
     if ($(this).text() === 'Start Sequence')
@@ -195,6 +203,24 @@ function onServoEnable(checkbox) {
         socket.emit('servos-disable');
     }
 }
+
+var llServerConnectionActive = false;
+
+function checkConnection()
+{
+    if (llServerConnectionActive)
+    {
+        $('#statusBar').css("background-color","transparent");
+        $('#statusBar').text(null);
+    }
+    else
+    {
+        $('#statusBar').css("background-color","#FFCD00");
+        $('#statusBar').text("No Connection to LLServer");
+    }
+}
+
+setInterval(function(){checkConnection();llServerConnectionActive = false;}, 4000);
 
 var jsonSequence;
 var jsonSensors = {};
@@ -464,6 +490,9 @@ socket.on('sequence-done', function() {
 
 socket.on('sensors', function(jsonSens) {
     console.log('sensors');
+
+    llServerConnectionActive = true;
+    checkConnection();
 
     for (let sensorInd in jsonSens)
     {
