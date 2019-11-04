@@ -491,8 +491,11 @@ socket.on('sequence-done', function() {
 socket.on('sensors', function(jsonSens) {
     console.log('sensors');
 
-    llServerConnectionActive = true;
-    checkConnection();
+    if (!llServerConnectionActive)
+    {
+        llServerConnectionActive = true;
+        checkConnection();
+    }
 
     for (let sensorInd in jsonSens)
     {
