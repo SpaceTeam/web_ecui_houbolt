@@ -186,7 +186,22 @@ ioClient.on('connection', function(socket){
     clientsCount++;
     if (clientsCount === 1)
     {
-        llServerMod.sendMessage(llServer, 'sensors-start');
+        if (llServer === undefined)
+        {
+            //CAUSES SEGMENTATION FAULT ON LLSERVER
+            // var intDel = setInterval(function () {
+            //     if (llServer !== undefined)
+            //     {
+            //         llServerMod.sendMessage(llServer, 'sensors-start');
+            //         clearInterval(intDel);
+            //     }
+            // }, 1000);
+        }
+        else
+        {
+            llServerMod.sendMessage(llServer, 'sensors-start');
+        }
+
     }
     console.log('userID: ' + socket.id + ' userAddress: ' + socket.handshake.address + ' connected');
     // if (master == null)
