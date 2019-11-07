@@ -185,7 +185,7 @@ ioClient.on('connection', function(socket){
 
     clientsCount++;
     console.log(clientsCount);
-    if (clientsCount === 1)
+    if (clientsCount <= 2)
     {
         // if (llServer === undefined)
         // {
