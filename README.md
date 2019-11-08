@@ -24,7 +24,7 @@ To enable all of these features, multiple Software Layers have been developed.
 
 ## Run
 
-To run ECUI first turn it on and connect via an Ethernet Cable from your PC to the Controller
+To run ECUI first turn on the Controller and connect via an Ethernet Cable from your PC to the Controller
 Then open your Terminal (CMD) and open an ssh connection to the raspberry pi
 
 	ssh pi@raspberrypi.local
