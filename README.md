@@ -12,13 +12,43 @@ To enable all of these features, multiple Software Layers have been developed.
 
 ## Table of Contents
 
-1. [Architecture](#architecture)
-2. [Web-Client](#web-client)
-3. [Web-Server](#web-server)
-4. [LLServer](#llserver-low-level-server)
-5. [ECUI-Protocols](#ecui-protocols)
-6. [JSON-Formats](#json-formats)
-7. [Appendix](#appendix)
+1. [Install and Running](#install-and-running)
+2. [Architecture](#architecture)
+3. [Web-Client](#web-client)
+4. [Web-Server](#web-server)
+5. [LLServer](#llserver-low-level-server)
+6. [ECUI-Protocols](#ecui-protocols)
+7. [JSON-Formats](#json-formats)
+8. [Appendix](#appendix)
+
+## Install and Running
+
+To install the ecui, pull both the TXV_ECUI_WEB and the TXV_ECUI_LLServer Repositories. 
+For the WebServer **node** and **Socket.io** are required. 
+For the LLServer you only need gcc and cmake
+If the Warning Light Neopixel is also desired, ask an avionics guy for help
+
+Commands to run the ecui
+
+In the TXV_ECUI_WEB folder execute
+
+	bash install.sh
+	
+and in TXV_ECUI_LLServer, if no console ouputs are required
+
+	bash install.sh
+	
+else exec
+
+	cmake . -DCMAKE_BUILD_TYPE:STRING=Release
+	make -j 3
+	./TXV_ECUI_LLSERVER
+
+if Warning Light is installed execute
+
+	sudo python3 ../warnlight/testapp_sock.py &
+	
+beforehand
 
 
 ## Architecture
@@ -80,16 +110,22 @@ The LLServer is mainly responsible for coordinating the timing between the Seque
 execution of each command. When the program is started, it waits for a server to connect to (Web-Server)
 After that the Web-Server needs to send the LLServer it's current Sequence and Abort Sequence which shall be executed. If there's any other event before that, it may result in a **crash** of the LLServer! 
 
+ - **LLController** main class initializes all required Modules
+ - **LLInterface** represents an abstract Layer for all interfaces to hardware (HcpManager, Warnlight, ...)
  - **Timer** is managing high resolution Clock and fires an event after a specific tick interval
  - **SequenceManager** is responsible to start the timer and handles actions on abort. 
  - **HcpManager** represents an abstract version of the Serial communication with the Hedgehog-Controller  
  - **HcpCommands** defines all Messages there can be sent or received over the HCP Protocol
+ - **EcuiSocket** static class for communicating with json objects; uses the socket class
+ - **Socket** low level socket interface
  - **Serial** is responsible for communicating with the Controller on byte level
- - **Debug** prints to the console and can be enabled or disabled 
+ - **Debug** prints to the console and can be enabled or disabled and logs to file
  - **utils** provides general tools for the Application
- - **Logging** manages Sensor logging during a test run
  - **config** config variables for the program
-
+ - **Warnlight** Controls the neopixel warnlight via socket and a python program
+ - **I2C** communicates with the raspberry pi i2c interface
+ - **Mapping** manages json mapping file
+ 
 Whenever the Sequence is started the server creates a Log file with the current Timestamp as name and logs
 sensor data in a specific sample rate, which can be specified in the config file. 
 
@@ -126,6 +162,8 @@ For TCP Sockets this is not the case. For consistency a message over TCP Sockets
 | sequence-start | none | starts the sequence |
 | sequence-save | [JSON Sequence Format](#sequence-format) | tells server to save this json as new Sequence |
 | abortSequence-save | [JSON Abort Sequence Format](#abort-sequence-format) | tells server to save this json as new Abort Sequence |
+| sensors-start | none | tells WebServer that it shall send all sensors periodically | 
+| sensors-stop | none | tells WebServer that it shall stop sending all sensors | 
 | servos-enable | none | enables all servos |
 | servos-disable | none | disables all servos |
 | servos-calibrate | [JSON Servos Calibrate Format](#servos-calibrate-format) | set new min or max position for an array of servos |
@@ -174,6 +212,8 @@ These messages are sent from the Server to each connected client
 |--|--|--|
 | abort | none | abort Sequence if running and start Abort Sequence automatically |
 | sequence-start | [JSON Sequence Start Format](#sequence-start-format) | tells LLServer that it shall start the Sequence which is transmitted with this message |
+| sensors-start | none | tells LLServer that it shall send all sensors periodically | 
+| sensors-stop | none | tells LLServer that it shall stop sending all sensors | 
 | servos-load | none | tells LLServer that it shall send all servo names and min and max values | 
 | servos-enable | none | enables all servos |
 | servos-disable | none | disables all servos |
@@ -396,4 +436,3 @@ The Mapping is necessary to map each Device to a port on the Hedgehog Controller
 # Appendix
 
 The LLServer is designed to enable a switch of any Micro-Controller, but the Interface has to be implemented first.
-
