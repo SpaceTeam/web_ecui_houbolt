@@ -145,7 +145,7 @@
                             </div>
                         </div>
                     </label>
-                    <input id="fuelCal" class="manual-obj" type="number" value="0" data-decimals="0" min="0"
+                    <input id="fuelCal" class="manual-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
@@ -170,8 +170,8 @@
                             </div>
                         </div>
                     </label>
-                    <input id="oxidizerCal" class="manual-obj" type="number" value="0" min="0" step="1"
-                           onchange="onServoSpinnerChange($(this));" disabled/>
+                    <input id="oxidizerCal" class="manual-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                           step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
                     <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerMin"
