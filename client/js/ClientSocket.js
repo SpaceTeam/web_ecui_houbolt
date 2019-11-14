@@ -9,6 +9,7 @@ socket.on('connect_error', function(error) {console.log(error)});
 
 document.onkeydown = function () {
     var seqButton = $('#toggleSequenceButton');
+    console.log(seqButton.text());
     if (seqButton.text() === 'Abort Sequence')
     {
         seqButton.click();

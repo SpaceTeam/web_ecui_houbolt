@@ -185,24 +185,22 @@ ioClient.on('connection', function(socket){
 
     clientsCount++;
     console.log(clientsCount);
-    if (clientsCount <= 2)
+    if (clientsCount === 1)
     {
-        // if (llServer === undefined)
-        // {
-        //     //CAUSES SEGMENTATION FAULT ON LLSERVER
-        //     // var intDel = setInterval(function () {
-        //     //     if (llServer !== undefined)
-        //     //     {
-        //     //         llServerMod.sendMessage(llServer, 'sensors-start');
-        //     //         clearInterval(intDel);
-        //     //     }
-        //     // }, 1000);
-        // }
-        // else
-        // {
-        //     llServerMod.sendMessage(llServer, 'sensors-start');
-        // }
-        llServerMod.sendMessage(llServer, 'sensors-start');
+        if (llServer === undefined)
+        {
+            var intDel = setInterval(function () {
+                if (llServer !== undefined)
+                {
+                    llServerMod.sendMessage(llServer, 'sensors-start');
+                    clearInterval(intDel);
+                }
+            }, 1000);
+        }
+        else
+        {
+            llServerMod.sendMessage(llServer, 'sensors-start');
+        }
 
     }
     console.log('userID: ' + socket.id + ' userAddress: ' + socket.handshake.address + ' connected');
@@ -212,7 +210,11 @@ ioClient.on('connection', function(socket){
     //     master = socket.handshake.address;
     // }
     //choose last one connected for testing
-    master = socket.id;
+    if (master === null)
+    {
+        master = socket.id;
+    }
+
 
     //send new socket up to date sequence
     let jsonSeq = sequenceManMod.loadSequence();
@@ -232,9 +234,8 @@ ioClient.on('connection', function(socket){
 
     socket.on('checklist-start', function(msg){
         console.log('checklist-start');
-        if (master === socket.id) {
-            eventEmitter.emit('onChecklistStart', ioClient, socket);
-        }
+        //everyone is allowed to call for checklist
+        eventEmitter.emit('onChecklistStart', ioClient, socket);
     });
 
     socket.on('checklist-save', function(msg){
@@ -328,6 +329,7 @@ ioClient.on('connection', function(socket){
             {
                 eventEmitter.emit('onAbort', ioClient, socket);
             }
+            master = null;
         }
         clientsCount--;
         if (clientsCount === 0)
