@@ -1,4 +1,7 @@
 {
+    "globals": {
+        "endTime": 3.2
+    },
     "actions" : {
         "fuel": 0,
         "igniter": 0,
