@@ -296,7 +296,7 @@ function abortSequence(abortMsg)
     setTimeout(function () {
             emptySensorCharts();
             isContinousTransmission = true;
-        }, 3000);
+        }, jsonAbortSequence.globals.endTime*1000+200);
 
     $('#toggleSequenceButton').attr("disabled", true);
     setTimeout(function () {
