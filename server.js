@@ -69,8 +69,10 @@ var onChecklistDone = function (ioClient, socket) {
 
     //send everyone up to date sequence
     let jsonSeq = sequenceManMod.loadSequence();
-    console.log(jsonSeq)
-    ioClient.emit('sequence-load', jsonSeq);
+    let jsonAbortSeq = sequenceManMod.loadAbortSequence();
+    console.log(jsonSeq);
+    console.log(jsonAbortSeq);
+    ioClient.emit('sequence-load', [jsonSeq, jsonAbortSeq]);
 }
 
 var onSequenceStart = function (ioClient, socket) {
@@ -218,7 +220,8 @@ ioClient.on('connection', function(socket){
 
     //send new socket up to date sequence
     let jsonSeq = sequenceManMod.loadSequence();
-    socket.emit('sequence-load', jsonSeq);
+    let jsonAbortSeq = sequenceManMod.loadAbortSequence();
+    socket.emit('sequence-load', [jsonSeq, jsonAbortSeq]);
 
     //send new socket up to date servo end positions
     llServerMod.sendMessage(llServer, 'servos-load');

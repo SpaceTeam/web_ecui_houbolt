@@ -223,7 +223,8 @@ function checkConnection()
 
 setInterval(function(){checkConnection();llServerConnectionActive = false;}, 4000);
 
-var jsonSequence;
+var jsonSequence = {};
+var jsonAbortSequence = {};
 var jsonSensors = {};
 var checklistLoaded = false;
 var isContinousTransmission = true;
@@ -296,6 +297,11 @@ function abortSequence(abortMsg)
             emptySensorCharts();
             isContinousTransmission = true;
         }, 3000);
+
+    $('#toggleSequenceButton').attr("disabled", true);
+    setTimeout(function () {
+        $('#toggleSequenceButton').removeAttr("disabled");
+    }, jsonAbortSequence.globals.endTime*1000);
 
     seqChart.reset();
     seqChart.loadSequenceChart(jsonSequence);
@@ -396,21 +402,23 @@ socket.on('checklist-done', function() {
     $('#toggleSequenceButton').removeAttr('hidden');
 });
 
-socket.on('sequence-load', function(jsonSeq) {
+socket.on('sequence-load', function(jsonSeqs) {
 
-    jsonSequence = jsonSeq;
+    console.log("why");
+    jsonSequence = jsonSeqs[0];
+    jsonAbortSequence = jsonSeqs[1];
 
-    $('#timer').text(jsonSeq.globals.startTime);
-    if (Number.isInteger(jsonSeq.globals.startTime))
+    $('#timer').text(jsonSequence.globals.startTime);
+    if (Number.isInteger(jsonSequence.globals.startTime))
     {
         $('#timer').append('.0')
     }
     $('#timer').css("color", "green");
     console.log('sequence-load:');
-    console.log(jsonSeq);
+    console.log(jsonSequence);
 
     console.log(seqChart.chart.data);
-    seqChart.loadSequenceChart(jsonSeq);
+    seqChart.loadSequenceChart(jsonSequence);
     console.log(seqChart.chart.data);
 
 });
@@ -482,9 +490,11 @@ socket.on('sequence-done', function() {
     seqChart.loadSequenceChart(jsonSequence);
     console.log(seqChart.chart.data);
 
+    $('#toggleSequenceButton').attr("disabled", true);
     setTimeout(function () {
             emptySensorCharts();
             isContinousTransmission = true;
+            $('#toggleSequenceButton').removeAttr("disabled");
         }, 3000);
 
 });
