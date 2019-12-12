@@ -427,8 +427,10 @@ socket.on('sequence-start', function() {
     console.log('sequence-start:');
 
     //empty sensor chart div first
-    emptySensorCharts();
-    isContinousTransmission = false;
+    setTimeout(function () {
+        emptySensorCharts();
+        isContinousTransmission = false;
+    }, 200);
 
     //responsiveVoice.speak("starting sequence", "US English Female", {rate: 1});
 
