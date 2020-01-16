@@ -45,6 +45,7 @@
 </div>
 
 <div>
+<div id="statusBar"></div>
 <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
     <li class="nav-item">
         <a class="nav-link active tab-button" id="monitor-tab-button" data-toggle="tab" href="#sequence-tab" role="tab"
@@ -144,15 +145,15 @@
                             </div>
                         </div>
                     </label>
-                    <input id="fuelCal" class="manual-obj" type="number" value="0" data-decimals="0" min="0"
+                    <input id="fuelCal" class="manual-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
                     <button class="btn btn-secondary cal-btn manual-obj" id="fuelMin"
-                            onclick="onCalibrateMin($(this));" disabled>Set Min
+                            onclick="onCalibrateMin($(this));" disabled>Set Close
                     </button>
                     <button class="btn btn-secondary cal-btn manual-obj" id="fuelMax"
-                            onclick="onCalibrateMax($(this));" disabled>Set Max
+                            onclick="onCalibrateMax($(this));" disabled>Set Open
                     </button>
                 </div>
             </div>
@@ -169,15 +170,15 @@
                             </div>
                         </div>
                     </label>
-                    <input id="oxidizerCal" class="manual-obj" type="number" value="0" min="0" step="1"
-                           onchange="onServoSpinnerChange($(this));" disabled/>
+                    <input id="oxidizerCal" class="manual-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                           step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
                     <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerMin"
-                            onclick="onCalibrateMin($(this));" disabled>Set Min
+                            onclick="onCalibrateMin($(this));" disabled>Set Close
                     </button>
                     <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerMax"
-                            onclick="onCalibrateMax($(this));" disabled>Set Max
+                            onclick="onCalibrateMax($(this));" disabled>Set Open
                     </button>
                 </div>
             </div>
@@ -188,7 +189,9 @@
 
 </div>
 </div>
-<div id="sensorChartDiv"></div>
+<div id="sensorChartDiv">
+    <button class="btn btn-secondary" id="resetButton" style="margin-left: 2rem; margin-top: -2rem;">Reset Sensor Charts</button><br>
+</div>
 
 
 <script src="/socket.io/socket.io.js"></script>

@@ -12,16 +12,52 @@ To enable all of these features, multiple Software Layers have been developed.
 
 ## Table of Contents
 
-1. [Install and Running](#install-and-running)
-2. [Architecture](#architecture)
-3. [Web-Client](#web-client)
-4. [Web-Server](#web-server)
-5. [LLServer](#llserver-low-level-server)
-6. [ECUI-Protocols](#ecui-protocols)
-7. [JSON-Formats](#json-formats)
-8. [Appendix](#appendix)
+1. [Run](#run)
+2. [Install](#install)
+3. [Architecture](#architecture)
+4. [Web-Client](#web-client)
+5. [Web-Server](#web-server)
+6. [LLServer](#llserver-low-level-server)
+7. [ECUI-Protocols](#ecui-protocols)
+8. [JSON-Formats](#json-formats)
+9. [Appendix](#appendix)
 
-## Install and Running
+## Run
+
+To run ECUI first turn on the Controller and connect via an Ethernet Cable from your PC to the Controller
+Then open your Terminal (CMD) and open an ssh connection to the raspberry pi
+
+	ssh pi@raspberrypi.local
+	
+Password is raspberry
+Then change to the LLServer directory
+
+	cd TXV_ECUI_LLServer/
+	./TXV_ECUI_LLSERVER
+	
+If something goes wrong you can restart it with
+
+	./TXV_ECUI_LLSERVER
+	
+After that you can go into Google Chrome and type in the search bar
+
+	raspberrypi.local:3000
+	
+To edit a Sequence or Checklist open FileZilla on your PC and connect to the ECUI
+Then open the TXV_ECUI_WEB -> sequence folder and Rightclick on 
+Sequence.json or Checklist.json and and choose edit
+
+then you can edit the sequence or checklist
+
+when you're done press STRG+S and go back to FileZilla. Choose "Delete Local File and upload" and click Yes
+then you can refresh the Webpage in the Browser.
+
+To view the logs go in FileZilla into the TXV_ECUI_LLServer -> logs folder and download the desired log file
+	
+	
+
+## Install
+>>>>>>> dev
 
 To install the ecui, pull both the TXV_ECUI_WEB and the TXV_ECUI_LLServer Repositories. 
 For the WebServer **node** and **Socket.io** are required. 
@@ -436,4 +472,3 @@ The Mapping is necessary to map each Device to a port on the Hedgehog Controller
 # Appendix
 
 The LLServer is designed to enable a switch of any Micro-Controller, but the Interface has to be implemented first.
-

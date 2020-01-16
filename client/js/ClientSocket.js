@@ -7,6 +7,15 @@ socket.on('connect', function() {socket.emit('checklist-start')});
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
 socket.on('connect_error', function(error) {console.log(error)});
 
+document.onkeydown = function () {
+    var seqButton = $('#toggleSequenceButton');
+    console.log(seqButton.text());
+    if (seqButton.text() === 'Abort Sequence')
+    {
+        seqButton.click();
+    }
+};
+
 $('#toggleSequenceButton').click(function()
 {
     if ($(this).text() === 'Start Sequence')
@@ -22,7 +31,7 @@ $('#toggleSequenceButton').click(function()
     }
     else if ($(this).text() === 'Abort Sequence')
     {
-        abortSequence();
+        abortSequence("abort from user");
         $(this).text('Start Sequence');
         $('.tab-button').each(function () {
             if ($(this).id !== "monitor-tab-button")
@@ -44,6 +53,9 @@ $('#saftlButton').click(function() {
     })
 });
 
+$('#resetButton').click(function() {
+    emptySensorCharts();
+});
 
 function onServoSpinnerChange(spinner) {
 
@@ -193,9 +205,29 @@ function onServoEnable(checkbox) {
     }
 }
 
-var jsonSequence;
+var llServerConnectionActive = false;
+
+function checkConnection()
+{
+    if (llServerConnectionActive)
+    {
+        $('#statusBar').css("background-color","transparent");
+        $('#statusBar').text(null);
+    }
+    else
+    {
+        $('#statusBar').css("background-color","#FFCD00");
+        $('#statusBar').text("No Connection to LLServer");
+    }
+}
+
+setInterval(function(){checkConnection();llServerConnectionActive = false;}, 4000);
+
+var jsonSequence = {};
+var jsonAbortSequence = {};
 var jsonSensors = {};
 var checklistLoaded = false;
+var isContinousTransmission = true;
 
 var seqChart = new SequenceChart("sequenceChart", "Sequence");
 
@@ -203,36 +235,73 @@ var endTime;
 var timeMillis;
 var intervalMillis;
 var intervalDelegate;
+
+var countdownTime;
+var countdownIntervalDelegate;
+
 function timerTick()
 {
     console.log(timeMillis);
-    $('#timer').text(timeMillis/1000);
+    let time = timeMillis/1000;
+    $('#timer').text(time);
 
-    if (Number.isInteger(timeMillis/1000))
+    if (Number.isInteger(time))
     {
-        if (timeMillis/1000 < 0)
-        {
-            //responsiveVoice.speak(Math.abs(timeMillis/1000).toString(), "US English Female", {rate: 1.2});
-        }
-        else if (timeMillis/1000 === 0)
-        {
-            ////responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
-            //responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-        }
+        // if (time < 0 && time >= -5)
+        // {
+        //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.2});
+        // }
+        // else if (time === 0)
+        // {
+        //     ////responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
+        //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+        // }
         $('#timer').append('.0');
     }
+
     seqChart.update(timeMillis);
 
     timeMillis += intervalMillis;
 }
 
-function abortSequence()
+function sequenceButtonStop()
 {
+    $('#toggleSequenceButton').text("Start Sequence");
+
+    //disable all other tabs
+    $('.tab-button').each(function () {
+        if ($(this).id !== "monitor-tab-button")
+        {
+            $(this).prop('disabled', false);
+        }
+    });
+}
+
+function abortSequence(abortMsg)
+{
+    clearInterval(countdownIntervalDelegate);
+
     seqChart.stop();
 
     clearInterval(intervalDelegate);
+
     $('#timer').css("color", "red");
     socket.emit('abort');
+
+    sequenceButtonStop();
+
+    setTimeout(function () {
+            responsiveVoice.speak(abortMsg, "US English Female", {rate: 1.0});
+        }, 1000);
+    setTimeout(function () {
+            emptySensorCharts();
+            isContinousTransmission = true;
+        }, jsonAbortSequence.globals.endTime*1000+500);
+
+    $('#toggleSequenceButton').attr("disabled", true);
+    setTimeout(function () {
+        $('#toggleSequenceButton').removeAttr("disabled");
+    }, jsonAbortSequence.globals.endTime*1000);
 
     seqChart.reset();
     seqChart.loadSequenceChart(jsonSequence);
@@ -248,11 +317,32 @@ function onChecklistTick(checkbox)
     socket.emit('checklist-tick', currId);
 }
 
-socket.on('abort', function() {
+function emptySensorCharts()
+{
+    for (let sensorName in jsonSensors)
+    {
+        jsonSensors[sensorName].chart.removeContent();
+    }
+}
+
+function countdownTimerTick()
+{
+    if (countdownTime < 0 && countdownTime >= -10)
+    {
+        responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
+    }
+    else if (countdownTime === 0)
+    {
+        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+        clearInterval(countdownIntervalDelegate);
+    }
+    countdownTime += 1;
+}
+
+socket.on('abort', function(abortMsg) {
     console.log('abort');
 
-    abortSequence();
-
+    abortSequence(abortMsg);
 });
 
 socket.on('servos-load', function(jsonServosData) {
@@ -312,21 +402,23 @@ socket.on('checklist-done', function() {
     $('#toggleSequenceButton').removeAttr('hidden');
 });
 
-socket.on('sequence-load', function(jsonSeq) {
+socket.on('sequence-load', function(jsonSeqs) {
 
-    jsonSequence = jsonSeq;
+    console.log("why");
+    jsonSequence = jsonSeqs[0];
+    jsonAbortSequence = jsonSeqs[1];
 
-    $('#timer').text(jsonSeq.globals.startTime);
-    if (Number.isInteger(jsonSeq.globals.startTime))
+    $('#timer').text(jsonSequence.globals.startTime);
+    if (Number.isInteger(jsonSequence.globals.startTime))
     {
         $('#timer').append('.0')
     }
     $('#timer').css("color", "green");
     console.log('sequence-load:');
-    console.log(jsonSeq);
+    console.log(jsonSequence);
 
     console.log(seqChart.chart.data);
-    seqChart.loadSequenceChart(jsonSeq);
+    seqChart.loadSequenceChart(jsonSequence);
     console.log(seqChart.chart.data);
 
 });
@@ -335,14 +427,15 @@ socket.on('sequence-start', function() {
     console.log('sequence-start:');
 
     //empty sensor chart div first
-    for (let sensorName in jsonSensors)
-    {
-        jsonSensors[sensorName].chart.removeContent();
-    }
+    setTimeout(function () {
+        emptySensorCharts();
+        isContinousTransmission = false;
+    }, 200);
+
+    //responsiveVoice.speak("starting sequence", "US English Female", {rate: 1});
 
     $('#toggleSequenceButton').text("Abort Sequence");
     $('#timer').css("color", "green");
-
 
     seqChart.start();
 });
@@ -354,14 +447,11 @@ socket.on('timer-start', function () {
     endTime = jsonSequence.globals.endTime;
     responsiveVoice.enableEstimationTimeout = false;
 
-    if (timeMillis/1000 === 0)
-    {
-        //responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-    }
-    else {
-        //responsiveVoice.speak(Math.abs(timeMillis / 1000).toString(), "US English Female", {rate: 1.2});
-    }
+    countdownTime = jsonSequence.globals.startTime;
+    countdownTimerTick();
+    countdownIntervalDelegate = setInterval(countdownTimerTick, 1000);
 
+    timerTick();
     intervalDelegate = setInterval(timerTick, intervalMillis);
 });
 
@@ -369,6 +459,15 @@ socket.on('sequence-sync', function(time) {
     console.log('sequence-sync:');
     timeMillis = time * 1000;
     console.log(timeMillis);
+
+    // if (time < 0 && time >= -5)
+    // {
+    //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.4});
+    // }
+    // else if (time === 0)
+    // {
+    //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.4});
+    // }
     // clearInterval(intervalDelegate);
     // if (timeMillis < endTime*1000) {
     //      intervalDelegate = setInterval(timerTick, intervalMillis);
@@ -387,24 +486,29 @@ socket.on('sequence-done', function() {
     {
         $('#timer').append('.0');
     }
-    $('#toggleSequenceButton').text("Start Sequence");
-
-    //disable all other tabs
-    $('.tab-button').each(function () {
-        if ($(this).id !== "monitor-tab-button")
-        {
-            $(this).prop('disabled', false);
-        }
-    });
+    sequenceButtonStop();
 
     seqChart.reset();
     seqChart.loadSequenceChart(jsonSequence);
     console.log(seqChart.chart.data);
 
+    $('#toggleSequenceButton').attr("disabled", true);
+    setTimeout(function () {
+            emptySensorCharts();
+            isContinousTransmission = true;
+            $('#toggleSequenceButton').removeAttr("disabled");
+        }, 3000);
+
 });
 
 socket.on('sensors', function(jsonSens) {
     console.log('sensors');
+
+    if (!llServerConnectionActive)
+    {
+        llServerConnectionActive = true;
+        checkConnection();
+    }
 
     for (let sensorInd in jsonSens)
     {
@@ -439,7 +543,7 @@ socket.on('sensors', function(jsonSens) {
             jsonSensors[jsonSen.name] = sensor;
 
         }
-        sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value);
+        sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value, isContinousTransmission);
     }
 
 });

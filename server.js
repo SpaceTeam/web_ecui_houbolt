@@ -4,6 +4,7 @@ const path = __dirname + '/client/';
 var app = express();
 var http = require('http').Server(app);
 var ioClient = require('socket.io')(http);
+var clientsCount = 0;
 var port = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/client/'));
@@ -68,8 +69,10 @@ var onChecklistDone = function (ioClient, socket) {
 
     //send everyone up to date sequence
     let jsonSeq = sequenceManMod.loadSequence();
-    console.log(jsonSeq)
-    ioClient.emit('sequence-load', jsonSeq);
+    let jsonAbortSeq = sequenceManMod.loadAbortSequence();
+    console.log(jsonSeq);
+    console.log(jsonAbortSeq);
+    ioClient.emit('sequence-load', [jsonSeq, jsonAbortSeq]);
 }
 
 var onSequenceStart = function (ioClient, socket) {
@@ -103,6 +106,13 @@ var onSequenceDone = function (ioClient) {
     console.log('sequence done');
     ioClient.emit('sequence-done');
     sequenceRunning = false;
+
+    setTimeout(function () {
+            if (!sequenceRunning)
+            {
+                llServerMod.sendMessage(llServer, 'sensors-start');
+            }
+        }, 3500);
 }
 
 var onAbort = function (ioClient, socket) {
@@ -112,15 +122,35 @@ var onAbort = function (ioClient, socket) {
         sequenceRunning = false;
 
         llServerMod.sendMessage(llServer, 'abort');
+
+        setTimeout(function () {
+            if (!sequenceRunning)
+            {
+                llServerMod.sendMessage(llServer, 'sensors-start');
+            }
+        }, 3500);
     }
 }
 
-var onAbortAll = function(ioClient)
+var onAbortAll = function(ioClient, abortMsg)
 {
     if (sequenceRunning) {
-        ioClient.emit('abort');
+        if (abortMsg !== undefined && abortMsg !== "")
+        {
+            ioClient.emit('abort', abortMsg);
+        }
+        else
+        {
+            ioClient.emit('abort');
+        }
         sequenceRunning = false;
 
+        setTimeout(function () {
+            if (!sequenceRunning)
+            {
+                llServerMod.sendMessage(llServer, 'sensors-start');
+            }
+        }, 3500);
     }
 }
 
@@ -155,6 +185,26 @@ var master = null;
 
 ioClient.on('connection', function(socket){
 
+    clientsCount++;
+    console.log(clientsCount);
+    if (clientsCount === 1)
+    {
+        if (llServer === undefined)
+        {
+            var intDel = setInterval(function () {
+                if (llServer !== undefined)
+                {
+                    llServerMod.sendMessage(llServer, 'sensors-start');
+                    clearInterval(intDel);
+                }
+            }, 1000);
+        }
+        else
+        {
+            llServerMod.sendMessage(llServer, 'sensors-start');
+        }
+
+    }
     console.log('userID: ' + socket.id + ' userAddress: ' + socket.handshake.address + ' connected');
     // if (master == null)
     // {
@@ -162,11 +212,16 @@ ioClient.on('connection', function(socket){
     //     master = socket.handshake.address;
     // }
     //choose last one connected for testing
-    master = socket.id;
+    if (master === null)
+    {
+        master = socket.id;
+    }
+
 
     //send new socket up to date sequence
     let jsonSeq = sequenceManMod.loadSequence();
-    socket.emit('sequence-load', jsonSeq);
+    let jsonAbortSeq = sequenceManMod.loadAbortSequence();
+    socket.emit('sequence-load', [jsonSeq, jsonAbortSeq]);
 
     //send new socket up to date servo end positions
     llServerMod.sendMessage(llServer, 'servos-load');
@@ -182,9 +237,8 @@ ioClient.on('connection', function(socket){
 
     socket.on('checklist-start', function(msg){
         console.log('checklist-start');
-        if (master === socket.id) {
-            eventEmitter.emit('onChecklistStart', ioClient, socket);
-        }
+        //everyone is allowed to call for checklist
+        eventEmitter.emit('onChecklistStart', ioClient, socket);
     });
 
     socket.on('checklist-save', function(msg){
@@ -278,6 +332,12 @@ ioClient.on('connection', function(socket){
             {
                 eventEmitter.emit('onAbort', ioClient, socket);
             }
+            master = null;
+        }
+        clientsCount--;
+        if (clientsCount === 0)
+        {
+            llServerMod.sendMessage(llServer, 'sensors-stop');
         }
     });
 });
@@ -320,7 +380,6 @@ function processLLServerMessage(data) {
                 eventEmitter.emit('onSequenceDone', ioClient);
                 break;
             case "sensors":
-                console.log("sensors");
                 ioClient.emit('sensors', jsonData.content);
                 break;
             case "servos-load":
@@ -329,7 +388,7 @@ function processLLServerMessage(data) {
                 break;
             case "abort":
                 console.log("abort from llserver");
-                eventEmitter.emit('onAbortAll', ioClient);
+                eventEmitter.emit('onAbortAll', ioClient, jsonData.content);
                 break;
 
         }

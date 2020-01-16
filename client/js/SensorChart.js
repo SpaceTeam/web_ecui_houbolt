@@ -26,9 +26,11 @@ class SensorChart
         this.xAxis = this.chart.xAxes.push(new am4charts.DurationAxis());
         this.yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
 
+        this.xAxis.renderer.minGridDistance = 30;
         this.xAxis.dataFields.category = "time";
         this.xAxis.baseUnit = "millisecond";
 
+        //this.chart.maxZoomLevel = 1;
         // Add legend
         this.chart.legend = new am4charts.Legend();
 
@@ -62,22 +64,22 @@ class SensorChart
         //series.stroke = strokeColor;
         series.fill = strokeColor;
         //series.tooltip.background.fill = strokeColor;
-        var range = this.xAxis.createSeriesRange(series);
-        range.value = 10000;
-        range.endValue = 20000;
+        // var range = this.xAxis.createSeriesRange(series);
+        // range.value = 10000;
+        // range.endValue = 20000;
 
         var nextColor = this.amColorSet.next();
         series.stroke = nextColor;
         series.tooltip.background.fill = nextColor;
 
         // Make bullets grow on hover
-        var bullet = series.bullets.push(new am4charts.CircleBullet());
-        bullet.circle.strokeWidth = 2;
-        bullet.circle.radius = 4;
-        bullet.circle.fill = am4core.color("#fff");
-
-        var bullethover = bullet.states.create("hover");
-        bullethover.properties.scale = 1.8;
+        // var bullet = series.bullets.push(new am4charts.CircleBullet());
+        // bullet.circle.strokeWidth = 2;
+        // bullet.circle.radius = 4;
+        // bullet.circle.fill = am4core.color("#fff");
+        //
+        // var bullethover = bullet.states.create("hover");
+        // bullethover.properties.scale = 1.8;
 
         var serObj = {};
         serObj["series"] = series;
@@ -111,8 +113,11 @@ class SensorChart
         //this.chart.scrollbarX = new am4charts.XYChartScrollbar();
         //this.chart.scrollbarX.parent = this.chart.bottomAxesContainer;
 
-        this.chart.scrollbarX = new am4core.Scrollbar();
-        this.chart.scrollbarX.parent = this.chart.bottomAxesContainer;
+
+        // this.chart.scrollbarX = new am4core.Scrollbar();
+        // this.chart.scrollbarX.parent = this.chart.bottomAxesContainer;
+        
+
         // this.chart.events.on("ready", function () {
         //     this.xAxis.zoom({start:0, end:1});
         // });
@@ -123,7 +128,7 @@ class SensorChart
         this.chart.data = [];
     }
 
-    addSingleData(series, valueX, valueY)
+    addSingleData(series, valueX, valueY, removeFirstItem=false)
     {
         var foundIndex = this.chart.data.findIndex(function(element) {
               return (element.time === valueX);
@@ -142,10 +147,20 @@ class SensorChart
         }
         dataObj[series.dataFields.valueY] = valueY;
 
-        this.chart.addData(
+        if (removeFirstItem && this.chart.data.length > 100)
+        {
+            this.chart.addData(
+                    dataObj,
+                    1
+                );
+        }
+        else
+        {
+            this.chart.addData(
                     dataObj,
                     0
                 );
+        }
     }
 
     addData(dataObj)
