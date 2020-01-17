@@ -2,7 +2,12 @@
     "globals": {
         "startTime": -12,
         "endTime": 7,
-        "interval": 0.01
+        "interval": 0.01,
+        "interpolation": {
+            "igniter": "none",
+            "fuel": "none",
+            "oxidizer": "linear"
+        }
     },
     "data": [
         {
