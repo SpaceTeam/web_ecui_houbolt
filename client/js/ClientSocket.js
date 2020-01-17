@@ -149,7 +149,7 @@ function onServosLoad(jsonServosData)
     }
 }
 
-function onIgniterCheck(checkbox)
+function onDigitalCheck(checkbox)
 {
     let id = $(checkbox).attr('id');
 

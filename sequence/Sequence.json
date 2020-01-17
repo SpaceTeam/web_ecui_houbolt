@@ -5,9 +5,12 @@
         "interval": 0.01,
         "interpolation": {
             "igniter": "none",
-            "fuel": "none",
+            "fuel": "linear",
             "oxidizer": "linear"
-        }
+        },
+        "ranges": [
+            "chamberPressure"
+        ]
     },
     "data": [
         {

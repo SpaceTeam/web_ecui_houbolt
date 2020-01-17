@@ -116,10 +116,22 @@
                 </div>
 
             </div>
-            <div class="form-control-lg custom-control custom-checkbox digitalOut-div row control-row">
-                <input type="checkbox" class="custom-control-input ckbx manual-obj" id="igniter"
-                       onclick="onIgniterCheck(this);">
-                <label class="custom-control-label ckbx-label" for="igniter">Igniter</label>
+            <div class="row control-row">
+                <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
+                    <input type="checkbox" class="custom-control-input ckbx manual-obj" id="igniter"
+                           onclick="onDigitalCheck(this);" disabled>
+                    <label class="custom-control-label ckbx-label" for="igniter">Igniter</label>
+                </div>
+                <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
+                    <input type="checkbox" class="custom-control-input ckbx manual-obj" id="solenoidPress"
+                           onclick="onDigitalCheck(this);" disabled>
+                    <label class="custom-control-label ckbx-label" for="solenoidPress">Solenoid Pressure</label>
+                </div>
+                <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
+                    <input type="checkbox" class="custom-control-input ckbx manual-obj" id="solenoidDepress"
+                           onclick="onDigitalCheck(this);" disabled>
+                    <label class="custom-control-label ckbx-label" for="solenoidDepress">Solenoid Depressure</label>
+                </div>
             </div>
 
             <button class="btn btn-secondary cal-btn manual-obj" id="saftlButton" disabled>Saftl</button>
