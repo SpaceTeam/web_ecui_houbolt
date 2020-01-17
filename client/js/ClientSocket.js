@@ -201,6 +201,14 @@ function onServoEnable(checkbox) {
             $(this).prop('disabled', true);
         });
 
+        $('.digitalOut').each(function () {
+            if ($(this).prop("checked") === true)
+            {
+                $(this).prop('checked', false);
+                $(this).click();
+            }
+        });
+
         socket.emit('servos-disable');
     }
 }

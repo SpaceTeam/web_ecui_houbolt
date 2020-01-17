@@ -29,74 +29,24 @@
                 },
                 {
                     "fuel": 0,
-                    "igniter": 0,
-                    "oxidizer": 0,
-                    "timestamp": -1.1
-                },
-		{
-                    "fuel": 0,
-                    "igniter": 0,
-                    "oxidizer": 0,
-                    "timestamp": -1.0
-		},
-		{
-                    "fuel": 0,
-                    "igniter": 0,
                     "oxidizer": 0,
                     "timestamp": 0.0
                 },
-		{
+		        {
                     "igniter": 100,
                     "timestamp": 0.1
                 },
                 {
                     "fuel": 50,
-                    "igniter": 100,
                     "oxidizer": 50,
                     "timestamp": 0.5
                 },
                 {
-                    "igniter": 100,
-                    "timestamp": 0.9
-                },
-                {
-                    "fuel": 100,
-                    "igniter": 100,
-                    "oxidizer": 100,
-                    "sensorsNominalRange" : {
-                        "chamberPressure" : [-5.0, 20.0]
-                    },
-                    "timestamp": 1.0
-                },
-                {
-                    "fuel": 100,
-                    "igniter": 100,
-                    "oxidizer": 100,
-                    "sensorsNominalRange" : {
-                        "chamberPressure" : [5.0, 20.0]
-                    },
-                    "timestamp": 1.1
-                },
-                {
-                    "igniter": 100,
+                    "igniter": 0,
                     "timestamp": 2.5
                 },
                 {
-                    "igniter": 0,
-                    "timestamp": 2.6
-                },
-                {
                     "fuel": 100,
-                    "igniter": 0,
-                    "oxidizer": 100,
-                    "sensorsNominalRange" : {
-                        "chamberPressure" : [5.0, 20.0]
-                    },
-                    "timestamp": 5.9
-                },
-                {
-                    "fuel": 100,
-                    "igniter": 0,
                     "oxidizer": 100,
                     "sensorsNominalRange" : {
                         "chamberPressure" : [-5.0, 20.0]
