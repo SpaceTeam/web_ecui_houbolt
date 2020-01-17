@@ -42,11 +42,39 @@
                     "timestamp": 0.5
                 },
                 {
+                    "fuel": 100,
+                    "igniter": 100,
+                    "oxidizer": 100,
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [-5.0, 20.0]
+                    },
+                    "timestamp": 1.0
+                },
+                {
+                    "fuel": 100,
+                    "igniter": 100,
+                    "oxidizer": 100,
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [5.0, 20.0]
+                    },
+                    "timestamp": 1.1
+                },
+                {
                     "igniter": 0,
                     "timestamp": 2.5
                 },
                 {
                     "fuel": 100,
+                    "igniter": 0,
+                    "oxidizer": 100,
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [5.0, 20.0]
+                    },
+                    "timestamp": 5.9
+                },
+                {
+                    "fuel": 100,
+                    "igniter": 0,
                     "oxidizer": 100,
                     "sensorsNominalRange" : {
                         "chamberPressure" : [-5.0, 20.0]
