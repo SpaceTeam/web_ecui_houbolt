@@ -260,14 +260,20 @@ class SequenceChart
                     else
                     {
                         //todo: make better solution
+                        let y;
                         if (currLiveSeries.constructor.name === "e") //constructor name of Line Series
                         {
                             let scale = (currInt.next.y - currInt.prev.y) / (currInt.next.x - currInt.prev.x);
-                            let y = scale * (time-currInt.prev.x) + currInt.prev.y;
+                            y = scale * (time-currInt.prev.x) + currInt.prev.y;
 
                             //console.log("time: " + time + " scale: " + scale + " y: " + y);
                             this.addSingleData(currLiveSeries, time, y);
                         }
+                        else
+                        {
+                            y = currInt.prev.y;
+                        }
+                        this.addSingleData(currLiveSeries, time, y);
                     }
 
                     let yValueName = this.chart.series.getIndex(serInd).dataFields.valueY;
