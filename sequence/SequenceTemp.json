@@ -2,7 +2,15 @@
     "globals": {
         "startTime": -12,
         "endTime": 7,
-        "interval": 0.01
+        "interval": 0.01,
+        "interpolation": {
+            "igniter": "none",
+            "fuel": "linear",
+            "oxidizer": "linear"
+        },
+        "ranges": [
+            "chamberPressure"
+        ]
     },
     "data": [
         {
@@ -21,35 +29,17 @@
                 },
                 {
                     "fuel": 0,
-                    "igniter": 0,
-                    "oxidizer": 0,
-                    "timestamp": -1.1
-                },
-		{
-                    "fuel": 0,
-                    "igniter": 0,
-                    "oxidizer": 0,
-                    "timestamp": -1.0
-		},
-		{
-                    "fuel": 0,
-                    "igniter": 0,
                     "oxidizer": 0,
                     "timestamp": 0.0
                 },
-		{
+		        {
                     "igniter": 100,
                     "timestamp": 0.1
                 },
                 {
                     "fuel": 50,
-                    "igniter": 100,
                     "oxidizer": 50,
                     "timestamp": 0.5
-                },
-                {
-                    "igniter": 100,
-                    "timestamp": 0.9
                 },
                 {
                     "fuel": 100,
@@ -70,12 +60,8 @@
                     "timestamp": 1.1
                 },
                 {
-                    "igniter": 100,
-                    "timestamp": 2.5
-                },
-                {
                     "igniter": 0,
-                    "timestamp": 2.6
+                    "timestamp": 2.5
                 },
                 {
                     "fuel": 100,

@@ -43,10 +43,23 @@ class SequenceChart
 
     //if indicator then strokecolor must be defined
     //TODO: allow only when live tracking is not running
-    addSeries(seriesName, yValueName, isIndicator=false, strokeColor=undefined)
+    addSeries(seriesName, yValueName, interpolation="none", isIndicator=false, strokeColor=undefined)
     {
         // Create series
-        var series = this.chart.series.push(new am4charts.LineSeries());
+        var series;
+        if (interpolation === "none")
+        {
+            series = this.chart.series.push(new am4charts.StepLineSeries());
+        }
+        else if (interpolation === "linear")
+        {
+            series = this.chart.series.push(new am4charts.LineSeries());
+        }
+        else
+        {
+            series = this.chart.series.push(new am4charts.StepLineSeries());
+        }
+
 
         series.name = seriesName;
         series.dataFields.valueY = yValueName;
@@ -185,7 +198,8 @@ class SequenceChart
 
                     let currSeries = this.chart.series.getIndex(i);
                     let yValueName = currSeries.dataFields.valueY;
-                    console.log(this.addSeries(currSeries.name + " live", yValueName + " live", true, currSeries.stroke));
+                    console.log("name: " + currSeries.name + " interp: " + this.getInterpolationFromName(currSeries.name));
+                    console.log(this.addSeries(currSeries.name + " live", yValueName + " live", this.getInterpolationFromName(currSeries.name), true, currSeries.stroke));
 
                     let time = this.chart.data[0].time;
 
@@ -235,6 +249,33 @@ class SequenceChart
 
                 if (currInt.next !== undefined)
                 {
+
+                    //todo: make it prettier
+                    let currLiveSeries = this.chart.series.getIndex(parseInt(serInd) + this.liveIntervalList.length);
+                    if (time === currInt.next.x)
+                    {
+                        this.addSingleData(currLiveSeries, time, currInt.next.y);
+                        //console.log({"time": time, "y": currInt.next.y});
+                    }
+                    else
+                    {
+                        //todo: make better solution
+                        let y;
+                        if (currLiveSeries.constructor.name === "e") //constructor name of Line Series
+                        {
+                            let scale = (currInt.next.y - currInt.prev.y) / (currInt.next.x - currInt.prev.x);
+                            y = scale * (time-currInt.prev.x) + currInt.prev.y;
+
+                            //console.log("time: " + time + " scale: " + scale + " y: " + y);
+                            this.addSingleData(currLiveSeries, time, y);
+                        }
+                        else
+                        {
+                            y = currInt.prev.y;
+                        }
+                        this.addSingleData(currLiveSeries, time, y);
+                    }
+
                     let yValueName = this.chart.series.getIndex(serInd).dataFields.valueY;
                     if (time >= currInt.next.x) {
                         //fetch next time with point from series
@@ -252,25 +293,6 @@ class SequenceChart
                             newNextInt.y = pnt[yValueName];
                         }
                         currInt.next = newNextInt;
-                    }
-                    if (currInt.next !== undefined) {
-
-                        //todo: make it prettier
-                        let currLiveSeries = this.chart.series.getIndex(parseInt(serInd) + this.liveIntervalList.length);
-                        if (time === currInt.next.x)
-                        {
-                            this.addSingleData(currLiveSeries, time, currInt.next.y);
-                            //console.log({"time": time, "y": currInt.next.y});
-                        }
-                        else
-                        {
-                            let scale = (currInt.next.y - currInt.prev.y) / (currInt.next.x - currInt.prev.x);
-                            let y = scale * (time-currInt.prev.x) + currInt.prev.y;
-
-                            //console.log("time: " + time + " scale: " + scale + " y: " + y);
-                            this.addSingleData(currLiveSeries, time, y);
-                        }
-
                     }
                 }
 
@@ -295,6 +317,7 @@ class SequenceChart
 
     loadSequenceChart(jsonSeq)
     {
+        this.globals = jsonSeq.globals;
         let startTime = jsonSeq.globals.startTime;
         let endTime = jsonSeq.globals.endTime;
 
@@ -347,7 +370,7 @@ class SequenceChart
                     {
                         if (!(cmd in serObj))
                         {
-                            let newSer = this.addSeries(cmd, cmd);
+                            let newSer = this.addSeries(cmd, cmd, jsonSeq.globals.interpolation[cmd]);
                             serObj[cmd] = newSer;
                         }
                         this.addSingleData(serObj[cmd], time, action[cmd]);
@@ -355,6 +378,11 @@ class SequenceChart
                 }
             }
         }
+    }
+
+    getInterpolationFromName(name)
+    {
+        return this.globals.interpolation[name];
     }
 }
 
