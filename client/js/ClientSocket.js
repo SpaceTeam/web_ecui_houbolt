@@ -82,6 +82,22 @@ function sendDigitalOut(doId, doValue)
     socket.emit('digital-outs-set', [jsonDigitalOut]);
 }
 
+function sendDigitalOutArr(doIds, doValue)
+{
+    let jsonDigitalOut = [];
+    let jsonDigitalOutObj = {};
+
+    for (let doIdsInd in doIds)
+    {
+        jsonDigitalOutObj = {};
+        jsonDigitalOutObj.id = doIds[doIdsInd];
+        jsonDigitalOutObj.value = doValue;
+
+        jsonDigitalOut.push(jsonDigitalOutObj);
+    }
+    socket.emit('digital-outs-set', jsonDigitalOut);
+}
+
 function sendServo(servoId, servoValue)
 {
     let jsonServo = {};
@@ -153,14 +169,18 @@ function onDigitalCheck(checkbox)
 {
     let id = $(checkbox).attr('id');
 
+    let ids = id.split(";");
+    console.log(ids);
+
     if (checkbox.checked)
     {
-        sendDigitalOut(id, true);
+        sendDigitalOutArr(ids, true);
     }
     else
     {
-        sendDigitalOut(id, false);
+        sendDigitalOutArr(ids, false);
     }
+
 
 }
 
