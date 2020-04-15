@@ -308,7 +308,7 @@ class SequenceChart {
             for (let actionInd in jsonSeq.data[dataInd].actions)
             {
                 let action = jsonSeq.data[dataInd].actions[actionInd];
-                let time = action.timestamp *= 1000;
+                let time = action.timestamp * 1000;
                 if (typeof time !== 'number')
                 {
                     console.error("timestamp in action must not be string")
@@ -318,6 +318,8 @@ class SequenceChart {
                     console.error("timestamp in action must be positive")
                 }
                 time += timeCmd;
+                console.log(time);
+                console.log(action);
 
                 for (let cmd in action)
                 {
