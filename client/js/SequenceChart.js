@@ -1,8 +1,6 @@
-class SequenceChart
-{
+class SequenceChart {
 
-    constructor(id, name=null, data=null)
-    {
+    constructor(id, name = null, data = null) {
         // Themes begin
         am4core.useTheme(am4themes_material);
         //am4core.useTheme(am4themes_animated);
@@ -34,8 +32,7 @@ class SequenceChart
         this.chart.legend = new am4charts.Legend();
 
         this._createScrollbars();
-        if (data != null)
-        {
+        if (data != null) {
             this.addData(data);
         }
         this._createCursor();
@@ -43,20 +40,14 @@ class SequenceChart
 
     //if indicator then strokecolor must be defined
     //TODO: allow only when live tracking is not running
-    addSeries(seriesName, yValueName, interpolation="none", isIndicator=false, strokeColor=undefined)
-    {
+    addSeries(seriesName, yValueName, interpolation = "none", isIndicator = false, strokeColor = undefined) {
         // Create series
         var series;
-        if (interpolation === "none")
-        {
+        if (interpolation === "none") {
             series = this.chart.series.push(new am4charts.StepLineSeries());
-        }
-        else if (interpolation === "linear")
-        {
+        } else if (interpolation === "linear") {
             series = this.chart.series.push(new am4charts.LineSeries());
-        }
-        else
-        {
+        } else {
             series = this.chart.series.push(new am4charts.StepLineSeries());
         }
 
@@ -77,8 +68,7 @@ class SequenceChart
             series.fill = strokeColor;
             series.tooltip.background.fill = strokeColor;
 
-        }
-        else {
+        } else {
             var nextColor = this.amColorSet.next();
             series.stroke = nextColor;
             series.tooltip.background.fill = nextColor;
@@ -104,8 +94,7 @@ class SequenceChart
         return series;
     }
 
-    _createCursor()
-    {
+    _createCursor() {
         // Make a panning cursor
         this.chart.cursor = new am4charts.XYCursor();
         this.chart.cursor.behavior = "panXY";
@@ -113,8 +102,7 @@ class SequenceChart
         //this.chart.cursor.snapToSeries = series;
     }
 
-    _createScrollbars()
-    {
+    _createScrollbars() {
         // Create vertical scrollbar and place it before the value axis
         // this.chart.scrollbarY = new am4core.Scrollbar();
         // this.chart.scrollbarY.parent = this.chart.leftAxesContainer;
@@ -129,68 +117,55 @@ class SequenceChart
         // });
     }
 
-    addSingleData(series, valueX, valueY)
-    {
+    addSingleData(series, valueX, valueY) {
         var thisObj = this;
-        var foundIndex = this.chart.data.findIndex(function(element) {
-              return (element.time === valueX);
+        var foundIndex = this.chart.data.findIndex(function (element) {
+            return (element.time === valueX);
         });
 
         let dataObj = {};
-        if (foundIndex >= 0)
-        {
+        if (foundIndex >= 0) {
             dataObj = this.chart.data[foundIndex];
-            this.chart.data.splice(foundIndex,1);
+            this.chart.data.splice(foundIndex, 1);
 
-        }
-        else
-        {
+        } else {
             dataObj[series.dataFields.valueX] = valueX;
         }
         dataObj[series.dataFields.valueY] = valueY;
 
-        this.chart.addData(
-                    dataObj,
-                    0
-                );
-    }
-
-    addData(dataObj)
-    {
         this.chart.addData(
             dataObj,
             0
         );
     }
 
-    getChart()
-    {
+    addData(dataObj) {
+        this.chart.addData(
+            dataObj,
+            0
+        );
+    }
+
+    getChart() {
         return this.chart;
     }
 
-    getYValueName(series)
-    {
-        for (let objInd in this.seriesList)
-        {
-            if (this.seriesList[objInd].series === series)
-            {
+    getYValueName(series) {
+        for (let objInd in this.seriesList) {
+            if (this.seriesList[objInd].series === series) {
                 return this.seriesList[objInd].yValueName;
             }
         }
         return undefined;
     }
 
-    get getSeriesList()
-    {
+    get getSeriesList() {
         return this.seriesList;
     }
 
-    start()
-    {
-        if (!this.isRunning)
-        {
-            if (this.chart.data.length > 0)
-            {
+    start() {
+        if (!this.isRunning) {
+            if (this.chart.data.length > 0) {
                 let seriesLength = this.chart.series.length;
                 this.isRunning = true;
                 this.liveIntervalList = [];
@@ -212,65 +187,51 @@ class SequenceChart
                     int.prev = {};
                     int.prev.x = firstPnt.time;
                     int.prev.y = firstPnt[yValueName];
-                    let pnt = this._findNextPoint(yValueName, time+1);
+                    let pnt = this._findNextPoint(yValueName, time + 1);
                     int.next = {};
                     int.next.x = pnt.time;
                     int.next.y = pnt[yValueName];
                     this.liveIntervalList.push(int);
                 }
                 // console.log(this.liveIntervalList);
-            }
-            else
-            {
+            } else {
                 console.error("no chart data available");
             }
-        }
-        else
-        {
+        } else {
             console.error("live tracker already running");
         }
     }
 
-    _findNextPoint(valName, time)
-    {
-        var foundElement = this.chart.data.find(function(element) {
+    _findNextPoint(valName, time) {
+        var foundElement = this.chart.data.find(function (element) {
             return element.time >= time && (valName in element);
         });
         return foundElement;
     }
 
-    update(time)
-    {
-        if (this.isRunning)
-        {
-            for (let serInd in this.seriesList)
-            {
+    update(time) {
+        if (this.isRunning) {
+            for (let serInd in this.seriesList) {
                 let currInt = this.liveIntervalList[serInd];
 
-                if (currInt.next !== undefined)
-                {
+                if (currInt.next !== undefined) {
 
                     //todo: make it prettier
                     let currLiveSeries = this.chart.series.getIndex(parseInt(serInd) + this.liveIntervalList.length);
-                    if (time === currInt.next.x)
-                    {
+                    if (time === currInt.next.x) {
                         this.addSingleData(currLiveSeries, time, currInt.next.y);
                         //console.log({"time": time, "y": currInt.next.y});
-                    }
-                    else
-                    {
+                    } else {
                         //todo: make better solution
                         let y;
                         if (currLiveSeries.constructor.name === "e") //constructor name of Line Series
                         {
                             let scale = (currInt.next.y - currInt.prev.y) / (currInt.next.x - currInt.prev.x);
-                            y = scale * (time-currInt.prev.x) + currInt.prev.y;
+                            y = scale * (time - currInt.prev.x) + currInt.prev.y;
 
                             //console.log("time: " + time + " scale: " + scale + " y: " + y);
                             this.addSingleData(currLiveSeries, time, y);
-                        }
-                        else
-                        {
+                        } else {
                             y = currInt.prev.y;
                         }
                         this.addSingleData(currLiveSeries, time, y);
@@ -286,9 +247,7 @@ class SequenceChart
                         if (pnt === undefined) {
                             newNextInt = undefined;
 
-                        }
-                        else
-                        {
+                        } else {
                             newNextInt.x = pnt.time;
                             newNextInt.y = pnt[yValueName];
                         }
@@ -300,19 +259,32 @@ class SequenceChart
         }
     }
 
-    stop()
-    {
+    stop() {
         this.isRunning = false;
 
     }
 
-    reset()
-    {
+    reset() {
 
-        for (let i=this.chart.series.length-1; i >= this.seriesList.length; i--) {
+        for (let i = this.chart.series.length - 1; i >= this.seriesList.length; i--) {
             this.chart.series.removeIndex(i).dispose();
         }
         this.chart.data = [];
+    }
+
+    getTimestamp(jsonObj, startTime, endTime)
+    {
+        let time = jsonObj.timestamp;
+
+        if (time === "START")
+        {
+            time = startTime;
+        }
+        else if (time === "END")
+        {
+            time = endTime;
+        }
+        return time;
     }
 
     loadSequenceChart(jsonSeq)
@@ -330,20 +302,23 @@ class SequenceChart
 
         for (let dataInd in jsonSeq.data)
         {
+            let dataCmd = jsonSeq.data[dataInd];
+            let timeCmd = this.getTimestamp(dataCmd, startTime, endTime);
+            timeCmd *= 1000;
             for (let actionInd in jsonSeq.data[dataInd].actions)
             {
                 let action = jsonSeq.data[dataInd].actions[actionInd];
-                let time = action.timestamp;
+                let time = action.timestamp *= 1000;
+                if (typeof time !== 'number')
+                {
+                    console.error("timestamp in action must not be string")
+                }
+                if (time < 0)
+                {
+                    console.error("timestamp in action must be positive")
+                }
+                time += timeCmd;
 
-                if (time === "START")
-                {
-                    time = startTime;
-                }
-                else if (time === "END")
-                {
-                    time = endTime;
-                }
-                time *= 1000;
                 for (let cmd in action)
                 {
                     if (cmd === "sensorsNominalRange")
