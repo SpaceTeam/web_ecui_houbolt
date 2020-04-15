@@ -19,6 +19,16 @@ form input {
     border: solid;
 }
 
+#commentTextbox {
+    width: calc(100% - 2rem);
+}
+
+#commentDiv {
+    width: 100%;
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
 .col {
     background-color: white;
 }

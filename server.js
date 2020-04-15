@@ -75,7 +75,7 @@ var onChecklistDone = function (ioClient, socket) {
     ioClient.emit('sequence-load', [jsonSeq, jsonAbortSeq]);
 }
 
-var onSequenceStart = function (ioClient, socket) {
+var onSequenceStart = function (ioClient, socket, msg) {
 
     if (!sequenceRunning) {
         console.log('sequence start');
@@ -87,7 +87,7 @@ var onSequenceStart = function (ioClient, socket) {
         //     function(time){onSequenceSync(ioClient,socket,time);},
         //     function(){onSequenceDone(ioClient,socket);}
         //     );
-        llServerMod.sendMessage(llServer, 'sequence-start', [sequenceManMod.loadSequence(), sequenceManMod.loadAbortSequence()]);
+        llServerMod.sendMessage(llServer, 'sequence-start', [sequenceManMod.loadSequence(), sequenceManMod.loadAbortSequence(), msg]);
     }
     else
     {
@@ -258,7 +258,7 @@ ioClient.on('connection', function(socket){
     socket.on('sequence-start', function(msg){
         console.log('sequence-start');
         if (master === socket.id) {
-            eventEmitter.emit('onSequenceStart', ioClient, socket);
+            eventEmitter.emit('onSequenceStart', ioClient, socket, msg);
 
         }
     });

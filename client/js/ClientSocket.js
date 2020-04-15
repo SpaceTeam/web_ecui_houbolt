@@ -20,7 +20,7 @@ $('#toggleSequenceButton').click(function()
 {
     if ($(this).text() === 'Start Sequence')
     {
-        socket.emit('sequence-start');
+        socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
         $(this).text('Abort Sequence');
         $('.tab-button').each(function () {
             if ($(this).id !== "monitor-tab-button")
