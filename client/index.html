@@ -14,7 +14,7 @@
     <link href="css/styles.css" rel="stylesheet"></link>
 </head>
 <body>
-<div id="templates" style="visibility: hidden;">
+<div id="templates" hidden>
     <div class="card">
         <div class="card-header" id="headingTemp">
             <h2 class="mb-0">
@@ -41,6 +41,31 @@
 
     </div>
     <div id="tempChart" class="sensorChart" hidden></div>
+    <div id="tempRow" class="row control-row"></div>
+    <div id="tempServo" class="range-slider col">
+        <label class="range-slider-label input-label">Temp Servo</label><br>
+        <input class="range-slider__range servo-slider manual-obj" id="tempServoSlider" idNum="0"
+               oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
+               disabled>
+        <span class="range-slider__value" disabled>0</span>
+
+    </div>
+    <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
+        <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="tempDigitalOut"
+               onclick="onDigitalCheck(this);" disabled>
+        <label class="custom-control-label ckbx-label" for="tempDigitalOut">Temp Digital Out</label>
+    </div>
+    <div id="tempMotor" class="btn-group btn-group-toggle" data-toggle="buttons">
+      <label class="btn btn-secondary btn-radio active">
+        <input type="radio" name="options" id="option1" checked> Active
+      </label>
+      <label class="btn btn-secondary btn-radio">
+        <input type="radio" name="options" id="option2"> Radio
+      </label>
+      <label class="btn btn-secondary btn-radio">
+        <input type="radio" name="options" id="option3"> Radio
+      </label>
+    </div>
 
 </div>
 
@@ -68,7 +93,7 @@
                     <h1 id="timer">0.0</h1>
                 </div>
                 <div class="col">
-                    <button class="btn btn-secondary" id="toggleSequenceButton" hidden>Start Sequence</button>
+                    <button class="btn btn-secondary" id="toggleSequenceButton" disabled="true">Start Sequence</button>
                 </div>
                 <div class="col col-3">
                     <h3 id="versionLabel">ECUI - Version <span id="version">1.0.0</span></h3>
@@ -108,7 +133,6 @@
                     <span class="range-slider__value" disabled>0</span>
 
                 </div>
-
             </div>
 
             <div class="row control-row">

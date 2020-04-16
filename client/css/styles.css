@@ -10,13 +10,20 @@ body {
     font: 13px Helvetica, SansSerif;
     background-color: white;
     color: #303030;
-    margin-top: -60px;
+    margin-top: 0px;
 }
 
 form input {
     border: 0;
     padding: 10px;
     border: solid;
+}
+
+#statusBar {
+    font-size: 1rem;
+    font-weight: bolder;
+    height: 1.4rem;
+    padding-left: 2rem;
 }
 
 #commentTextbox {
@@ -153,6 +160,14 @@ div#servo-container > button {
 
 .btn-secondary:hover {
     background-color: #714187;
+}
+
+.btn-radio {
+    background: #656565 !important;
+}
+
+.btn-radio.active {
+    background: #522e63 !important;
 }
 
 #timer {

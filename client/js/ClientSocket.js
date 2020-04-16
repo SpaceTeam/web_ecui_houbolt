@@ -7,13 +7,33 @@ socket.on('connect', function() {socket.emit('checklist-start')});
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
 socket.on('connect_error', function(error) {console.log(error)});
 
-document.onkeydown = function () {
+document.onkeydown = function (event) {
     var seqButton = $('#toggleSequenceButton');
     console.log(seqButton.text());
     if (seqButton.text() === 'Abort Sequence')
     {
         seqButton.click();
     }
+    else
+    {
+        var code;
+
+        if (event.key !== undefined) {
+            code = event.key;
+        } else if (event.keyIdentifier !== undefined) {
+            code = event.keyIdentifier;
+        } else if (event.keyCode !== undefined) {
+            code = event.keyCode;
+        }
+
+        if (code === ' ' && !seqButton.prop('disabled'))
+        {
+            seqButton.click();
+        }
+
+    }
+
+
 };
 
 $('#toggleSequenceButton').click(function()
@@ -427,7 +447,7 @@ socket.on('checklist-done', function() {
     //TODO: check with user credentials and only display them when master
     //$('#checklistCol').hide('slide', { direction: 'right' }, 300);
     $('#startChecklistButton').attr('hidden', '');
-    $('#toggleSequenceButton').removeAttr('hidden');
+    $('#toggleSequenceButton').prop('disabled', false);
 });
 
 socket.on('sequence-load', function(jsonSeqs) {
