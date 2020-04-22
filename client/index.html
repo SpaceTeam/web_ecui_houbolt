@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>ECUI-WEB</title>
+    <title>Engine Control User Interface</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://www.amcharts.com/lib/4/core.js"></script>
@@ -13,7 +13,6 @@
     <link href="css/slider.css" rel="stylesheet"></link>
     <link href="css/styles.css" rel="stylesheet"></link>
 </head>
-<body>
 <div id="templates" hidden>
     <div class="card">
         <div class="card-header" id="headingTemp">
@@ -69,9 +68,15 @@
 
 </div>
 
-<div>
-<div id="statusBar"></div>
-<ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
+
+<div id="titleBar">
+    <img id="icon" src="icon.png" alt="ST Logo" style="width:8rem;">
+    <p id="title">ECUI</p>
+    <p id="subtitle">Engine Control User Interface</p>
+    <p id="versionLabel">v<span id="version">1.0.0</span></p>
+</div>
+
+<ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
     <li class="nav-item">
         <a class="nav-link active tab-button" id="monitor-tab-button" data-toggle="tab" href="#sequence-tab" role="tab"
            aria-controls="sequence-tab" aria-selected="true">Monitor</a>
@@ -85,7 +90,10 @@
            aria-controls="calibration-tab" aria-selected="false">Calibrate</a>
     </li>
 </ul>
+<hr>
+<div id="statusBar"></div>
 <div class="tab-content" id="myTabContent">
+
     <div class="tab-pane fade show active" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
         <div class="container-fluid sequence-fluid">
             <div class="row header">
@@ -98,9 +106,6 @@
                 </div>
                 <div class="col">
                     <button class="btn btn-secondary" id="toggleSequenceButton" disabled="true">Start Sequence</button>
-                </div>
-                <div class="col col-3">
-                    <h3 id="versionLabel">ECUI - Version <span id="version">1.0.0</span></h3>
                 </div>
             </div>
             <div class="row content">
