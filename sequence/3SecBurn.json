@@ -1,7 +1,7 @@
 {
 	"globals":
 	{
-		"endTime": 10,
+		"endTime": 8,
 		"interpolation":
 		{
 			"fuel": "linear",
@@ -83,7 +83,7 @@
 			]
 		},
 		{
-			"timestamp": 6,
+			"timestamp": 4,
 			"name": "shutdown",
 			"desc": "shutting down",
 			"actions":
@@ -108,7 +108,7 @@
 			]
 		},
 		{
-			"timestamp": 7,
+			"timestamp": 5,
 			"name": "depress",
 			"desc": "depressurizing",
 			"actions":

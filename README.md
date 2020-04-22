@@ -195,8 +195,8 @@ For TCP Sockets this is not the case. For consistency a message over TCP Sockets
 | checklist-save | [JSON Checklist Format](#checklist-format) | tells server to save this json as the new Checklist |
 | checklist-tick | id:int | tells server that client ticked off a checklist item |
 | sequence-start | none | starts the sequence |
-| sequence-save | [JSON Sequence Format](#sequence-format) | tells server to save this json as new Sequence |
-| abortSequence-save | [JSON Abort Sequence Format](#abort-sequence-format) | tells server to save this json as new Abort Sequence |
+| sequence-set | sequenceName:string | tells server to use this Sequence |
+| abortSequence-set | abortSequenceName:string | tells server to use this Abort Sequence |
 | sensors-start | none | tells WebServer that it shall send all sensors periodically | 
 | sensors-stop | none | tells WebServer that it shall stop sending all sensors | 
 | servos-enable | none | enables all servos |
@@ -216,7 +216,7 @@ These messages are sent from the Server to each connected client
 |--|--|--|
 | abort | none | abort Sequence if running and start Abort Sequence automatically |
 | checklist-done | none | tells all clients that checklist is processed |
-| sequence-load | [JSON Sequence Format](#sequence-format) | tells all clients up to date Sequence |
+| sequence-load | [JSON Sequence Load Format](#sequence-load-format) | sends all clients a list of Sequences which are in the folder as well as up to date Sequence |
 | sequence-start | none | tells all clients that sequence is about to start | 
 | sequence-sync | timeInSeconds:float | sends current time of LLServer to sync their timers |
 | sequence-done | none | tells all clients that the Sequence is done |
@@ -305,59 +305,84 @@ The comments describe the datatype on the LLServer
 		
 #### Sequence Format
 
-Each timestamp of the data item object has to be the same value as the first timestamp in the actions array.
-Each number in actions except the timestamp is uint8 on the LLServer
+Each timestamp **MUST** be a number type; timestamps in the data array objects may also have the
+value **"START"** or **"END"**. 
+The first object in action of the first data object **HAS TO** include all Devices used!
+Each number in actions except the timestamp is uint8 on the LLServer.
+
+> Note: The keywords "START" or "END" are only allowed in the Group Commands (objects inside data array).
+> 
 
 	{  
-		"globals": {  
-		  "startTime": -4,  
-		  "endTime": 4,  
-		  "interval": 0.01  
-	    },  
-	    "data": [  
-			{  
-				"timestamp": "START",  
-				"name": "All to Zero",  
-			    "desc": "blah blah optional blah",  
-			    "actions": [  
-			              {  
-				              "chamberPressureMin": 0,  
-							  "fuel": 0,  
-							  "igniter": 0,  
-							  "oxidizer": 0,  
-							  "timestamp": "START"  
-						  },  
-						  {  
-			                  "chamberPressureMin": 0,  
-							  "fuel": 0,  
-							  "igniter": 0,  
-							  "oxidizer": 0,  
-							  "timestamp": 0.0  
-						  },  
-						  {  
-			                  "chamberPressureMin": 0,  
-							  "fuel": 50,  
-							  "igniter": 0,  
-							  "oxidizer": 50,  
-							  "timestamp": 0.5  
-						  },  
-						  {  
-			                  "chamberPressureMin": 0,  
-							  "fuel": 100,  
-							  "igniter": 100,  
-							  "oxidizer": 100,  
-							  "timestamp": 1.0  
-						  },   
-			     ] 
-		 }
-		 ] 
+	    "globals":
+        {
+            "endTime": 8,
+            "interpolation":
+            {
+                "fuel": "linear",
+                "igniter": "none",
+                "oxidizer": "linear",
+                "solenoidDepress": "none",
+                "solenoidPress": "none"
+            },
+            "interval": 0.01,
+            "ranges":
+            [
+                "chamberPressure"
+            ],
+            "startTime": -12
+        },
+        "data": 
+        [
+            {
+                "timestamp": "START",
+                "name": "start",
+                "desc": "set all to zero",
+                "actions":
+                [
+                    {
+                        "timestamp": 0.0,
+                        "fuel": 0,
+                        "igniter": 0,
+                        "oxidizer": 0,
+                        "solenoidDepress": 0,
+                        "solenoidPress": 0,
+                        "sensorsNominalRange":
+                        {
+                            "chamberPressure": [-5, 20]
+                        }
+                    }
+                ]
+            },
+            {
+                "timestamp": -5.5,
+                "name": "press",
+                "desc": "pressurize tanks",
+                "actions":
+                [
+                    {
+                        "timestamp": 0,
+                        "solenoidDepress": 100
+                    },
+                    {
+                        "timestamp": 0.5,
+                        "solenoidPress": 100
+                    }
+                ]
+            }
+        ] 
 	}
 
 #### Abort Sequence Format
 
-For now exactly one object with all commands to be executed
+For now exactly one object with all commands to be executed.
+The "endTime" key in "globals" is used to describe for how long the logging should continue
+in case of an abort.
 
 	{  
+	    "globals": {
+            "endTime": 3.2              //double
+        },
 	    "actions" : {  
 	        "fuel": 0,  				//uint8
 		    "igniter": 0,  				//uint8
@@ -419,15 +444,31 @@ Array of JSON objects, each object needs to have the name of the sensor and a va
 	    "value" = 20  					//uint16
 	}]
 
+#### Sequence Load Format
+
+	{  
+	    "type" : "sequence-load",  
+	    "content" : [<List of Sequences>, <List of Abort Sequences>, <JSON Sequence Format>, <JSON Abort Sequence Format>]  
+	}
+
+List of Sequences: all available Sequences saved on server
+List of Abort Sequences: all available Abort Sequences saved on server
+[JSON Sequence Format](#sequence-format)
+[JSON Abort Sequence Format](#abort-sequence-format)
+
+> Note: the first item of each list indicates the file currently used
+
 #### Sequence Start Format
 
 	{  
 	    "type" : "sequence-start",  
-	    "content" : [<JSON Sequence Format>, <JSON Abort Sequence Format>]  
+	    "content" : [<JSON Sequence Format>, <JSON Abort Sequence Format>, <Comment Text>]  
 	}
 
 [JSON Sequence Format](#sequence-format)
 [JSON Abort Sequence Format](#abort-sequence-format)
+Comment Text: A string which should be saved alongside the log files
+
 
 ## Mapping
 

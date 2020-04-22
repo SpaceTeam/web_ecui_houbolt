@@ -1,5 +1,5 @@
-const sequenceSavePath = './sequence/Sequence.json';
-const abortSequenceSavePath = './sequence/AbortSequence.json';
+const sequenceSaveDir = './sequence/';
+const abortSequenceSaveDir = "./sequence/abort_sequence/";
 const fs = require('fs');
 
 const timerMod = require('./Timer');
@@ -13,6 +13,8 @@ module.exports = class SequenceManager {
     static _syncCallback;
     static _running = false;
     static _syncInterval;
+    static _sequencePath = sequenceSaveDir + "Sequence.json";
+    static _abortSequencePath = abortSequenceSaveDir + "AbortSequence.json";
 
     static init() {
         console.log('initialized SequenceManager');
@@ -63,7 +65,7 @@ module.exports = class SequenceManager {
         try
         {
             let data = JSON.stringify(sequence, null, 4);
-            fs.writeFileSync(sequenceSavePath, data);
+            fs.writeFileSync(sequenceSaveDir + SequenceManager._sequencePath, data);
         }
         catch (e) {
             console.error(e.message)
@@ -75,23 +77,100 @@ module.exports = class SequenceManager {
         try
         {
             let data = JSON.stringify(abortSequence, null, 4);
-            fs.writeFileSync(abortSequenceSavePath, data);
+            fs.writeFileSync(abortSequenceSaveDir + SequenceManager._abortSequencePath, data);
         }
         catch (e) {
             console.error(e.message)
         }
     }
 
+    //returns list of sequences where the currently selected gets positioned first
+    static getAllSequences()
+    {
+        let sequences = [];
+
+        fs.readdirSync(sequenceSaveDir).forEach(function(file) {
+
+            let filePath = sequenceSaveDir + file;
+            var stat = fs.statSync(filePath);
+
+            if (stat && stat.isFile())
+            {
+                if (file.match(/.*(\.json)$/))
+                {
+                    if (filePath === SequenceManager._sequencePath)
+                    {
+                        sequences.splice( 0, 0, file);
+                    }
+                    else
+                    {
+                        sequences.push(file);
+                    }
+                }
+            }
+            else
+            {
+                console.log("ignored " + file + " folder");
+            }
+
+        });
+
+        return sequences;
+    }
+
+    static getAllAbortSequences()
+    {
+        let abortSequences = [];
+
+        fs.readdirSync(abortSequenceSaveDir).forEach(function(file) {
+
+            let filePath = abortSequenceSaveDir + file;
+            var stat = fs.statSync(filePath);
+
+            if (stat && stat.isFile()) {
+                if (file.match(/.*(\.json)$/))
+                {
+                    if (filePath === SequenceManager._abortSequencePath)
+                    {
+                        abortSequences.splice( 0, 0, file);
+                    }
+                    else
+                    {
+                        abortSequences.push(file);
+                    }
+                }
+            }
+            else
+            {
+                console.log("ignored " + file + " folder");
+            }
+
+        });
+
+        return abortSequences;
+    }
+
+    static setSequence(fileName)
+    {
+        SequenceManager._sequencePath = sequenceSaveDir + fileName;
+    }
+
+    static setAbortSequence(fileName)
+    {
+        SequenceManager._abortSequencePath = abortSequenceSaveDir + fileName;
+
+    }
+
     static loadSequence()
     {
-        let rawdata = fs.readFileSync(sequenceSavePath);
+        let rawdata = fs.readFileSync(SequenceManager._sequencePath);
         let seq = JSON.parse(rawdata);
         return seq
     }
 
     static loadAbortSequence()
     {
-        let rawdata = fs.readFileSync(abortSequenceSavePath);
+        let rawdata = fs.readFileSync(SequenceManager._abortSequencePath);
         let seq = JSON.parse(rawdata);
         return seq
     }

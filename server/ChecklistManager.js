@@ -1,4 +1,4 @@
-const checklistSavePath = './sequence/Checklist.json'
+const checklistSavePath = './checklists/Checklist.json';
 const fs = require('fs');
 
 module.exports = class ChecklistManager {

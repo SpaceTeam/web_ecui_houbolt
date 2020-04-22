@@ -40,6 +40,23 @@ server.listen(5555, function(){ llServerMod.onCreateTCP(server)});
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
+var onSequenceLoad = function (ioClient, socket)
+{
+    //send new socket up to date sequence
+    let jsonSeq = sequenceManMod.loadSequence();
+    let jsonAbortSeq = sequenceManMod.loadAbortSequence();
+    let sequences = sequenceManMod.getAllSequences();
+    let abortSequences = sequenceManMod.getAllAbortSequences();
+
+    console.log("sequences");
+    console.log(sequences);
+    console.log("abortSequences");
+    console.log(abortSequences);
+
+
+    socket.emit('sequence-load', [sequences, abortSequences, jsonSeq, jsonAbortSeq]);
+}
+
 
 var onChecklistStart = function (ioClient, socket) {
     console.log('checklist start');
@@ -48,6 +65,10 @@ var onChecklistStart = function (ioClient, socket) {
     //send new socket up to date checklist
     let jsonChecklist = checklistManMod.loadChecklist();
     socket.emit('checklist-load', jsonChecklist);
+    if (jsonChecklist.length === 0)
+    {
+        eventEmitter.emit('onChecklistDone', ioClient, socket);
+    }
 };
 
 var onChecklistTick = function (ioClient, socket, id) {
@@ -68,11 +89,7 @@ var onChecklistDone = function (ioClient, socket) {
     ioClient.emit('checklist-done');
 
     //send everyone up to date sequence
-    let jsonSeq = sequenceManMod.loadSequence();
-    let jsonAbortSeq = sequenceManMod.loadAbortSequence();
-    console.log(jsonSeq);
-    console.log(jsonAbortSeq);
-    ioClient.emit('sequence-load', [jsonSeq, jsonAbortSeq]);
+    eventEmitter.emit('onSequenceLoad', ioClient, socket);
 }
 
 var onSequenceStart = function (ioClient, socket, msg) {
@@ -170,6 +187,7 @@ eventEmitter.on('onChecklistStart', onChecklistStart);
 eventEmitter.on('onChecklistDone', onChecklistDone);
 eventEmitter.on('onChecklistTick', onChecklistTick);
 
+eventEmitter.on('onSequenceLoad', onSequenceLoad);
 eventEmitter.on('onSequenceStart', onSequenceStart);
 eventEmitter.on('onSequenceSync', onSequenceSync);
 eventEmitter.on('onSequenceDone', onSequenceDone);
@@ -218,10 +236,7 @@ ioClient.on('connection', function(socket){
     }
 
 
-    //send new socket up to date sequence
-    let jsonSeq = sequenceManMod.loadSequence();
-    let jsonAbortSeq = sequenceManMod.loadAbortSequence();
-    socket.emit('sequence-load', [jsonSeq, jsonAbortSeq]);
+    eventEmitter.emit('onSequenceLoad', ioClient, socket);
 
     //send new socket up to date servo end positions
     llServerMod.sendMessage(llServer, 'servos-load');
@@ -263,17 +278,21 @@ ioClient.on('connection', function(socket){
         }
     });
 
-    socket.on('sequence-save', function(msg){
-        console.log('sequence-save');
+    socket.on('sequence-set', function(msg){
+        console.log('sequence-set');
         if (master === socket.id) {
-            sequenceManMod.saveSequence(msg);
+            sequenceManMod.setSequence(msg);
+
+            eventEmitter.emit('onSequenceLoad', ioClient, socket);
         }
     });
 
-    socket.on('abortSequence-save', function(msg){
-        console.log('abortSequence-save');
+    socket.on('abortSequence-set', function(msg){
+        console.log('abortSequence-set');
         if (master === socket.id) {
-            sequenceManMod.saveAbortSequence(msg);
+            sequenceManMod.setAbortSequence(msg);
+
+            eventEmitter.emit('onSequenceLoad', ioClient, socket);
         }
     });
 

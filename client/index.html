@@ -89,8 +89,12 @@
     <div class="tab-pane fade show active" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
         <div class="container-fluid sequence-fluid">
             <div class="row header">
-                <div class="col col-5">
+                <div class="col col-3">
                     <h1 id="timer">0.0</h1>
+                </div>
+                <div class="col col-2">
+                  <select class="btn btn-secondary ecui-select" id="sequenceSelect" onchange="onSequenceSelectChange(value);">
+                  </select>
                 </div>
                 <div class="col">
                     <button class="btn btn-secondary" id="toggleSequenceButton" disabled="true">Start Sequence</button>

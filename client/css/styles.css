@@ -153,6 +153,11 @@ div#servo-container > button {
     width: 100%;
 }
 
+.ecui-select {
+    width: 100%;
+    height: 2.4rem;
+}
+
 .btn-secondary {
     background: #522e63;
     margin-top: 20px;
