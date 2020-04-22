@@ -27,11 +27,11 @@ form input {
 }
 
 #commentTextbox {
-    width: calc(100% - 2rem);
+    width: 100%;
 }
 
 #commentDiv {
-    width: 100%;
+    width: calc(100% - 2rem);
     margin-left: 2rem;
     margin-bottom: 1rem;
 }
