@@ -1,0 +1,143 @@
+{
+	"globals":
+	{
+		"endTime": 8,
+		"interpolation":
+		{
+			"fuel": "linear",
+			"igniter": "none",
+			"oxidizer": "linear",
+			"solenoidDepress": "none",
+			"solenoidPress": "none"
+		},
+		"interval": 0.01,
+		"ranges":
+		[
+			"chamberPressure"
+		],
+		"startTime": -12
+	},
+	"data":
+	[
+		{
+			"timestamp": "START",
+			"name": "start",
+			"desc": "set all to zero",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"fuel": 0,
+					"igniter": 0,
+					"oxidizer": 0,
+					"solenoidDepress": 0,
+					"solenoidPress": 0,
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [-5, 20]
+					}
+				}
+			]
+		},
+		{
+			"timestamp": -5.5,
+			"name": "press",
+			"desc": "pressurize tanks",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"solenoidDepress": 100
+				},
+				{
+					"timestamp": 0.5,
+					"solenoidPress": 100
+				}
+			]
+		},
+		{
+			"timestamp": 0.0,
+			"name": "ignition",
+			"desc": "lets light this candle",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+                    "fuel": 0,
+					"oxidizer": 0,
+					"igniter": 100
+				},
+				{
+					"timestamp": 1,
+					"fuel": 100,
+					"oxidizer": 100,
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [4, 20]
+					}
+				},
+				{
+					"timestamp": 2,
+					"igniter": 0
+				}
+			]
+		},
+		{
+			"timestamp": 6,
+			"name": "shutdown",
+			"desc": "shutting down",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+                    "fuel": 100,
+					"oxidizer": 100,
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [-5, 20]
+					}
+				},
+				{
+					"timestamp": 0.2,
+					"fuel": 0
+				},
+				{
+					"timestamp": 0.4,
+					"oxidizer": 0
+				}
+			]
+		},
+		{
+			"timestamp": 5,
+			"name": "depress",
+			"desc": "depressurizing",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"solenoidPress": 0
+				},
+				{
+					"timestamp": 0.5,
+					"solenoidDepress": 0
+				}
+			]
+		},
+		{
+			"timestamp": "END",
+			"name": "end",
+			"desc": "the end",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"fuel": 0,
+					"igniter": 0,
+					"oxidizer": 0,
+					"solenoidPress": 0,
+					"solenoidDepress": 0
+				}
+			]
+		}
+	]
+}
