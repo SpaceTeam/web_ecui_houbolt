@@ -418,6 +418,10 @@ app.get('/', function(req, res){
     res.sendFile(path + 'index.html');
 });
 
+app.get('/chart', function(req, res){
+    res.sendFile(path + 'chartTest.html');
+});
+
 http.listen(port, function(){
     console.log('listening on *:' + port);
 });

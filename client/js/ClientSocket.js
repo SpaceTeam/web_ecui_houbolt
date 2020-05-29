@@ -296,7 +296,7 @@ var countdownIntervalDelegate;
 
 function timerTick()
 {
-    console.log(timeMillis);
+    //console.log(timeMillis);
     let time = timeMillis/1000;
     $('#timer').text(time);
 
@@ -534,9 +534,8 @@ socket.on('timer-start', function () {
 });
 
 socket.on('sequence-sync', function(time) {
-    console.log('sequence-sync:');
+    //console.log('sequence-sync:');
     timeMillis = time * 1000;
-    console.log(timeMillis);
 
     // if (time < 0 && time >= -5)
     // {
@@ -580,7 +579,7 @@ socket.on('sequence-done', function() {
 });
 
 socket.on('sensors', function(jsonSens) {
-    console.log('sensors');
+    //console.log('sensors');
 
     if (!llServerConnectionActive)
     {

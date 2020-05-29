@@ -318,8 +318,6 @@ class SequenceChart {
                     console.error("timestamp in action must be positive")
                 }
                 time += timeCmd;
-                console.log(time);
-                console.log(action);
 
                 for (let cmd in action)
                 {
