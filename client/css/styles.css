@@ -129,7 +129,7 @@ div#servo-container > button {
 
 #myTabContent
 {
-    height: 35rem;
+    height: 25rem;
 }
 
 #titleBar {
@@ -228,7 +228,11 @@ hr {
 }
 
 .control-row {
-    padding-top: 60px;
+     padding-top: 2rem;
+}
+
+.control-row-last {
+
 }
 
 .spinner {
