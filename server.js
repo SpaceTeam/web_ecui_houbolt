@@ -5,7 +5,7 @@ var app = express();
 var http = require('http').Server(app);
 var ioClient = require('socket.io')(http);
 var clientsCount = 0;
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 3001;
 
 app.use(express.static(__dirname + '/client/'));
 

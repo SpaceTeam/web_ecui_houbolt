@@ -200,6 +200,14 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
     let ids = id.split(";");
     console.log(ids);
 
+    // Check that the cooling pump and heating pump cannot be enabled at the same time
+    // Therefore, we disable the other button.
+    if (id === "coolingPump") {
+        $('#heatingPump').prop('disabled', checkbox.checked);
+    } else if (id === "heatingPump") {
+        $('#coolingPump').prop('disabled', checkbox.checked);
+    }
+
     if (checkbox.checked) {
         if (delaySecondDigitalOut === 0.0)
         {
