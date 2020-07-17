@@ -142,25 +142,38 @@ Notes: Hotfire
 
             <div class="row control-row">
                 <div class="range-slider col">
-                    <label class="range-slider-label input-label">Fuel Servo</label><br>
-                    <input class="range-slider__range servo-slider manual-obj" id="fuel" idNum="0"
+                    <label class="range-slider-label input-label">Fuel Main Valve</label><br>
+                    <input class="range-slider__range servo-slider manual-obj" id="fuelMainValve" idNum="0"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
 
                 </div>
+
             </div>
 
             <div class="row control-row">
                 <div class="range-slider col">
-                    <label class="range-slider-label input-label">Oxidizer Servo</label><br>
-                    <input class="range-slider__range servo-slider manual-obj" id="oxidizer" idNum="1"
+                    <label class="range-slider-label input-label">Oxidizer Main Valve</label><br>
+                    <input class="range-slider__range servo-slider manual-obj" id="oxMainValve" idNum="1"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
                 </div>
 
             </div>
+            
+            <div class="row control-row">
+                <div class="range-slider col">
+                    <label class="range-slider-label input-label">Oxidizer Supercharge Valve</label><br>
+                    <input class="range-slider__range servo-slider manual-obj" id="oxSuperchargeValve" idNum="1"
+                           oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
+                           disabled>
+                    <span class="range-slider__value" disabled>0</span>
+                </div>
+
+            </div>
+            
             <div class="row control-row">
                 <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
                     <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="igniter"
@@ -168,9 +181,14 @@ Notes: Hotfire
                     <label class="custom-control-label ckbx-label" for="igniter">Igniter</label>
                 </div>
                 <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
-                    <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="solenoidPress;solenoidDepress"
-                           onclick="onDigitalCheck(this);" disabled>
-                    <label class="custom-control-label ckbx-label" for="solenoidPress;solenoidDepress">Solenoid Pressure</label>
+                    <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="fuelPressSolenoid;fuelDepressSolenoid"
+                           onclick="onDigitalCheck(this,0.5);" disabled>
+                    <label class="custom-control-label ckbx-label" for="fuelPressSolenoid;fuelDepressSolenoid">Pressurize Fuel</label>
+                </div>
+                <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
+                    <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="oxPressSolenoid;oxDepressSolenoid"
+                           onclick="onDigitalCheck(this,0.5);" disabled>
+                    <label class="custom-control-label ckbx-label" for="oxPressSolenoid;oxDepressSolenoid">Pressurize Oxidizer</label>
                 </div>
             </div>
 
@@ -188,23 +206,23 @@ Notes: Hotfire
 
             <div class="row control-row">
                 <div class="col col-3 spinner">
-                    <label class="input-label" for="fuelCal" style="width: 100%;">
+                    <label class="input-label" for="fuelMainValveCal" style="width: 100%;">
                         <div class="container-fluid calLabel-container">
                             <div class="row">
-                                <div id="fuelMinLabel" class="col col-3 minLabel">1200</div>
-                                <div id="fuelLabel" class="col centerLabel">Fuel</div>
-                                <div id="fuelMaxLabel" class="col col-3 maxLabel">2000</div>
+                                <div id="fuelMainValveMinLabel" class="col col-3 minLabel">1200</div>
+                                <div id="fuelMainValveLabel" class="col centerLabel">Fuel Main Valve</div>
+                                <div id="fuelMainValveMaxLabel" class="col col-3 maxLabel">2000</div>
                             </div>
                         </div>
                     </label>
-                    <input id="fuelCal" class="manual-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                    <input id="fuelMainValveCal" class="manual-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
-                    <button class="btn btn-secondary cal-btn manual-obj" id="fuelMin"
+                    <button class="btn btn-secondary cal-btn manual-obj" id="fuelMainValveMin"
                             onclick="onCalibrateMin($(this));" disabled>Set Close
                     </button>
-                    <button class="btn btn-secondary cal-btn manual-obj" id="fuelMax"
+                    <button class="btn btn-secondary cal-btn manual-obj" id="fuelMainValveMax"
                             onclick="onCalibrateMax($(this));" disabled>Set Open
                     </button>
                 </div>
@@ -213,23 +231,48 @@ Notes: Hotfire
             <div class="row control-row">
 
                 <div class="col col-3 spinner">
-                    <label class="input-label" for="oxidizerCal">
+                    <label class="input-label" for="oxMainValveCal">
                         <div class="container-fluid calLabel-container">
                             <div class="row">
-                                <div id="oxidizerMinLabel" class="col col-3 minLabel">1200</div>
-                                <div id="oxidizerLabel" class="col centerLabel">Oxidizer</div>
-                                <div id="oxidizerMaxLabel" class="col col-3 maxLabel">2000</div>
+                                <div id="oxMainValveMinLabel" class="col col-3 minLabel">1200</div>
+                                <div id="oxMainValveLabel" class="col centerLabel">Oxidizer Main Valve</div>
+                                <div id="oxMainValveMaxLabel" class="col col-3 maxLabel">2000</div>
                             </div>
                         </div>
                     </label>
-                    <input id="oxidizerCal" class="manual-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                    <input id="oxMainValveCal" class="manual-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
-                    <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerMin"
+                    <button class="btn btn-secondary cal-btn manual-obj" id="oxMainValveMin"
                             onclick="onCalibrateMin($(this));" disabled>Set Close
                     </button>
-                    <button class="btn btn-secondary cal-btn manual-obj" id="oxidizerMax"
+                    <button class="btn btn-secondary cal-btn manual-obj" id="oxMainValveMax"
+                            onclick="onCalibrateMax($(this));" disabled>Set Open
+                    </button>
+                </div>
+            </div>
+
+            <div class="row control-row">
+
+                <div class="col col-3 spinner">
+                    <label class="input-label" for="oxSuperchargeValveCal">
+                        <div class="container-fluid calLabel-container">
+                            <div class="row">
+                                <div id="oxSuperchargeValveMinLabel" class="col col-3 minLabel">1200</div>
+                                <div id="oxSuperchargeValveLabel" class="col centerLabel">Oxidizer Supercharge Valve</div>
+                                <div id="oxSuperchargeValveMaxLabel" class="col col-3 maxLabel">2000</div>
+                            </div>
+                        </div>
+                    </label>
+                    <input id="oxSuperchargeValveCal" class="manual-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                           step="1" onchange="onServoSpinnerChange($(this));" disabled/>
+                </div>
+                <div class="col col-5">
+                    <button class="btn btn-secondary cal-btn manual-obj" id="oxSuperchargeValveMin"
+                            onclick="onCalibrateMin($(this));" disabled>Set Close
+                    </button>
+                    <button class="btn btn-secondary cal-btn manual-obj" id="oxSuperchargeValveMax"
                             onclick="onCalibrateMax($(this));" disabled>Set Open
                     </button>
                 </div>

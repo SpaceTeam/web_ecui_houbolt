@@ -190,20 +190,51 @@ function onServosLoad(jsonServosData)
     }
 }
 
-function onDigitalCheck(checkbox)
+//BE CAREFUL when using the delay feature: when enabling first digital gets set instantly and others
+//after the delay, when disabling however, the others get set first then the first one (mainly used for solenoid timing
+//when this was written)
+function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 {
     let id = $(checkbox).attr('id');
 
     let ids = id.split(";");
     console.log(ids);
 
-    if (checkbox.checked)
-    {
-        sendDigitalOutArr(ids, true);
+    // Check that the cooling pump and heating pump cannot be enabled at the same time
+    // Therefore, we disable the other button.
+    if (id === "coolingPump") {
+        $('#heatingPump').prop('disabled', checkbox.checked);
+    } else if (id === "heatingPump") {
+        $('#coolingPump').prop('disabled', checkbox.checked);
+    }
+
+    if (checkbox.checked) {
+        if (delaySecondDigitalOut === 0.0)
+        {
+            sendDigitalOutArr(ids, true);
+        }
+        else
+        {
+            sendDigitalOut(ids[0], true);
+            setTimeout(function () {
+                sendDigitalOutArr(ids.slice(1), true);
+            }, delaySecondDigitalOut*1000);
+        }
     }
     else
     {
-        sendDigitalOutArr(ids, false);
+        if (delaySecondDigitalOut === 0.0)
+        {
+            sendDigitalOutArr(ids, false);
+        }
+        else
+        {
+            sendDigitalOutArr(ids.slice(1), false);
+
+            setTimeout(function () {
+                sendDigitalOut(ids[0], false);
+            }, delaySecondDigitalOut*1000);
+        }
     }
 
 
