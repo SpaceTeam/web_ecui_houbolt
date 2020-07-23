@@ -273,17 +273,17 @@ function onServoEnable(checkbox) {
             $(this).attr('disabled', true);
         });
 
-        $('.manual-obj').each(function () {
-            $(this).prop('disabled', true);
-        });
+        // $('.manual-obj').each(function () {
+        //     $(this).prop('disabled', true);
+        // });s
 
-        $('.digitalOut').each(function () {
-            if ($(this).prop("checked") === true)
-            {
-                $(this).prop('checked', false);
-                $(this).click();
-            }
-        });
+        // $('.digitalOut').each(function () {
+        //     if ($(this).prop("checked") === true)
+        //     {
+        //         $(this).prop('checked', false);
+        //         $(this).click();
+        //     }
+        // });
 
         socket.emit('servos-disable');
     }
