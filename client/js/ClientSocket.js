@@ -96,6 +96,15 @@ function onServoSliderInput(servoSlider)
     let id = servoSlider.attr('id');
     let val = parseFloat(servoSlider.val());
     sendServo(id, val);
+
+    
+    if val > 0 {
+        $('#statusBar').css("background-color","#ff4d4d");
+        $('#statusBar').text("Valves are open !!!");
+    } else {
+        $('#statusBar').css("background-color","transparent");
+        $('#statusBar').text("");
+    }
 }
 
 function sendDigitalOut(doId, doValue)
