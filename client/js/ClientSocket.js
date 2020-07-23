@@ -99,7 +99,7 @@ function onServoSliderInput(servoSlider)
 
 
     if (val > 0) {
-        $('#statusBar').css("background-color","#ff4d4d");
+        $('#statusBar').css("background-color","deeppink");
         $('#statusBar').text("Valves are open !!!");
     } else {
         $('#statusBar').css("background-color","transparent");
