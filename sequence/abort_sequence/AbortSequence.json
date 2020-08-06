@@ -1,0 +1,12 @@
+{
+    "globals": {
+        "endTime": 3.2
+    },
+    "actions" : {
+        "fuel": 0,
+        "igniter": 0,
+        "oxidizer": 0,
+	"solenoidPress": 0,
+	"solenoidDepress": 0
+    }
+}
