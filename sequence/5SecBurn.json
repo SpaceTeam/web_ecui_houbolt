@@ -4,11 +4,14 @@
 		"endTime": 10,
 		"interpolation":
 		{
-			"fuel": "linear",
+			"fuelMainValve": "linear",
 			"igniter": "none",
-			"oxidizer": "linear",
-			"solenoidDepress": "none",
-			"solenoidPress": "none"
+			"oxMainValve": "linear",
+			"oxPressSolenoid": "none",
+			"oxDepressSolenoid": "none",
+			"fuelPressSolenoid": "none",
+			"fuelDepressSolenoid": "none",
+			"oxSuperchargeValve": "none"
 		},
 		"interval": 0.01,
 		"ranges":
@@ -27,11 +30,14 @@
 			[
 				{
 					"timestamp": 0.0,
-					"fuel": 0,
+					"fuelMainValve": 0,
 					"igniter": 0,
-					"oxidizer": 0,
-					"solenoidDepress": 0,
-					"solenoidPress": 0,
+					"oxMainValve": 0,
+					"fuelDepressSolenoid": 0,
+					"oxDepressSolenoid": 0,
+					"fuelPressSolenoid": 0,
+					"oxPressSolenoid": 0,
+					"oxSuperchargeValve": 100,
 					"sensorsNominalRange":
 					{
 						"chamberPressure": [-5, 20]
@@ -40,18 +46,30 @@
 			]
 		},
 		{
-			"timestamp": -5.5,
+			"timestamp": -7,
 			"name": "press",
 			"desc": "pressurize tanks",
 			"actions":
 			[
 				{
 					"timestamp": 0,
-					"solenoidDepress": 100
+					"oxSuperchargeValve": 0
 				},
 				{
 					"timestamp": 0.5,
-					"solenoidPress": 100
+					"fuelDepressSolenoid": 100
+				},
+				{
+					"timestamp": 1,
+					"fuelPressSolenoid": 100
+				},
+				{
+					"timestamp": 1.5,
+					"oxDepressSolenoid": 100
+				},
+				{
+					"timestamp": 2,
+					"oxPressSolenoid": 100
 				}
 			]
 		},
@@ -63,14 +81,14 @@
 			[
 				{
 					"timestamp": 0,
-                    "fuel": 0,
-					"oxidizer": 0,
+                    "fuelMainValve": 0,
+					"oxMainValve": 0,
 					"igniter": 100
 				},
 				{
 					"timestamp": 1,
-					"fuel": 100,
-					"oxidizer": 100,
+					"fuelMainValve": 100,
+					"oxMainValve": 100,
 					"sensorsNominalRange":
 					{
 						"chamberPressure": [4, 20]
@@ -90,7 +108,7 @@
 			[
 				{
 					"timestamp": 0,
-                    "fuel": 100,
+                    "fuelMainValve": 100,
 					"sensorsNominalRange":
 					{
 						"chamberPressure": [-5, 20]
@@ -98,12 +116,12 @@
 				},
 				{
 					"timestamp": 0.2,
-					"fuel": 0,
-                    "oxidizer": 100
+					"fuelMainValve": 0,
+                    "oxMainValve": 100
 				},
 				{
 					"timestamp": 0.4,
-					"oxidizer": 0
+					"oxMainValve": 0
 				}
 			]
 		},
@@ -114,12 +132,24 @@
 			"actions":
 			[
 				{
-					"timestamp": 0,
-					"solenoidPress": 0
+					"timestamp": 0.5,
+					"fuelPressSolenoid": 0
 				},
 				{
-					"timestamp": 0.5,
-					"solenoidDepress": 0
+					"timestamp": 1,
+					"fuelDepressSolenoid": 0
+				},
+				{
+					"timestamp": 1.5,
+					"oxPressSolenoid": 0
+				},
+				{
+					"timestamp": 2,
+					"oxDepressSolenoid": 0
+				},
+				{
+					"timestamp": 2.5,
+					"oxSuperchargeValve": 100
 				}
 			]
 		},
@@ -131,11 +161,14 @@
 			[
 				{
 					"timestamp": 0.0,
-					"fuel": 0,
+					"fuelMainValve": 0,
 					"igniter": 0,
-					"oxidizer": 0,
-					"solenoidPress": 0,
-					"solenoidDepress": 0
+					"oxMainValve": 0,
+					"fuelDepressSolenoid": 0,
+					"oxDepressSolenoid": 0,
+					"fuelPressSolenoid": 0,
+					"oxPressSolenoid": 0,
+					"oxSuperchargeValve": 100
 				}
 			]
 		}
