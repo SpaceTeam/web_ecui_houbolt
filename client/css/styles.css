@@ -108,7 +108,7 @@ form input {
 }
 
 div#servo-container > button {
-    margin-top: 60px;
+    margin-top: 1.3rem;
 }
 
 #sequenceChart {
@@ -129,7 +129,9 @@ div#servo-container > button {
 
 #myTabContent
 {
-    height: 35rem;
+    /*height: 35rem;*/
+    height: auto;
+    padding-bottom: 4rem;
 }
 
 #titleBar {
@@ -228,7 +230,7 @@ hr {
 }
 
 .control-row {
-    padding-top: 60px;
+    padding-top: 1.3rem;
 }
 
 .spinner {
