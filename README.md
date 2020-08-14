@@ -95,7 +95,7 @@ The communication Protocol used between Web-Client and Web-Server is called Sock
 The **LLServer** functions mainly as an accurate Timer and sends commands defined by the Sequence-File
 to the **Hedgehog-Controller**
 
-![ECUI Architecture](https://github.com/SpaceTeam/TXV_ECUI_WEB/blob/dev/ECUI.png)
+![ECUI Architecture](img/ECUI.png)
 
 
 ## Web-Client
