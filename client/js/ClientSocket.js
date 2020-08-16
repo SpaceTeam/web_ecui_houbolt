@@ -26,10 +26,10 @@ document.onkeydown = function (event) {
             code = event.keyCode;
         }
 
-        if (code === ' ' && !seqButton.prop('disabled'))
-        {
-            seqButton.click();
-        }
+        // if (code === ' ' && !seqButton.prop('disabled'))
+        // {
+        //     seqButton.click();
+        // }
 
     }
 
@@ -63,12 +63,14 @@ $('#toggleSequenceButton').click(function()
 
 });
 $('#saftlButton').click(function() {
-    $('#fuel').each(function () {
+    $('#saftlButton').prop('disabled', true);
+    $('#fuelMainValve').each(function () {
         let slider = $(this);
         let lastVal = slider.val();
         slider.val(slider.attr('max')).trigger('input');
         setTimeout(function () {
             slider.val(lastVal).trigger('input');
+            $('#saftlButton').prop('disabled', false);
         }, 2000);
     })
 });
@@ -253,7 +255,7 @@ function onServoEnable(checkbox) {
             $(this).attr('disabled', false);
         });
 
-        $('.manual-obj').each(function () {
+        $('.servo-enable-obj').each(function () {
             $(this).prop('disabled', false);
         });
 
@@ -266,23 +268,20 @@ function onServoEnable(checkbox) {
 
         $('#toggleSequenceButton').prop('disabled', false);
 
-        $('.range-slider__range').each(function () {
-            //$(this).val(0).trigger('input');
-        });
         $('.range-slider__value').each(function () {
             $(this).attr('disabled', true);
         });
 
-        $('.manual-obj').each(function () {
+        $('.servo-enable-obj').each(function () {
             $(this).prop('disabled', true);
         });
 
         $('.digitalOut').each(function () {
-            if ($(this).prop("checked") === true)
-            {
-                $(this).prop('checked', false);
-                $(this).click();
-            }
+            // if ($(this).prop("checked") === true)
+            // {
+            //     $(this).prop('checked', false);
+            //     $(this).click();
+            // }
         });
 
         socket.emit('servos-disable');

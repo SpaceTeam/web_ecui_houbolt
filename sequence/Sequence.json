@@ -1,0 +1,122 @@
+{
+    "globals": {
+        "startTime": -12,
+        "endTime": 7,
+        "interval": 0.01,
+        "interpolation": {
+            "igniter": "none",
+            "fuel": "linear",
+            "oxidizer": "linear"
+        },
+        "ranges": [
+            "chamberPressure"
+        ]
+    },
+    "data": [
+        {
+            "timestamp": "START",
+            "name": "All to Zero",
+            "desc": "sets all outputs to 0",
+            "actions": [
+                {
+                    "fuel": 0,
+                    "igniter": 0,
+                    "oxidizer": 0,
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [-5.0, 20.0]
+                    },
+                    "timestamp": 0.0
+                }
+            ]
+        },
+        {
+            "timestamp": 0.0,
+            "name": "Start Engine",
+            "desc": "start up engine",
+            "actions": [
+                {
+                    "fuel": 0,
+                    "oxidizer": 0,
+                    "timestamp": 0.0
+                },
+		        {
+                    "igniter": 100,
+                    "timestamp": 0.1
+                },
+                {
+                    "fuel": 50,
+                    "oxidizer": 50,
+                    "timestamp": 0.5
+                },
+                {
+                    "fuel": 100,
+                    "oxidizer": 100,
+                    "timestamp": 1.0
+                },
+                {
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [5.0, 20.0]
+                    },
+                    "timestamp": 1.1
+                },
+                {
+                    "igniter": 0,
+                    "timestamp": 2.5
+                }
+            ]
+        },
+        {
+            "timestamp": 5.0,
+            "name": "Shutdown Engine",
+            "desc": "shut down engine",
+            "actions": [
+                {
+                    "fuel": 100,
+                    "igniter": 0,
+                    "oxidizer": 100,
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [5.0, 20.0]
+                    },
+                    "timestamp": 0.9
+                },
+                {
+                    "sensorsNominalRange" : {
+                        "chamberPressure" : [-5.0, 20.0]
+                    },
+                    "timestamp": 1.0
+                },
+                {
+                    "fuel": 0,
+                    "igniter": 0,
+                    "oxidizer": 100,
+                    "timestamp": 1.2
+                },
+                {
+                    "fuel": 0,
+                    "igniter": 0,
+                    "oxidizer": 100,
+                    "timestamp": 1.3
+                },
+                {
+                    "fuel": 0,
+                    "igniter": 0,
+                    "oxidizer": 0,
+                    "timestamp": 1.5
+                }
+            ]
+        },
+        {
+            "timestamp": "END",
+            "name": "Reset",
+            "desc": "reset outputs",
+            "actions": [
+                {
+                    "fuel": 0,
+                    "igniter": 0,
+                    "oxidizer": 0,
+                    "timestamp": 0.0
+                }
+            ]
+        }
+    ]
+}
