@@ -79,6 +79,10 @@ $('#resetButton').click(function() {
     emptySensorCharts();
 });
 
+$('#tareButton').click(function() {
+    socket.emit('tare');
+});
+
 function onSequenceSelectChange(value)
 {
     socket.emit('sequence-set', value);

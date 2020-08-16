@@ -344,6 +344,14 @@ ioClient.on('connection', function(socket){
 
     });
 
+    socket.on('tare', function(){
+        console.log('tare');
+        if (master === socket.id) {
+            llServerMod.sendMessage(llServer, 'tare');
+        }
+
+    });
+
     socket.on('disconnect', function(msg){
         console.log('user disconnected');
         if (master === socket.id) {

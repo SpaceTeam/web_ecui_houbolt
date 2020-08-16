@@ -204,7 +204,7 @@ For TCP Sockets this is not the case. For consistency a message over TCP Sockets
 | servos-calibrate | [JSON Servos Calibrate Format](#servos-calibrate-format) | set new min or max position for an array of servos |
 | servos-set | [JSON Servos Set Format](#servos-set-format) | set servo position between 0% and 100% |
 | servos-set-raw | [JSON Servos Set Raw Format](#servos-set-raw-format) | set servo raw position in microseconds |
-
+| tare | none | tares all load cells |
 ---
 ### Web-Server ---> Web-Client
 
@@ -255,6 +255,7 @@ These messages are sent from the Server to each connected client
 | servos-calibrate | [JSON Servos Calibrate Format](#servos-calibrate-format) | tells LLServer to set new endpoints and feedbacks if there are any |
 | servos-set | [JSON Servos Set Format](#servos-set-format) | set servo position between 0% and 100% |
 | servos-set-raw | [JSON Servos Set Raw Format](#servos-set-raw-format) | set servo raw position in microseconds |
+| tare | none | tares all load cells |
 
 ---
 ### LLServer ---> Web-Server
