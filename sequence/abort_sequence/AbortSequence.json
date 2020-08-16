@@ -1,0 +1,15 @@
+{
+    "globals": {
+        "endTime": 3.2
+    },
+    "actions" : {
+        "fuelMainValve": 0,
+        "igniter": 0,
+        "oxMainValve": 0,
+        "fuelDepressSolenoid": 0,
+		"oxDepressSolenoid": 0,
+		"fuelPressSolenoid": 0,
+		"oxPressSolenoid": 0,
+        "oxSuperchargeValve": 100
+    }
+}
