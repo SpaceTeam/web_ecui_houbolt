@@ -13,7 +13,7 @@ module.exports = class SequenceManager {
     static _syncCallback;
     static _running = false;
     static _syncInterval;
-    static _sequencePath = sequenceSaveDir + "Sequence.json";
+    static _sequencePath = sequenceSaveDir + SequenceManager.getAllSequences()[0];
     static _abortSequencePath = abortSequenceSaveDir + "AbortSequence.json";
 
     static init() {

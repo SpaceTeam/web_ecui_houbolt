@@ -26,10 +26,10 @@ document.onkeydown = function (event) {
             code = event.keyCode;
         }
 
-        if (code === ' ' && !seqButton.prop('disabled'))
-        {
-            seqButton.click();
-        }
+        // if (code === ' ' && !seqButton.prop('disabled'))
+        // {
+        //     seqButton.click();
+        // }
 
     }
 
