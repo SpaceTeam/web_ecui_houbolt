@@ -364,6 +364,7 @@ ioClient.on('connection', function(socket){
         clientsCount--;
         if (clientsCount === 0)
         {
+            llServerMod.sendMessage(llServer, 'abort');
             llServerMod.sendMessage(llServer, 'sensors-stop');
         }
     });
