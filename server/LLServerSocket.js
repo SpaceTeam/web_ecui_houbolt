@@ -78,6 +78,9 @@ module.exports = {
             // }
             //
             // if (correct) {
+                console.log("------------------");
+                console.log(msg);
+                console.log("------------------");
                 let strMsg = JSON.stringify(msg);
                 client.write(strMsg + '\n');
             // }
