@@ -69,8 +69,20 @@ class SensorChart
         // range.endValue = 20000;
 
         var nextColor = this.amColorSet.next();
+        console.log(nextColor);
         series.stroke = nextColor;
         series.tooltip.background.fill = nextColor;
+
+        if (series.name.startsWith("oxVentV"))
+              series.stroke = am4core.color("#FF00FF");
+        else if (series.name.startsWith("ox"))
+              series.stroke = am4core.color("#0000FF");
+        else if (series.name.startsWith("fuel"))
+              series.stroke = am4core.color("#FF0000");
+	else
+              series.stroke = am4core.color("#00FF00");
+	
+
 
         // Make bullets grow on hover
         // var bullet = series.bullets.push(new am4charts.CircleBullet());
