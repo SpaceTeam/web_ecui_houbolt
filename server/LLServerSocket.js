@@ -79,7 +79,7 @@ module.exports = {
             //
             // if (correct) {
                 let strMsg = JSON.stringify(msg);
-                client.write(strMsg + '\0');
+                client.write(strMsg + '\n');
             // }
         }
         else
