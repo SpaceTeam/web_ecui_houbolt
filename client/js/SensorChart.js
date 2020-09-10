@@ -73,10 +73,15 @@ class SensorChart
         series.stroke = nextColor;
         series.tooltip.background.fill = nextColor;
 
-        if(series.name.startsWith("ox"))
-              series.stroke = am4core.color("#00FF00");
-        else if(series.name.startsWith("fuel"))
+        if (series.name.startsWith("oxVentV"))
+              series.stroke = am4core.color("#FF00FF");
+        else if (series.name.startsWith("ox"))
               series.stroke = am4core.color("#0000FF");
+        else if (series.name.startsWith("fuel"))
+              series.stroke = am4core.color("#FF0000");
+	else
+              series.stroke = am4core.color("#00FF00");
+	
 
 
         // Make bullets grow on hover
