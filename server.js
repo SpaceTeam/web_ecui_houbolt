@@ -370,55 +370,66 @@ ioClient.on('connection', function(socket){
     });
 });
 
+var llServerMsg = "";
+
 function processLLServerMessage(data) {
     // Print received client data and length.
-    dataArr = data.split("\n");
-
-    if (dataArr.length > 2)
+    llServerMsg += data;
+    let index = llServerMsg.lastIndexOf("\n");
+    if (index !== -1)
     {
-        console.log("multiple messages detected");
+        dataArr = llServerMsg.split("\n");
 
-    }
+        llServerMsg = llServerMsg.substring(index+1);
+        if (llServerMsg !== "")
+            console.log("uncomplete substring msg:", llServerMsg);
 
-    let jsonData;
-    for (let dataInd = 0; dataInd < dataArr.length-1; dataInd++) // ignore last empty string
-    {
-        //console.log(dataArr[dataInd]);
-        jsonData = JSON.parse(dataArr[dataInd]);
+        if (dataArr.length > 2)
+        {
+            console.log("multiple messages detected");
 
-        let type = jsonData.type;
+        }
 
-        switch (type) {
-            case "TEST":
-                console.log("hello");
-                break;
-            case "timer-start":
-                console.log("timer-start");
-                eventEmitter.emit('onTimerStart', ioClient);
-                break;
-            case "timer-sync":
-                console.log("timer-sync");
-                let time = Math.round(jsonData.content.toPrecision(3) * 100) / 100;
-                console.log(jsonData.content.toPrecision(3));
-                console.log(time);
-                eventEmitter.emit('onSequenceSync', ioClient, time);
-                break;
-            case "timer-done":
-                console.log("timer-done");
-                eventEmitter.emit('onSequenceDone', ioClient);
-                break;
-            case "sensors":
-                ioClient.emit('sensors', jsonData.content);
-                break;
-            case "servos-load":
-                console.log("servos-load");
-                ioClient.emit('servos-load', jsonData.content);
-                break;
-            case "abort":
-                console.log("abort from llserver");
-                eventEmitter.emit('onAbortAll', ioClient, jsonData.content);
-                break;
+        let jsonData;
+        for (let dataInd = 0; dataInd < dataArr.length-1; dataInd++) // ignore last empty string
+        {
+            //console.log(dataArr[dataInd]);
+            jsonData = JSON.parse(dataArr[dataInd]);
 
+            let type = jsonData.type;
+
+            switch (type) {
+                case "TEST":
+                    console.log("hello");
+                    break;
+                case "timer-start":
+                    console.log("timer-start");
+                    eventEmitter.emit('onTimerStart', ioClient);
+                    break;
+                case "timer-sync":
+                    console.log("timer-sync");
+                    let time = Math.round(jsonData.content.toPrecision(3) * 100) / 100;
+                    console.log(jsonData.content.toPrecision(3));
+                    console.log(time);
+                    eventEmitter.emit('onSequenceSync', ioClient, time);
+                    break;
+                case "timer-done":
+                    console.log("timer-done");
+                    eventEmitter.emit('onSequenceDone', ioClient);
+                    break;
+                case "sensors":
+                    ioClient.emit('sensors', jsonData.content);
+                    break;
+                case "servos-load":
+                    console.log("servos-load");
+                    ioClient.emit('servos-load', jsonData.content);
+                    break;
+                case "abort":
+                    console.log("abort from llserver");
+                    eventEmitter.emit('onAbortAll', ioClient, jsonData.content);
+                    break;
+
+            }
         }
     }
 }
