@@ -37,7 +37,7 @@
 					"oxDepressSolenoid": 0,
 					"fuelPressSolenoid": 0,
 					"oxPressSolenoid": 0,
-					"oxSuperchargeValve": 100,
+					"oxSuperchargeValve": 0,
 					"sensorsNominalRange":
 					{
 						"chamberPressure": [-5, 20]
@@ -53,7 +53,7 @@
 			[
 				{
 					"timestamp": 0,
-					"oxSuperchargeValve": 0
+					"oxSuperchargeValve": 100
 				},
 				{
 					"timestamp": 0.5,
@@ -149,7 +149,7 @@
 				},
 				{
 					"timestamp": 2.5,
-					"oxSuperchargeValve": 100
+					"oxSuperchargeValve": 0
 				}
 			]
 		},
@@ -168,7 +168,7 @@
 					"oxDepressSolenoid": 0,
 					"fuelPressSolenoid": 0,
 					"oxPressSolenoid": 0,
-					"oxSuperchargeValve": 100
+					"oxSuperchargeValve": 0
 				}
 			]
 		}
