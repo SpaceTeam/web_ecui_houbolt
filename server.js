@@ -112,6 +112,11 @@ var onSequenceStart = function (ioClient, socket, msg) {
     }
 }
 
+var onPostSeqComment = function (ioClient, socket, msg) {
+    console.log('send-postseq-comment')
+    llServerMod.sendMessage(llServer, 'send-postseq-comment', [msg]);
+}
+
 var onSequenceSync = function (ioClient, time) {
     console.log('sequence sync');
 
@@ -189,6 +194,7 @@ eventEmitter.on('onChecklistTick', onChecklistTick);
 
 eventEmitter.on('onSequenceLoad', onSequenceLoad);
 eventEmitter.on('onSequenceStart', onSequenceStart);
+eventEmitter.on('onPostSeqComment', onPostSeqComment);
 eventEmitter.on('onSequenceSync', onSequenceSync);
 eventEmitter.on('onSequenceDone', onSequenceDone);
 
@@ -277,6 +283,15 @@ ioClient.on('connection', function(socket){
 
         }
     });
+
+    socket.on('send-postseq-comment', function(msg){
+        console.log('send-postseq-comment');
+        if (master === socket.id) {
+            eventEmitter.emit('onPostSeqComment', ioClient, socket, msg);
+
+        }
+    });
+
 
     socket.on('sequence-set', function(msg){
         console.log('sequence-set');
