@@ -14,7 +14,7 @@ module.exports = {
             msgRecvCallback(data);
         });
 
-        // When client send data complete.
+        // When client disconnects.
         client.on('end', function () {
             console.log('Client disconnect.');
 
@@ -65,25 +65,21 @@ module.exports = {
             msg.type = type;
             msg.content = content;
 
-            console.log(msg);
-            // let correct = true;
-            // switch (type) {
-            //     case 'abort':
-            //         break;
-            //     case 'sequence-start':
-            //         break;
-            //     default:
-            //         console.error("message not supported");
-            //         correct = false;
-            // }
-            //
-            // if (correct) {
-                console.log("------------------");
-                console.log(msg);
-                console.log("------------------");
-                let strMsg = JSON.stringify(msg);
-                client.write(strMsg + '\n');
-            // }
+            // console.log("-JSON-----------------");
+            // console.log(msg);
+            // console.log("-STR-----------------");
+            let strMsg = JSON.stringify(msg);
+            // console.log(strMsg);
+            
+            //Header used to identify the packet length
+            var header = new Uint8Array(2);
+            var strLen = strMsg.length;
+            header[1] = strLen & 0xFF;
+            header[0] = (strLen >> 8) & 0xFF;
+
+            client.write(header);
+            client.write(strMsg);
+
         }
         else
         {
