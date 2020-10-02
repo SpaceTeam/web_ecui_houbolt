@@ -1,4 +1,5 @@
 module.exports = {
+
     onLLServerConnect: function(client, msgRecvCallback) {
 
         console.log('Client connect. Client local address : ' + client.localAddress + ':' + client.localPort + '. client remote address : ' + client.remoteAddress + ':' + client.remotePort);
@@ -9,7 +10,6 @@ module.exports = {
 
         // When receive client data.
         client.on('data', function (data) {
-
             //console.log('client message');
             msgRecvCallback(data);
         });
@@ -36,6 +36,11 @@ module.exports = {
         client.on('timeout', function () {
             console.log('Client request time out. ');
         })
+
+        client.on('error', function(err) {
+            // process error here
+            console.log(err);
+        });
 
         return client;
     },
