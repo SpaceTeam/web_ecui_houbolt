@@ -35,7 +35,10 @@ document.onkeydown = function (event) {
 
 
 };
-
+$('#sendPostSeqCommentButton').click(function()
+{
+    socket.emit('send-postseq-comment', $('#commentTextbox').val() + '\n');
+});
 $('#toggleSequenceButton').click(function()
 {
     if ($(this).text() === 'Start Sequence')
@@ -48,6 +51,7 @@ $('#toggleSequenceButton').click(function()
                 $(this).prop('disabled', true);
             }
         });
+        $('#sendPostSeqCommentButton').prop('disabled', false);
     }
     else if ($(this).text() === 'Abort Sequence')
     {

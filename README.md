@@ -14,13 +14,14 @@ To enable all of these features, multiple Software Layers have been developed.
 
 1. [Run](#run)
 2. [Install](#install)
-3. [Architecture](#architecture)
-4. [Web-Client](#web-client)
-5. [Web-Server](#web-server)
-6. [LLServer](#llserver-low-level-server)
-7. [ECUI-Protocols](#ecui-protocols)
-8. [JSON-Formats](#json-formats)
-9. [Appendix](#appendix)
+3. [Docker](#docker)
+4. [Architecture](#architecture)
+5. [Web-Client](#web-client)
+6. [Web-Server](#web-server)
+7. [LLServer](#llserver-low-level-server)
+8. [ECUI-Protocols](#ecui-protocols)
+9. [JSON-Formats](#json-formats)
+10. [Appendix](#appendix)
 
 ## Run
 
@@ -84,6 +85,39 @@ if Warning Light is installed execute
 	sudo python3 ../warnlight/testapp_sock.py &
 	
 beforehand
+
+## Docker
+Alternatively TXV_ECUI_WEB (GUI) could be deployed via docker. Use the docker file found in the repo.
+
+```
+cd TXV_ECUI_WEB
+docker build . -t txv_ecui_web
+docker run -v `pwd`:/TXV_ECUI_WEB txv_ecui_web
+
+```
+
+For subsequent runs you can either create a new container ('docker run' cmd) or reuse the old one (use ls to figure out the name of the container):
+
+```
+docker container ls -a
+docker start <name/of/the/container>
+```
+
+If you end using docker don't forget to change the IP address that LLServer will try to reach the server (config.json)
+
+Finally you will have to setup port forwading using iptables (I couldn't test that, but the commands should be the following) on the RPI:
+
+```
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j DNAT --to 172.17.0.2:80
+sudo iptables -A FORWARD -p tcp -d 172.17.0.2 --dport 80 -j ACCEPT
+```
+
+1. eth0: is the interface to outside
+2. 172.17.0.2: is the address of the docker container
+3. 80: is the port for the webserver
+
+
 
 
 ## Architecture
@@ -195,6 +229,7 @@ For TCP Sockets this is not the case. For consistency a message over TCP Sockets
 | checklist-save | [JSON Checklist Format](#checklist-format) | tells server to save this json as the new Checklist |
 | checklist-tick | id:int | tells server that client ticked off a checklist item |
 | sequence-start | none | starts the sequence |
+| send-postseq-comment | comment:string | user comment for post sequence |
 | sequence-set | sequenceName:string | tells server to use this Sequence |
 | abortSequence-set | abortSequenceName:string | tells server to use this Abort Sequence |
 | sensors-start | none | tells WebServer that it shall send all sensors periodically | 
@@ -247,6 +282,7 @@ These messages are sent from the Server to each connected client
 |--|--|--|
 | abort | none | abort Sequence if running and start Abort Sequence automatically |
 | sequence-start | [JSON Sequence Start Format](#sequence-start-format) | tells LLServer that it shall start the Sequence which is transmitted with this message |
+| send-postseq-comment | comment:string | user comment for post sequence |
 | sensors-start | none | tells LLServer that it shall send all sensors periodically | 
 | sensors-stop | none | tells LLServer that it shall stop sending all sensors | 
 | servos-load | none | tells LLServer that it shall send all servo names and min and max values | 
