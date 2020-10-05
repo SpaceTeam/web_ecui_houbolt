@@ -38,7 +38,12 @@ document.onkeydown = function (event) {
 $('#sendPostSeqCommentButton').click(function()
 {
     socket.emit('send-postseq-comment', $('#commentTextbox').val() + '\n');
+    $('#sendPostSeqCommentButton').prop('disabled', true);
+    setTimeout(function () {
+        $('#sendPostSeqCommentButton').prop('disabled', false);
+    }, 400);
 });
+
 $('#toggleSequenceButton').click(function()
 {
     if ($(this).text() === 'Start Sequence')
