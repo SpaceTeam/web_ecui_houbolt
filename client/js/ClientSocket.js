@@ -268,7 +268,7 @@ function onServoEnable(checkbox) {
             $(this).attr('disabled', false);
         });
 
-        $('.servo-enable-obj').each(function () {
+        $('.manual-obj').each(function () {
             $(this).prop('disabled', false);
         });
 
@@ -285,7 +285,7 @@ function onServoEnable(checkbox) {
             $(this).attr('disabled', true);
         });
 
-        $('.servo-enable-obj').each(function () {
+        $('.manual-obj').each(function () {
             $(this).prop('disabled', true);
         });
 
