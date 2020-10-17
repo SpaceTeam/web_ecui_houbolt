@@ -453,8 +453,8 @@ app.get('/', function(req, res){
     res.sendFile(path + 'index.html');
 });
 
-app.get('/chart', function(req, res){
-    res.sendFile(path + 'chartTest.html');
+app.get('/pnid', function(req, res){
+    res.sendFile(path + 'pnid.html');
 });
 
 http.listen(port, function(){
