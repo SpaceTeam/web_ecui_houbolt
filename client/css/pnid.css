@@ -15,7 +15,7 @@
     .half-oval {
       height: 20%;
       width: 100%;
-      background-color: #555;
+      background-color: #aaaaaa;
       border-top-left-radius: 100%;
       border-top-right-radius: 100%;
     }
@@ -36,7 +36,7 @@
         width: 0px;
         height: 0px;
         border-top: 50px solid transparent;
-        border-left: 100px solid #555;
+        border-left: 100px solid #aaaaaa;
         border-bottom: 50px solid transparent;
         transform: rotate(0deg);
     }
@@ -48,21 +48,27 @@
     .line {
         width: 0px;
         height: 50%;
-        border-left: 3px solid #555;
+        border-left: 3px solid #aaaaaa;
+    }
+    .pipe {
+        width: 1px;
+        height: 100%;
+        border-left: 5px solid #aaaaaa;
     }
     .circle-hollow {
         width: 30%;
         height: 30%;
-        border: 3px solid #555;
+        border: 3px solid #aaaaaa;
         border-radius: 50%;
     }
     .square-hollow {
         width: 30%;
         height: 30%;
-        border: 3px solid #555;
+        border: 3px solid #aaaaaa;
     }
     .trapezoid {
-        border-bottom: 70px solid #555;
+        border-bottom: 70px solid #aaaaaa;
+        /*border-bottom: 70px solid #555;*/
         border-left: 25px solid transparent;
         border-right: 25px solid transparent;
         height: 0;
@@ -88,6 +94,7 @@
         background-color: transparent;
         border: none;
         font-size: 1.3rem;
+        color: white;
     }
     #pnid {
         /*background-image: url("../img/P&ID Small Test Stand.vpd.png");*/
@@ -96,5 +103,10 @@
         background-position: center;
     }
     .pnid-container {
-
+        /*border: solid;*/
+    }
+    .valve-label
+    {
+        background-color: #2d2d2d;
+        color: white;
     }

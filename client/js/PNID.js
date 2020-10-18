@@ -6,6 +6,13 @@ const VALVE_STATUS_PALETTE = {
 	CLOSE: "#1f9723"
 };
 
+const PIPE_STATUS_PALETTE = {
+	PRESSURIZED_OX: "#2a38d2",
+	DEPRESSURIZED_OX: "#aaaaaa",
+	PRESSURIZED_FUEL: "#8e2024",
+	DEPRESSURIZED_FUEL: "#aaaaaa"
+};
+
 const VALVE_STATUS_THRESHOLDS = {
 	OPEN: [81,100],
 	BETWEEN: [21,80],
@@ -18,6 +25,11 @@ setInterval(function () {
 	$("#pnid-oxSuperchargeValve,#pnid-oxVentValve, #pnid-oxMainValve, #pnid-fuelMainValve").find(".pnid-input").each(function () {
 		//console.log(this.parentNode)
 		this.value = val;
+		$(this).change();
+	});
+	$("#pnid-oxTankPressure, #pnid-fuelTankPressure").find(".pnid-input").each(function () {
+		//console.log(this.parentNode)
+		this.value = (val+0.1234).toFixed(2) + " bar";
 		$(this).change();
 	});
 	$("#pnid-oxDepressSolenoid, #pnid-fuelDepressSolenoid").find(".pnid-input").each(function () {
@@ -34,6 +46,56 @@ setInterval(function () {
 		//console.log(this)
 		this.value = val <= 70 ? "Pressurized" : "Depressurized";
 		$(this).change();
+	});
+	$(".pnid-oxPipes").each(function () {
+		//console.log(this)
+		if (val <= 70){
+			$(this).css("border-left", "7px solid " + PIPE_STATUS_PALETTE.PRESSURIZED_OX);
+			//$(this).css("box-shadow", "0px 0px 5px 2px " + PIPE_STATUS_PALETTE.PRESSURIZED);
+		}
+		else
+		{
+			$(this).css("border-left", "5px solid " + PIPE_STATUS_PALETTE.DEPRESSURIZED_OX);
+			//$(this).css("box-shadow", "none");
+		}
+	});
+	$(".pnid-fuelPipes").each(function () {
+		//console.log(this)
+		if (val <= 70){
+			$(this).css("border-left", "7px solid " + PIPE_STATUS_PALETTE.PRESSURIZED_FUEL);
+			//$(this).css("box-shadow", "0px 0px 5px 2px " + PIPE_STATUS_PALETTE.PRESSURIZED);
+		}
+		else
+		{
+			$(this).css("border-left", "5px solid " + PIPE_STATUS_PALETTE.DEPRESSURIZED_FUEL);
+			//$(this).css("box-shadow", "none");
+		}
+	});
+	$(".pnid-injectorOxPipes").each(function () {
+		//console.log(this)
+		if (val > 50 && val < 70){
+			$(this).css("border-left", "7px solid " + PIPE_STATUS_PALETTE.PRESSURIZED_OX);
+			//$(this).css("box-shadow", "0px 0px 5px 2px " + PIPE_STATUS_PALETTE.PRESSURIZED);
+		}
+		else
+		{
+			$(this).css("border-left", "5px solid " + PIPE_STATUS_PALETTE.DEPRESSURIZED_OX);
+			//$(this).css("box-shadow", "none");
+		}
+	});
+	$(".pnid-injectorFuelPipes").each(function () {
+		//console.log(this)
+		if (val > 50 && val < 70){
+			$(this).css("border-left", "7px solid " + PIPE_STATUS_PALETTE.PRESSURIZED_FUEL);
+			$('#injectorExhaust').removeAttr('hidden');
+			//$(this).css("box-shadow", "0px 0px 5px 2px " + PIPE_STATUS_PALETTE.PRESSURIZED);
+		}
+		else
+		{
+			$(this).css("border-left", "5px solid " + PIPE_STATUS_PALETTE.DEPRESSURIZED_FUEL);
+			$('#injectorExhaust').attr('hidden','true');
+			//$(this).css("box-shadow", "none");
+		}
 	});
 }, 100);
 
@@ -77,16 +139,30 @@ function onPNIDInputChange(input)
 
 		})
 	}
-	else if ($(par).hasClass( "pnid-tank" ))
+	else if ($(par).hasClass( "pnid-tank-ox" ))
 	{
 		$(par).find(".square, .half-oval").each(function () {
 			if (input.value.toLowerCase() === "depressurized")
 			{
-				$(this).css("background-color", VALVE_STATUS_PALETTE.CLOSE);
+				$(this).css("background-color", PIPE_STATUS_PALETTE.DEPRESSURIZED_OX);
 			}
 			else if (input.value.toLowerCase() === "pressurized")
 			{
-				$(this).css("background-color", VALVE_STATUS_PALETTE.OPEN);
+				$(this).css("background-color", PIPE_STATUS_PALETTE.PRESSURIZED_OX);
+			}
+
+		})
+	}
+	else if ($(par).hasClass( "pnid-tank-fuel" ))
+	{
+		$(par).find(".square, .half-oval").each(function () {
+			if (input.value.toLowerCase() === "depressurized")
+			{
+				$(this).css("background-color", PIPE_STATUS_PALETTE.DEPRESSURIZED_FUEL);
+			}
+			else if (input.value.toLowerCase() === "pressurized")
+			{
+				$(this).css("background-color", PIPE_STATUS_PALETTE.PRESSURIZED_FUEL);
 			}
 
 		})
