@@ -95,6 +95,21 @@ document.getElementById("pnid-fuelMainValve").onchange = function (evt) {
 	{
 		ignitePNID(false);
 	}
+	$(".pnid-injectorFuelPipes").each(function () {
+
+		if (evt.target.value >= VALVE_STATUS_THRESHOLDS.OPEN[0] &&
+			$("#pnid-fuelDepressSolenoid").find(".pnid-input")[0].value === "Close" &&
+			$("#pnid-fuelPressSolenoid").find(".pnid-input")[0].value === "Open")
+		{
+			$(this).css("border-left", "7px solid " + PIPE_STATUS_PALETTE.PRESSURIZED_FUEL);
+			//$(this).css("box-shadow", "0px 0px 5px 2px " + PIPE_STATUS_PALETTE.PRESSURIZED);
+		}
+		else
+		{
+			$(this).css("border-left", "5px solid " + PIPE_STATUS_PALETTE.DEPRESSURIZED_FUEL);
+			//$(this).css("box-shadow", "none");
+		}
+	});
 };
 
 document.getElementById("pnid-oxMainValve").onchange = function (evt) {
@@ -102,6 +117,21 @@ document.getElementById("pnid-oxMainValve").onchange = function (evt) {
 	{
 		ignitePNID(false);
 	}
+	$(".pnid-injectorOxPipes").each(function () {
+
+		if (evt.target.value >= VALVE_STATUS_THRESHOLDS.OPEN[0] &&
+			$("#pnid-oxDepressSolenoid").find(".pnid-input")[0].value === "Close" &&
+			$("#pnid-oxPressSolenoid").find(".pnid-input")[0].value === "Open")
+		{
+			$(this).css("border-left", "7px solid " + PIPE_STATUS_PALETTE.PRESSURIZED_OX);
+			//$(this).css("box-shadow", "0px 0px 5px 2px " + PIPE_STATUS_PALETTE.PRESSURIZED);
+		}
+		else
+		{
+			$(this).css("border-left", "5px solid " + PIPE_STATUS_PALETTE.DEPRESSURIZED_OX);
+			//$(this).css("box-shadow", "none");
+		}
+	});
 };
 
 function ignitePNID(ignite)
