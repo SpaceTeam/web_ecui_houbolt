@@ -17,7 +17,7 @@
 </head>
 
 <body style="width: auto; height: 100%; margin: auto; background-color: #2d2d2d;">
-    <div id="pnid" style="margin: auto; width: 1400px; height: 1200px; border-color: #4e4e4e; position: relative; background-color: #2d2d2d; z-index: -2;"> <!--background-color: #202020-->
+    <div id="pnid" style="margin: auto; width: 1400px; height: 1200px; border-color: #4e4e4e; position: relative; background-color: #2d2d2d; z-index: 0;"> <!--background-color: #202020-->
         <div id="oxSystem" class="abs pnid-container" style="height: 600px; width: 500px; top: 0%; left: 700px;">
 
             <div id="pnid-oxTank" class="abs pnid-tank pnid-tank-ox" style="width:90px; height:180px; top: 350px; left: 140px; color: white;">
@@ -49,7 +49,7 @@
                     <div class="abs line anchor-center" style="left: 50%; top: 0%; height: 100%;"></div>
                     <div class="abs circle-hollow text-center anchor-center valve-label" style="width: 40%; height: 40%; left: 50%; top: -50%;">P</div>
                 </div>
-                <input type="text" value="40 bar" class="abs pnid-input anchor-center" style="left: -20%; top: 10%;" onchange="onPNIDInputChange(this);"/>
+                <input type="text" value="40" unit="bar" class="abs pnid-input anchor-center" style="left: -20%; top: 10%;" onchange="onPNIDInputChange(this);"/>
             </div>
 
             <div id="pnid-oxDepressSolenoid" class="abs pnid-solenoid" style="width:100px; height:100px; top: 145px; left: 250px;">
@@ -109,7 +109,7 @@
                     <div class="abs line anchor-center" style="left: 50%; top: 0%; height: 100%;"></div>
                     <div class="abs circle-hollow text-center anchor-center valve-label" style="width: 40%; height: 40%; left: 50%; top: -50%;">P</div>
                 </div>
-                <input type="text" value="40 bar" class="abs pnid-input anchor-center text-center" style="left: 120%; top: 10%;" onchange="onPNIDInputChange(this);"/>
+                <input type="text" value="40" unit="bar" class="abs pnid-input anchor-center text-center" style="left: 120%; top: 10%;" onchange="onPNIDInputChange(this);"/>
             </div>
 
             <div id="pnid-fuelDepressSolenoid" class="abs pnid-solenoid" style="width:100px; height:100px; top: 145px; left: 149px; z-index: 5;">
@@ -185,6 +185,28 @@
                 <div class="abs pipe anchor-center pnid-injectorFuelPipes" style="height:60px; top: 165px; left: 488px; z-index: -5;"></div>
                 <div class="abs pipe anchor-center pnid-injectorFuelPipes" style="height:180px; top: 102px; left: 397px; z-index: -5; transform: rotate(-90deg)"></div>
                 <div class="abs pipe anchor-center pnid-injectorFuelPipes" style="height:25px; top: 203px; left: 313px; z-index: -5;"></div>
+            </div>
+
+            <div id="pnid-oxVenturiPressure" class="abs pnid-pressure anchor-center" style="width:100px; height:100px; top: 170px; left: 490px;">
+                <div class="abs" style="width:100%; height:100%; transform: rotate(90deg); z-index: -2;">
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%; height: 100%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="width: 40%; height: 40%; left: 50%; top: -50%;">P</div>
+                </div>
+                <input type="text" value="40" unit="bar" class="abs pnid-input anchor-center" style="left: 120%; top: 90%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+            <div id="pnid-fuelVenturiPressure" class="abs pnid-pressure anchor-center" style="width:100px; height:100px; top: 170px; left: 115px;">
+                <div class="abs" style="width:100%; height:100%; transform: rotate(-90deg); z-index: -2;">
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%; height: 100%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="width: 40%; height: 40%; left: 50%; top: -50%;">P</div>
+                </div>
+                <input type="text" value="40" unit="bar" class="abs pnid-input anchor-center" style="left: -20%; top: 90%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+            <div id="pnid-chamberPressure" class="abs pnid-pressure anchor-center" style="width:100px; height:100px; top: 240px; left: 275px;">
+                <div class="abs" style="width:100%; height:100%; transform: rotate(-90deg); z-index: -2;">
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%; height: 100%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="width: 40%; height: 40%; left: 50%; top: -50%;">P</div>
+                </div>
+                <input type="text" value="40" unit="bar" class="abs pnid-input anchor-center" style="left: -20%; top: 90%;" onchange="onPNIDInputChange(this);"/>
             </div>
         </div>
 

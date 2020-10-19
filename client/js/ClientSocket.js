@@ -51,9 +51,9 @@ $('#toggleSequenceButton').click(function()
         socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
         $(this).text('Abort Sequence');
         $('.tab-button').each(function () {
-            if ($(this).id !== "monitor-tab-button")
+            if ($(this).id !== "monitor-tab-button" && $(this).id !== "sequence-tab-button")
             {
-                $(this).prop('disabled', true);
+                //$(this).prop('disabled', true);
             }
         });
         $('#sendPostSeqCommentButton').prop('disabled', false);
@@ -63,7 +63,7 @@ $('#toggleSequenceButton').click(function()
         abortSequence("abort from user");
         $(this).text('Start Sequence');
         $('.tab-button').each(function () {
-            if ($(this).id !== "monitor-tab-button")
+            if ($(this).id !== "monitor-tab-button" && $(this).id !== "sequence-tab-button")
             {
                 $(this).prop('disabled', false);
             }
@@ -359,6 +359,63 @@ function timerTick()
 
     seqChart.update(timeMillis);
 
+    //update pnid - doesn't work if timestamps overlap (don't try it anyways)
+    let latestAction = undefined;
+    for (let ind in jsonSequence.data)
+    {
+        let currCmd = jsonSequence.data[ind];
+        let currCmdTimestamp = seqChart.getTimestamp(currCmd, jsonSequence.globals.startTime, jsonSequence.globals.startTime);
+        if (currCmdTimestamp <= time)
+        {
+
+            for (let actionInd in currCmd.actions)
+            {
+                let currAction = currCmd.actions[actionInd];
+                if ((currCmdTimestamp + currAction.timestamp) <= time)
+                {
+                    latestAction = currAction;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        else
+        {
+            break;
+        }
+
+    }
+
+    for (let key in latestAction)
+    {
+        if (key.includes("DepressSolenoid"))
+        {
+            $("#pnid-" + key).find(".pnid-input").each(function () {
+
+                this.value = (latestAction[key] === 0) ? "Open" : "Close";
+                $(this).change();
+            });
+        }
+        else if (key.includes("Solenoid"))
+        {
+            $("#pnid-" + key).find(".pnid-input").each(function () {
+
+                this.value = (latestAction[key] === 0) ? "Close" : "Open";
+                $(this).change();
+            });
+        }
+        else if (key.includes("igniter"))
+        {
+            if (latestAction[key] !== 0)
+            {
+                ignitePNID(true);
+            }
+        }
+
+    }
+
     timeMillis += intervalMillis;
 }
 
@@ -368,7 +425,7 @@ function sequenceButtonStop()
 
     //disable all other tabs
     $('.tab-button').each(function () {
-        if ($(this).id !== "monitor-tab-button")
+        if ($(this).id !== "monitor-tab-button" && $(this).id !== "sequence-tab-button")
         {
             $(this).prop('disabled', false);
         }
@@ -633,6 +690,11 @@ socket.on('sensors', function(jsonSens) {
     for (let sensorInd in jsonSens)
     {
         let jsonSen = jsonSens[sensorInd];
+
+        //update pnid
+        updatePNID(jsonSen);
+
+        //generate plot and or update
         let sensor;
         if (jsonSen.name in jsonSensors)
         {
