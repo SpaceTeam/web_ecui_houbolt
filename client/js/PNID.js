@@ -20,6 +20,53 @@ const VALVE_STATUS_THRESHOLDS = {
 	CLOSE: [0,20]
 }
 
+const PRESSURE_STATUS_PALETTE = {
+	CRITICAL_HIGH: "#8e2024",
+	HIGH: "#ce670b",
+	NOMINAL: "#1f9723",
+	LOW: "#0079ce",
+	CRITICAL_LOW: "#8e2024"
+};
+
+const PRESSURE_STATUS_THRESHOLDS = {
+	oxVenturiPressure: [5, 40],
+	fuelVenturiPressure: [5, 30],
+	oxTankPressure: [5, 40],
+	fuelTankPressure: [5, 30],
+	chamberPressure: [5, 20]
+};
+
+$('.pnid-pressure .pnid-input').on('change',function() {
+	let id = this.parentNode.id;
+	//strip pnid
+	id = id.replace("pnid-","");
+	if (PRESSURE_STATUS_THRESHOLDS.hasOwnProperty(id))
+	{
+		if (this.value.match(/[\d.]+/)[0] < PRESSURE_STATUS_THRESHOLDS[id][0])
+		{
+			console.log("hello");
+			$(this.parentNode).find("*").css("border-color", PRESSURE_STATUS_PALETTE.LOW);
+			$(this.parentNode).find("*").css("color", PRESSURE_STATUS_PALETTE.LOW);
+		}
+		else if (this.value.match(/[\d.]+/)[0] > PRESSURE_STATUS_THRESHOLDS[id][1])
+		{
+			$(this.parentNode).find("*").css("border-color", PRESSURE_STATUS_PALETTE.HIGH);
+			$(this.parentNode).find("*").css("color", PRESSURE_STATUS_PALETTE.HIGH);
+		}
+		else
+		{
+			$(this.parentNode).find("*").css("border-color", PRESSURE_STATUS_PALETTE.NOMINAL);
+			$(this.parentNode).find("*").css("color", PRESSURE_STATUS_PALETTE.NOMINAL);
+		}
+
+	}
+	else
+	{
+		console.error("pressure sensor in status object not found!");
+	}
+
+});
+
 function updatePNID(jsonSensor)
 {
 	$("#pnid-" + jsonSensor.name).find(".pnid-input").each(function () {
@@ -146,6 +193,16 @@ function ignitePNID(ignite)
 	}
 }
 
+setInterval(function () {
+	val = (val + 1) % 100;
+	//console.log($("#pnid-oxSuperchargeValve").find(".pnid-label"))
+
+	$(".pnid-pressure").find(".pnid-input").each(function () {
+		//console.log(this.parentNode)
+		this.value = (val+0.1234).toFixed(2) ;
+		$(this).change();
+	});
+}, 100);
 
 // setInterval(function () {
 // 	val = (val + 1) % 100;
