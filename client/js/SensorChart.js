@@ -8,6 +8,8 @@ class SensorChart
         //am4core.useTheme(am4themes_animated);
         // Themes end
 
+        am4core.options.onlyShowOnViewport = true;
+
         this.amColorSet = new am4core.ColorSet();
         this.seriesList = [];
         this.isRunning = false;
@@ -40,6 +42,16 @@ class SensorChart
             this.addData(data);
         }
         this._createCursor();
+    }
+
+    enable()
+    {
+        this.chart.disabled = false;
+    }
+
+    disable()
+    {
+        this.chart.disabled = true;
     }
 
     //if indicator then strokecolor must be defined

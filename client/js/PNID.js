@@ -20,7 +20,7 @@ const VALVE_STATUS_THRESHOLDS = {
 	CLOSE: [0,20]
 }
 
-const PRESSURE_STATUS_PALETTE = {
+const SENSOR_STATUS_PALETTE = {
 	CRITICAL_HIGH: "#8e2024",
 	HIGH: "#ce670b",
 	NOMINAL: "#1f9723",
@@ -28,35 +28,35 @@ const PRESSURE_STATUS_PALETTE = {
 	CRITICAL_LOW: "#8e2024"
 };
 
-const PRESSURE_STATUS_THRESHOLDS = {
+const SENSOR_STATUS_THRESHOLDS = {
 	oxVenturiPressure: [5, 40],
 	fuelVenturiPressure: [5, 30],
 	oxTankPressure: [5, 40],
 	fuelTankPressure: [5, 30],
-	chamberPressure: [5, 20]
+	chamberPressure: [5, 20],
+	thrust_Sum: [50,400],
 };
 
-$('.pnid-pressure .pnid-input').on('change',function() {
+$('.pnid-sensor .pnid-input').on('change',function() {
 	let id = this.parentNode.id;
 	//strip pnid
 	id = id.replace("pnid-","");
-	if (PRESSURE_STATUS_THRESHOLDS.hasOwnProperty(id))
+	if (SENSOR_STATUS_THRESHOLDS.hasOwnProperty(id))
 	{
-		if (this.value.match(/[\d.]+/)[0] < PRESSURE_STATUS_THRESHOLDS[id][0])
+		if (this.value.match(/-?[\d.]+/)[0] < SENSOR_STATUS_THRESHOLDS[id][0])
 		{
-			console.log("hello");
-			$(this.parentNode).find("*").css("border-color", PRESSURE_STATUS_PALETTE.LOW);
-			$(this.parentNode).find("*").css("color", PRESSURE_STATUS_PALETTE.LOW);
+			$(this.parentNode).find("*").css("border-color", SENSOR_STATUS_PALETTE.LOW);
+			$(this.parentNode).find("*").css("color", SENSOR_STATUS_PALETTE.LOW);
 		}
-		else if (this.value.match(/[\d.]+/)[0] > PRESSURE_STATUS_THRESHOLDS[id][1])
+		else if (this.value.match(/-?[\d.]+/)[0] > SENSOR_STATUS_THRESHOLDS[id][1])
 		{
-			$(this.parentNode).find("*").css("border-color", PRESSURE_STATUS_PALETTE.HIGH);
-			$(this.parentNode).find("*").css("color", PRESSURE_STATUS_PALETTE.HIGH);
+			$(this.parentNode).find("*").css("border-color", SENSOR_STATUS_PALETTE.HIGH);
+			$(this.parentNode).find("*").css("color", SENSOR_STATUS_PALETTE.HIGH);
 		}
 		else
 		{
-			$(this.parentNode).find("*").css("border-color", PRESSURE_STATUS_PALETTE.NOMINAL);
-			$(this.parentNode).find("*").css("color", PRESSURE_STATUS_PALETTE.NOMINAL);
+			$(this.parentNode).find("*").css("border-color", SENSOR_STATUS_PALETTE.NOMINAL);
+			$(this.parentNode).find("*").css("color", SENSOR_STATUS_PALETTE.NOMINAL);
 		}
 
 	}
@@ -67,16 +67,42 @@ $('.pnid-pressure .pnid-input').on('change',function() {
 
 });
 
-function updatePNID(jsonSensor)
+function updatePNID(name, value)
 {
-	$("#pnid-" + jsonSensor.name).find(".pnid-input").each(function () {
-		this.value = jsonSensor.value.toFixed(2);
-		$(this).change();
-	});
-	$("#pnid-" + jsonSensor.name.substring(0,jsonSensor.name.length-2)).find(".pnid-input").each(function () {
-		this.value = jsonSensor.value.toFixed(0);
-		$(this).change();
-	});
+	if (name.includes("DepressSolenoid"))
+	{
+		$("#pnid-" + name).find(".pnid-input").each(function () {
+
+			this.value = value ? "Close" : "Open";
+			$(this).change();
+		});
+	}
+	else if (name.includes("Solenoid"))
+	{
+		$("#pnid-" + name).find(".pnid-input").each(function () {
+
+			this.value = value ? "Open" : "Close";
+			$(this).change();
+		});
+	}
+	else if (name.includes("igniter"))
+	{
+		if (value)
+		{
+			ignitePNID(true);
+		}
+	}
+	else
+	{
+		$("#pnid-" + name.replace(" ", "_")).find(".pnid-input").each(function () {
+			this.value = value.toFixed(2);
+			$(this).change();
+		});
+		$("#pnid-" + name.substring(0, name.length - 2)).find(".pnid-input").each(function () {
+			this.value = value.toFixed(0);
+			$(this).change();
+		});
+	}
 }
 
 document.getElementById("pnid-oxPressSolenoid").onchange = function () {
@@ -138,7 +164,9 @@ document.getElementById("pnid-fuelPressSolenoid").onchange = function () {
 };
 
 document.getElementById("pnid-fuelMainValve").onchange = function (evt) {
-	if (evt.target.value <= VALVE_STATUS_THRESHOLDS.CLOSE[1])
+	if (evt.target.value <= VALVE_STATUS_THRESHOLDS.CLOSE[1] ||
+		($("#pnid-oxDepressSolenoid").find(".pnid-input")[0].value === "Open") ||
+		$("#pnid-fuelDepressSolenoid").find(".pnid-input")[0].value === "Open")
 	{
 		ignitePNID(false);
 	}
@@ -160,7 +188,9 @@ document.getElementById("pnid-fuelMainValve").onchange = function (evt) {
 };
 
 document.getElementById("pnid-oxMainValve").onchange = function (evt) {
-	if (evt.target.value <= VALVE_STATUS_THRESHOLDS.CLOSE[1])
+	if (evt.target.value <= VALVE_STATUS_THRESHOLDS.CLOSE[1] ||
+		($("#pnid-oxDepressSolenoid").find(".pnid-input")[0].value === "Open") ||
+		$("#pnid-fuelDepressSolenoid").find(".pnid-input")[0].value === "Open")
 	{
 		ignitePNID(false);
 	}
@@ -193,16 +223,16 @@ function ignitePNID(ignite)
 	}
 }
 
-setInterval(function () {
-	val = (val + 1) % 100;
-	//console.log($("#pnid-oxSuperchargeValve").find(".pnid-label"))
-
-	$(".pnid-pressure").find(".pnid-input").each(function () {
-		//console.log(this.parentNode)
-		this.value = (val+0.1234).toFixed(2) ;
-		$(this).change();
-	});
-}, 100);
+// setInterval(function () {
+// 	val = (val + 1) % 100;
+// 	//console.log($("#pnid-oxSuperchargeValve").find(".pnid-label"))
+//
+// 	$(".pnid-pressure").find(".pnid-input").each(function () {
+// 		//console.log(this.parentNode)
+// 		this.value = (val+0.1234).toFixed(2) ;
+// 		$(this).change();
+// 	});
+// }, 100);
 
 // setInterval(function () {
 // 	val = (val + 1) % 100;

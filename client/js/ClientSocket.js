@@ -51,19 +51,25 @@ $('#toggleSequenceButton').click(function()
         socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
         $(this).text('Abort Sequence');
         $('.tab-button').each(function () {
-            if ($(this).id !== "monitor-tab-button" && $(this).id !== "sequence-tab-button")
+            if ($(this).id === "control-tab-button" || $(this).id === "calibration-tab-button")
             {
                 //$(this).prop('disabled', true);
             }
         });
         $('#sendPostSeqCommentButton').prop('disabled', false);
+
+        //scroll to pnid
+        document.getElementById('monitorTabsContent').scrollIntoView({
+            behavior: "smooth",
+            block:    "start",
+        });
     }
     else if ($(this).text() === 'Abort Sequence')
     {
         abortSequence("abort from user");
         $(this).text('Start Sequence');
         $('.tab-button').each(function () {
-            if ($(this).id !== "monitor-tab-button" && $(this).id !== "sequence-tab-button")
+            if ($(this).id === "control-tab-button" || $(this).id === "calibration-tab-button")
             {
                 $(this).prop('disabled', false);
             }
@@ -90,6 +96,34 @@ $('#resetButton').click(function() {
 
 $('#tareButton').click(function() {
     socket.emit('tare');
+});
+
+var chartTabObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.type === "attributes")
+        {
+            if(mutation.target.classList.contains("show"))
+            {
+                console.log("sensor charts enabled");
+                for (let sensorName in jsonSensors)
+                {
+                    jsonSensors[sensorName].chart.enable();
+                }
+            }
+            else
+            {
+                console.log("sensor charts disabled");
+                for (let sensorName in jsonSensors)
+                {
+                    jsonSensors[sensorName].chart.disable();
+                }
+            }
+        }
+    });
+});
+
+chartTabObserver.observe(document.getElementById('chart-tab'), {
+  attributes: true //configure it to listen to attribute changes
 });
 
 function onSequenceSelectChange(value)
@@ -119,6 +153,9 @@ function sendDigitalOut(doId, doValue)
 
     jsonDigitalOut.id = doId;
     jsonDigitalOut.value = doValue;
+
+    updatePNID(doId, doValue);
+
     socket.emit('digital-outs-set', [jsonDigitalOut]);
 }
 
@@ -132,6 +169,8 @@ function sendDigitalOutArr(doIds, doValue)
         jsonDigitalOutObj = {};
         jsonDigitalOutObj.id = doIds[doIdsInd];
         jsonDigitalOutObj.value = doValue;
+
+        updatePNID(doIds[doIdsInd], doValue);
 
         jsonDigitalOut.push(jsonDigitalOutObj);
     }
@@ -390,28 +429,9 @@ function timerTick()
 
     for (let key in latestAction)
     {
-        if (key.includes("DepressSolenoid"))
+        if (key.includes("Solenoid") || key.includes("igniter"))
         {
-            $("#pnid-" + key).find(".pnid-input").each(function () {
-
-                this.value = (latestAction[key] === 0) ? "Open" : "Close";
-                $(this).change();
-            });
-        }
-        else if (key.includes("Solenoid"))
-        {
-            $("#pnid-" + key).find(".pnid-input").each(function () {
-
-                this.value = (latestAction[key] === 0) ? "Close" : "Open";
-                $(this).change();
-            });
-        }
-        else if (key.includes("igniter"))
-        {
-            if (latestAction[key] !== 0)
-            {
-                ignitePNID(true);
-            }
+            updatePNID(key, latestAction[key] !== 0);
         }
 
     }
@@ -425,7 +445,7 @@ function sequenceButtonStop()
 
     //disable all other tabs
     $('.tab-button').each(function () {
-        if ($(this).id !== "monitor-tab-button" && $(this).id !== "sequence-tab-button")
+        if ($(this).id === "control-tab-button" || $(this).id === "calibration-tab-button")
         {
             $(this).prop('disabled', false);
         }
@@ -692,7 +712,7 @@ socket.on('sensors', function(jsonSens) {
         let jsonSen = jsonSens[sensorInd];
 
         //update pnid
-        updatePNID(jsonSen);
+        updatePNID(jsonSen.name, jsonSen.value);
 
         //generate plot and or update
         let sensor;
