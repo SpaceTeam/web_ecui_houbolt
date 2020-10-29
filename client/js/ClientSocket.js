@@ -746,6 +746,7 @@ socket.on('sensors', function(jsonSens) {
 
         }
         sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value, isContinousTransmission);
+
     }
 
 });

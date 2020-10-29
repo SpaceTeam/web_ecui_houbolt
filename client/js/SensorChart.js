@@ -44,9 +44,15 @@ class SensorChart
         this._createCursor();
     }
 
+    isEnabled()
+    {
+        return !this.chart.disabled;
+    }
+
     enable()
     {
         this.chart.disabled = false;
+        this.chart.validateData();
     }
 
     disable()
@@ -175,7 +181,7 @@ class SensorChart
         {
             this.chart.addData(
                     dataObj,
-                    1
+                    this.chart.data.length - 100
                 );
         }
         else
