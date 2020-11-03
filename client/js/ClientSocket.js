@@ -742,6 +742,8 @@ socket.on('sensors', function(jsonSens) {
             sensor.series = sensor.chart.addSeries(jsonSen.name, jsonSen.name);
             sensor.name = jsonSen.name;
 
+            sensor.chart.disable();
+
             jsonSensors[jsonSen.name] = sensor;
 
         }
