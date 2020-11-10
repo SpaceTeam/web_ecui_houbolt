@@ -1,4 +1,5 @@
 module.exports = {
+
     onLLServerConnect: function(client, msgRecvCallback) {
 
         console.log('Client connect. Client local address : ' + client.localAddress + ':' + client.localPort + '. client remote address : ' + client.remoteAddress + ':' + client.remotePort);
@@ -60,6 +61,7 @@ module.exports = {
 
     sendMessage: function(client, type, content={})
     {
+        const MAX_MSG_LENGTH = 65536-1; //2^16 - 1
         if (client !== undefined) {
             let msg = {};
             msg.type = type;
@@ -81,8 +83,16 @@ module.exports = {
                 console.log("------------------");
                 console.log(msg);
                 console.log("------------------");
-                let strMsg = JSON.stringify(msg);
-                client.write(strMsg + '\n');
+                let strMsg = JSON.stringify(msg) + '\n';
+                let strMsgLen = strMsg.length;
+                if (strMsgLen <= MAX_MSG_LENGTH)
+                {
+                    let LSB = strMsgLen & 0x00FF;
+                    let MSB = strMsgLen >> 8;
+                    console.log(MSB, LSB);
+                    client.write(String.fromCharCode(MSB) + String.fromCharCode(LSB) + strMsg);
+                }
+
             // }
         }
         else
