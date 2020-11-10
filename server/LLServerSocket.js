@@ -61,6 +61,8 @@ module.exports = {
 
     sendMessage: function(client, type, content={})
     {
+        const Buffer = require('buffer').Buffer;
+
         const MAX_MSG_LENGTH = 65536-1; //2^16 - 1
         if (client !== undefined) {
             let msg = {};
@@ -90,7 +92,8 @@ module.exports = {
                     let LSB = strMsgLen & 0x00FF;
                     let MSB = strMsgLen >> 8;
                     console.log(MSB, LSB);
-                    client.write(String.fromCharCode(MSB) + String.fromCharCode(LSB) + strMsg);
+                    console.log(Buffer.from([MSB, LSB]).toString('ascii'));
+                    client.write(Buffer.from([MSB, LSB]).toString('ascii') + strMsg);
                 }
 
             // }
