@@ -10,7 +10,6 @@ module.exports = {
 
         // When receive client data.
         client.on('data', function (data) {
-
             //console.log('client message');
             msgRecvCallback(data);
         });
@@ -74,37 +73,22 @@ module.exports = {
             msg.type = type;
             msg.content = content;
 
+            console.log("------------------");
             console.log(msg);
-            // let correct = true;
-            // switch (type) {
-            //     case 'abort':
-            //         break;
-            //     case 'sequence-start':
-            //         break;
-            //     default:
-            //         console.error("message not supported");
-            //         correct = false;
-            // }
-            //
-            // if (correct) {
-                console.log("------------------");
-                console.log(msg);
-                console.log("------------------");
-                let strMsg = JSON.stringify(msg) + '\n';
-                let strMsgLen = strMsg.length;
-                if (strMsgLen <= MAX_MSG_LENGTH)
-                {
-                    let strMsgArray = Buffer.from(strMsg, 'ascii');
-                    let uint8Array = new Uint8Array(strMsgLen + 2);
+            console.log("------------------");
+            let strMsg = JSON.stringify(msg) + '\n';
+            let strMsgLen = strMsg.length;
+            if (strMsgLen <= MAX_MSG_LENGTH)
+            {
+                let strMsgArray = Buffer.from(strMsg, 'ascii');
+                let uint8Array = new Uint8Array(strMsgLen + 2);
 
-                    let LSB = strMsgLen & 0x00FF;
-                    let MSB = strMsgLen >> 8;
-                    uint8Array.set([MSB, LSB],0);
-                    uint8Array.set(strMsgArray,2);
-                    client.write(uint8Array);
-                }
-
-            // }
+                let LSB = strMsgLen & 0x00FF;
+                let MSB = strMsgLen >> 8;
+                uint8Array.set([MSB, LSB],0);
+                uint8Array.set(strMsgArray,2);
+                client.write(uint8Array);
+            }
         }
         else
         {
