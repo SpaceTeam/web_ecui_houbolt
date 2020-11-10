@@ -15,7 +15,7 @@ module.exports = {
             msgRecvCallback(data);
         });
 
-        // When client send data complete.
+        // When client disconnects.
         client.on('end', function () {
             console.log('Client disconnect.');
 
@@ -36,7 +36,12 @@ module.exports = {
         // When client timeout.
         client.on('timeout', function () {
             console.log('Client request time out. ');
-        })
+        });
+
+        client.on('error', function(err) {
+             // process error here
+             console.log(err);
+         });
 
         return client;
     },
