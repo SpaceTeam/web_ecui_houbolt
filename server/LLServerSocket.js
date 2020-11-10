@@ -89,11 +89,14 @@ module.exports = {
                 let strMsgLen = strMsg.length;
                 if (strMsgLen <= MAX_MSG_LENGTH)
                 {
+                    let strMsgArray = Buffer.from(strMsg, 'ascii');
+                    let uint8Array = new Uint8Array(strMsgLen + 2);
+
                     let LSB = strMsgLen & 0x00FF;
                     let MSB = strMsgLen >> 8;
-                    console.log(MSB, LSB);
-                    console.log(Buffer.from([MSB, LSB]).toString('latin1'), Buffer.from([MSB, LSB]).toString('latin1').length);
-                    client.write(Buffer.from([MSB, LSB]).toString('latin1') + strMsg);
+                    uint8Array.set([MSB, LSB],0);
+                    uint8Array.set(strMsgArray,2);
+                    client.write(uint8Array);
                 }
 
             // }
