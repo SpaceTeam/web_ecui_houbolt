@@ -120,6 +120,8 @@ class SensorChart
         //TODO: only add when scrollbar is chart scrollbar
         //this.chart.scrollbarX.series.push(series);
 
+        setInterval(this.updateXAxis, 1000, this);
+
         return series;
     }
 
@@ -191,6 +193,14 @@ class SensorChart
                     0
                 );
         }
+
+    }
+
+    updateXAxis(self)
+    {
+        console.log(self.chart.data[0].time, self.chart.data[self.chart.data.length-1].time);
+        self.xAxis.min = self.chart.data[0].time + 4;
+        self.xAxis.max = self.chart.data[self.chart.data.length-1].time;
     }
 
     addData(dataObj)

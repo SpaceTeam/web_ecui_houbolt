@@ -105,6 +105,7 @@ var chartTabObserver = new MutationObserver(function(mutations) {
             if(mutation.target.classList.contains("show"))
             {
                 console.log("sensor charts enabled");
+                window.scrollTo(0,document.body.scrollHeight);
                 for (let sensorName in jsonSensors)
                 {
                     jsonSensors[sensorName].chart.enable();
@@ -742,7 +743,7 @@ socket.on('sensors', function(jsonSens) {
             sensor.series = sensor.chart.addSeries(jsonSen.name, jsonSen.name);
             sensor.name = jsonSen.name;
 
-            sensor.chart.disable();
+            //sensor.chart.disable();
 
             jsonSensors[jsonSen.name] = sensor;
 
