@@ -1,4 +1,5 @@
 var val = 0;
+var igniterActive = false;
 
 const VALVE_STATUS_PALETTE = {
 	FAILURE: "#8e2024",
@@ -87,10 +88,7 @@ function updatePNID(name, value)
 	}
 	else if (name.includes("igniter"))
 	{
-		if (value)
-		{
-			ignitePNID(true);
-		}
+		igniterActive = value;
 	}
 	else
 	{
@@ -164,9 +162,17 @@ document.getElementById("pnid-fuelPressSolenoid").onchange = function () {
 };
 
 document.getElementById("pnid-fuelMainValve").onchange = function (evt) {
-	if (evt.target.value <= VALVE_STATUS_THRESHOLDS.CLOSE[1] ||
-		($("#pnid-oxDepressSolenoid").find(".pnid-input")[0].value === "Open") ||
-		$("#pnid-fuelDepressSolenoid").find(".pnid-input")[0].value === "Open")
+	//only fuel main valve is checking for ignition
+	if (evt.target.value >= VALVE_STATUS_THRESHOLDS.OPEN[0] &&
+		$("#pnid-oxMainValve").find(".pnid-input")[0].value >= VALVE_STATUS_THRESHOLDS.OPEN[0] &&
+		$("#pnid-fuelDepressSolenoid").find(".pnid-input")[0].value === "Close" &&
+		$("#pnid-fuelPressSolenoid").find(".pnid-input")[0].value === "Open" &&
+		$("#pnid-oxDepressSolenoid").find(".pnid-input")[0].value === "Close" &&
+		$("#pnid-oxPressSolenoid").find(".pnid-input")[0].value === "Open")
+	{
+		ignitePNID(true);
+	}
+	else
 	{
 		ignitePNID(false);
 	}
@@ -188,12 +194,6 @@ document.getElementById("pnid-fuelMainValve").onchange = function (evt) {
 };
 
 document.getElementById("pnid-oxMainValve").onchange = function (evt) {
-	if (evt.target.value <= VALVE_STATUS_THRESHOLDS.CLOSE[1] ||
-		($("#pnid-oxDepressSolenoid").find(".pnid-input")[0].value === "Open") ||
-		$("#pnid-fuelDepressSolenoid").find(".pnid-input")[0].value === "Open")
-	{
-		ignitePNID(false);
-	}
 	$(".pnid-injectorOxPipes").each(function () {
 
 		if (evt.target.value >= VALVE_STATUS_THRESHOLDS.OPEN[0] &&
@@ -213,7 +213,7 @@ document.getElementById("pnid-oxMainValve").onchange = function (evt) {
 
 function ignitePNID(ignite)
 {
-	if (ignite)
+	if (ignite && igniterActive)
 	{
 		$('#injectorExhaust').removeAttr('hidden');
 	}
