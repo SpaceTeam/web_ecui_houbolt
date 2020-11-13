@@ -109,6 +109,11 @@
                 <div class="col col-2">
                     <button class="btn btn-secondary" id="toggleSequenceButton" disabled="true">Start Sequence</button>
                 </div>
+                <div class="form-control-lg custom-control custom-checkbox servo-enable-container row control-row">
+                    <input type="checkbox" class="custom-control-input ckbx" id="debugSequenceCheck"
+                           onclick="onDebugSequence(this);">
+                    <label class="custom-control-label ckbx-label" for="debugSequenceCheck">Auto Sequence Start</label>
+                </div>
                 <div class="col"></div>
                 <div class="col col-2">
                     <button class="btn btn-secondary" id="sendPostSeqCommentButton" disabled="true">Send post-Seq Comment</button>

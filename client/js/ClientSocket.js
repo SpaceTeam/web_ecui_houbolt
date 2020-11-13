@@ -98,6 +98,23 @@ $('#tareButton').click(function() {
     socket.emit('tare');
 });
 
+var debugSequenceInterval = undefined;
+
+function onDebugSequence(checkbox)
+{
+    if (checkbox.checked)
+    {
+        $('#toggleSequenceButton').click();
+        debugSequenceInterval = setInterval(function () {
+            $('#toggleSequenceButton').click();
+        }, 25000);
+    }
+    else
+    {
+        clearInterval(debugSequenceInterval);
+    }
+}
+
 var chartTabObserver = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
         if (mutation.type === "attributes")
