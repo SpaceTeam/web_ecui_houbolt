@@ -1,120 +1,29 @@
 
+//-------------------------------------Global Variables | Yikes!!!---------------------------------
+
 var socket = io();
-var start = new Date();
 
-socket.on('connect', function() {socket.emit('checklist-start')});
+var sequences = [];
+var abortSequences = [];
+var jsonSequence = {};
+var jsonAbortSequence = {};
+var jsonSensors = {};
+var checklistLoaded = false;
+var isContinousTransmission = true;
 
-socket.on('connect_timeout', function() {console.log('connect-timeout')});
-socket.on('connect_error', function(error) {console.log(error)});
+var seqChart = new SequenceChart("sequenceChart", "Sequence");
 
-document.onkeydown = function (event) {
-    var seqButton = $('#toggleSequenceButton');
-    console.log(seqButton.text());
-    if (seqButton.text() === 'Abort Sequence')
-    {
-        seqButton.click();
-    }
-    else
-    {
-        var code;
+var endTime;
+var timeMillis;
+var intervalMillis;
+var intervalDelegate;
 
-        if (event.key !== undefined) {
-            code = event.key;
-        } else if (event.keyIdentifier !== undefined) {
-            code = event.keyIdentifier;
-        } else if (event.keyCode !== undefined) {
-            code = event.keyCode;
-        }
+var countdownTime;
+var countdownIntervalDelegate;
 
-        // if (code === ' ' && !seqButton.prop('disabled'))
-        // {
-        //     seqButton.click();
-        // }
+var llServerConnectionActive = false;
 
-    }
-
-
-};
-$('#sendPostSeqCommentButton').click(function()
-{
-    socket.emit('send-postseq-comment', $('#commentTextbox').val() + '\n');
-    $('#sendPostSeqCommentButton').prop('disabled', true);
-    setTimeout(function () {
-        $('#sendPostSeqCommentButton').prop('disabled', false);
-    }, 400);
-});
-
-$('#toggleSequenceButton').click(function()
-{
-    if ($(this).text() === 'Start Sequence')
-    {
-        socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
-        $(this).text('Abort Sequence');
-        $('.tab-button').each(function () {
-            if ($(this).id === "control-tab-button" || $(this).id === "calibration-tab-button")
-            {
-                //$(this).prop('disabled', true);
-            }
-        });
-        $('#sendPostSeqCommentButton').prop('disabled', false);
-
-        //scroll to pnid
-        document.getElementById('monitorTabsContent').scrollIntoView({
-            behavior: "smooth",
-            block:    "start",
-        });
-    }
-    else if ($(this).text() === 'Abort Sequence')
-    {
-        abortSequence("abort from user");
-        $(this).text('Start Sequence');
-        $('.tab-button').each(function () {
-            if ($(this).id === "control-tab-button" || $(this).id === "calibration-tab-button")
-            {
-                $(this).prop('disabled', false);
-            }
-        });
-    }
-
-});
-$('#saftlButton').click(function() {
-    $('#saftlButton').prop('disabled', true);
-    $('#fuelMainValve').each(function () {
-        let slider = $(this);
-        let lastVal = slider.val();
-        slider.val(slider.attr('max')).trigger('input');
-        setTimeout(function () {
-            slider.val(lastVal).trigger('input');
-            $('#saftlButton').prop('disabled', false);
-        }, 2000);
-    })
-});
-
-$('#resetButton').click(function() {
-    emptySensorCharts();
-});
-
-$('#tareButton').click(function() {
-    socket.emit('tare');
-});
-
-var debugSequenceInterval = undefined;
-
-function onDebugSequence(checkbox)
-{
-    if (checkbox.checked)
-    {
-        $('#toggleSequenceButton').click();
-        debugSequenceInterval = setInterval(function () {
-            $('#toggleSequenceButton').click();
-        }, 25000);
-    }
-    else
-    {
-        clearInterval(debugSequenceInterval);
-    }
-}
-
+//create observer to check if sensor charts shall be rendered
 var chartTabObserver = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
         if (mutation.type === "attributes")
@@ -144,9 +53,10 @@ chartTabObserver.observe(document.getElementById('chart-tab'), {
   attributes: true //configure it to listen to attribute changes
 });
 
-function onSequenceSelectChange(value)
-{
-    socket.emit('sequence-set', value);
+//-------------------------------------GUI Events---------------------------------
+
+function onResetSensors() {
+    emptySensorCharts();
 }
 
 function onServoSpinnerChange(spinner) {
@@ -163,72 +73,6 @@ function onServoSliderInput(servoSlider)
     let id = servoSlider.attr('id');
     let val = parseFloat(servoSlider.val());
     sendServo(id, val);
-}
-
-function sendDigitalOut(doId, doValue)
-{
-    let jsonDigitalOut = {};
-
-    jsonDigitalOut.id = doId;
-    jsonDigitalOut.value = doValue;
-
-    updatePNID(doId, doValue);
-
-    socket.emit('digital-outs-set', [jsonDigitalOut]);
-}
-
-function sendDigitalOutArr(doIds, doValue)
-{
-    let jsonDigitalOut = [];
-    let jsonDigitalOutObj = {};
-
-    for (let doIdsInd in doIds)
-    {
-        jsonDigitalOutObj = {};
-        jsonDigitalOutObj.id = doIds[doIdsInd];
-        jsonDigitalOutObj.value = doValue;
-
-        updatePNID(doIds[doIdsInd], doValue);
-
-        jsonDigitalOut.push(jsonDigitalOutObj);
-    }
-    socket.emit('digital-outs-set', jsonDigitalOut);
-}
-
-function sendServo(servoId, servoValue)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.value = servoValue;
-    socket.emit('servos-set', [jsonServo]);
-}
-
-function sendServoRaw(servoId, rawValue)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.value = rawValue;
-    socket.emit('servos-set-raw', [jsonServo]);
-}
-
-function sendServoMin(servoId, newServoMin)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.min = newServoMin;
-    socket.emit('servos-calibrate', [jsonServo]);
-}
-
-function sendServoMax(servoId, newServoMax)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.max = newServoMax;
-    socket.emit('servos-calibrate', [jsonServo]);
 }
 
 function onCalibrateMin(button) {
@@ -308,57 +152,9 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
             }, delaySecondDigitalOut*1000);
         }
     }
-
-
 }
 
-function onServoEnable(checkbox) {
-    console.log(checkbox.checked);
-    if (checkbox.checked)
-    {
-        $('#servoEnableCheck').prop('checked', true);
-        $('#servoEnableCheck1').prop('checked', true);
-
-        $('#toggleSequenceButton').prop('disabled', true);
-
-        $('.range-slider__value').each(function () {
-            $(this).attr('disabled', false);
-        });
-
-        $('.manual-obj').each(function () {
-            $(this).prop('disabled', false);
-        });
-
-        socket.emit('servos-enable');
-    }
-    else
-    {
-        $('#servoEnableCheck').prop('checked', false);
-        $('#servoEnableCheck1').prop('checked', false);
-
-        $('#toggleSequenceButton').prop('disabled', false);
-
-        $('.range-slider__value').each(function () {
-            $(this).attr('disabled', true);
-        });
-
-        $('.manual-obj').each(function () {
-            $(this).prop('disabled', true);
-        });
-
-        $('.digitalOut').each(function () {
-            // if ($(this).prop("checked") === true)
-            // {
-            //     $(this).prop('checked', false);
-            //     $(this).click();
-            // }
-        });
-
-        socket.emit('servos-disable');
-    }
-}
-
-var llServerConnectionActive = false;
+//-------------------------------------Utility functions for ECUI,Socket,Timing---------------------------------
 
 function checkConnection()
 {
@@ -374,25 +170,10 @@ function checkConnection()
     }
 }
 
-setInterval(function(){checkConnection();llServerConnectionActive = false;}, 4000);
-
-var sequences = [];
-var abortSequences = [];
-var jsonSequence = {};
-var jsonAbortSequence = {};
-var jsonSensors = {};
-var checklistLoaded = false;
-var isContinousTransmission = true;
-
-var seqChart = new SequenceChart("sequenceChart", "Sequence");
-
-var endTime;
-var timeMillis;
-var intervalMillis;
-var intervalDelegate;
-
-var countdownTime;
-var countdownIntervalDelegate;
+setInterval(function(){
+    checkConnection();
+    llServerConnectionActive = false;
+    },4000);
 
 function timerTick()
 {
@@ -487,6 +268,194 @@ function loadSequenceSelect()
     }
 }
 
+function emptySensorCharts()
+{
+    for (let sensorName in jsonSensors)
+    {
+        jsonSensors[sensorName].chart.removeContent();
+    }
+}
+
+function countdownTimerTick()
+{
+    if (countdownTime < 0 && countdownTime >= -10)
+    {
+        responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
+    }
+    else if (countdownTime === 0)
+    {
+        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+        clearInterval(countdownIntervalDelegate);
+    }
+    countdownTime += 1;
+}
+
+//-------------------------------------Controls on sending Socket Messages---------------------------------
+
+function onSendPostSequenceComment()
+{
+    socket.emit('send-postseq-comment', $('#commentTextbox').val() + '\n');
+    $('#sendPostSeqCommentButton').prop('disabled', true);
+    setTimeout(function () {
+        $('#sendPostSeqCommentButton').prop('disabled', false);
+    }, 400);
+}
+
+function onToggleSequenceButton(btn)
+{
+    if ($(btn).text() === 'Start Sequence')
+    {
+        socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
+        $(btn).text('Abort Sequence');
+        $('.tab-button').each(function () {
+            if ($(btn).id === "control-tab-button" || $(btn).id === "calibration-tab-button")
+            {
+                //$(this).prop('disabled', true);
+            }
+        });
+        $('#sendPostSeqCommentButton').prop('disabled', false);
+
+        //scroll to pnid
+        document.getElementById('monitorTabsContent').scrollIntoView({
+            behavior: "smooth",
+            block:    "start",
+        });
+    }
+    else if ($(btn).text() === 'Abort Sequence')
+    {
+        abortSequence("abort from user");
+        $(btn).text('Start Sequence');
+        $('.tab-button').each(function () {
+            if ($(btn).id === "control-tab-button" || $(btn).id === "calibration-tab-button")
+            {
+                $(btn).prop('disabled', false);
+            }
+        });
+    }
+}
+
+function onTareLoadCells()
+{
+    socket.emit('tare');
+}
+
+function onSequenceSelectChange(value)
+{
+    socket.emit('sequence-set', value);
+}
+
+function sendDigitalOut(doId, doValue)
+{
+    let jsonDigitalOut = {};
+
+    jsonDigitalOut.id = doId;
+    jsonDigitalOut.value = doValue;
+
+    updatePNID(doId, doValue);
+
+    socket.emit('digital-outs-set', [jsonDigitalOut]);
+}
+
+function sendDigitalOutArr(doIds, doValue)
+{
+    let jsonDigitalOut = [];
+    let jsonDigitalOutObj = {};
+
+    for (let doIdsInd in doIds)
+    {
+        jsonDigitalOutObj = {};
+        jsonDigitalOutObj.id = doIds[doIdsInd];
+        jsonDigitalOutObj.value = doValue;
+
+        updatePNID(doIds[doIdsInd], doValue);
+
+        jsonDigitalOut.push(jsonDigitalOutObj);
+    }
+    socket.emit('digital-outs-set', jsonDigitalOut);
+}
+
+function sendServo(servoId, servoValue)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.value = servoValue;
+    socket.emit('servos-set', [jsonServo]);
+}
+
+function sendServoRaw(servoId, rawValue)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.value = rawValue;
+    socket.emit('servos-set-raw', [jsonServo]);
+}
+
+function sendServoMin(servoId, newServoMin)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.min = newServoMin;
+    socket.emit('servos-calibrate', [jsonServo]);
+}
+
+function sendServoMax(servoId, newServoMax)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.max = newServoMax;
+    socket.emit('servos-calibrate', [jsonServo]);
+}
+
+function onServoEnable(checkbox) {
+    console.log(checkbox.checked);
+    if (checkbox.checked)
+    {
+        $('#servoEnableCheck').prop('checked', true);
+        $('#servoEnableCheck1').prop('checked', true);
+
+        $('#toggleSequenceButton').prop('disabled', true);
+
+        $('.range-slider__value').each(function () {
+            $(this).attr('disabled', false);
+        });
+
+        $('.manual-obj').each(function () {
+            $(this).prop('disabled', false);
+        });
+
+        socket.emit('servos-enable');
+    }
+    else
+    {
+        $('#servoEnableCheck').prop('checked', false);
+        $('#servoEnableCheck1').prop('checked', false);
+
+        $('#toggleSequenceButton').prop('disabled', false);
+
+        $('.range-slider__value').each(function () {
+            $(this).attr('disabled', true);
+        });
+
+        $('.manual-obj').each(function () {
+            $(this).prop('disabled', true);
+        });
+
+        $('.digitalOut').each(function () {
+            // if ($(this).prop("checked") === true)
+            // {
+            //     $(this).prop('checked', false);
+            //     $(this).click();
+            // }
+        });
+
+        socket.emit('servos-disable');
+    }
+}
+
 function abortSequence(abortMsg)
 {
     clearInterval(countdownIntervalDelegate);
@@ -527,27 +496,12 @@ function onChecklistTick(checkbox)
     socket.emit('checklist-tick', currId);
 }
 
-function emptySensorCharts()
-{
-    for (let sensorName in jsonSensors)
-    {
-        jsonSensors[sensorName].chart.removeContent();
-    }
-}
+//-------------------------------------Controls on receiving Socket Messages---------------------------------
 
-function countdownTimerTick()
-{
-    if (countdownTime < 0 && countdownTime >= -10)
-    {
-        responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
-    }
-    else if (countdownTime === 0)
-    {
-        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-        clearInterval(countdownIntervalDelegate);
-    }
-    countdownTime += 1;
-}
+socket.on('connect', function() {socket.emit('checklist-start')});
+
+socket.on('connect_timeout', function() {console.log('connect-timeout')});
+socket.on('connect_error', function(error) {console.log(error)});
 
 socket.on('abort', function(abortMsg) {
     console.log('abort');

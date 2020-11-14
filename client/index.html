@@ -107,7 +107,7 @@
                   </select>
                 </div>
                 <div class="col col-2">
-                    <button class="btn btn-secondary" id="toggleSequenceButton" disabled="true">Start Sequence</button>
+                    <button class="btn btn-secondary" id="toggleSequenceButton" disabled="true" onclick="onToggleSequenceButton(this);">Start Sequence</button>
                 </div>
                 <div class="form-control-lg custom-control custom-checkbox servo-enable-container row control-row">
                     <input type="checkbox" class="custom-control-input ckbx" id="debugSequenceCheck"
@@ -116,7 +116,7 @@
                 </div>
                 <div class="col"></div>
                 <div class="col col-2">
-                    <button class="btn btn-secondary" id="sendPostSeqCommentButton" disabled="true">Send post-Seq Comment</button>
+                    <button class="btn btn-secondary" id="sendPostSeqCommentButton" disabled="true" onclick="onSendPostSequenceComment();">Send post-Seq Comment</button>
                 </div>
             </div>
             <div class="row content">
@@ -296,8 +296,8 @@ Notes: Hotfire
 </div>
 
 <div class="row" style="margin-top: -2rem">
-    <button class="btn btn-secondary" id="resetButton" style="margin-left: 2rem">Reset Sensor Charts</button><br>
-    <button class="btn btn-secondary" id="tareButton" style="margin-left: 2rem;">Tare Thrust Sensors</button><br>
+    <button class="btn btn-secondary" id="resetButton" style="margin-left: 2rem" onclick="onResetSensors();">Reset Sensor Charts</button><br>
+    <button class="btn btn-secondary" id="tareButton" style="margin-left: 2rem;" onclick="onTareLoadCells();">Tare Thrust Sensors</button><br>
 </div>
 
 <ul class="nav nav-pills justify-content-center" id="monitorTabs" role="tablist">
@@ -542,6 +542,7 @@ Notes: Hotfire
 </script>
 
 <script src="lib/bootstrap-input-spinner.js"></script>
+<script src="/js/GUIControls.js"></script>
 <script src="js/Slider.js"></script>
 <script src="js/PNID.js"></script>
 <script src="js/SequenceChart.js"></script>

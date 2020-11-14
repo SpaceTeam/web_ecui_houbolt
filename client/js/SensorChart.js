@@ -203,8 +203,10 @@ class SensorChart
 
     updateXAxis(self)
     {
-        self.xAxis.min = self.chart.data[0].time + 4;
-        self.xAxis.max = self.chart.data[self.chart.data.length-1].time;
+        if (self.chart.data.length > 0) {
+            self.xAxis.min = self.chart.data[0].time + 4;
+            self.xAxis.max = self.chart.data[self.chart.data.length - 1].time;
+        }
     }
 
     addData(dataObj)
