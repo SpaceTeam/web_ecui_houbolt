@@ -1,27 +1,24 @@
 //abort if any key is pressed
 document.onkeydown = function (event) {
     var seqButton = $('#toggleSequenceButton');
-    console.log(seqButton.text());
     if (seqButton.text() === 'Abort Sequence')
     {
         seqButton.click();
     }
     else
     {
-        var code;
-
-        if (event.key !== undefined) {
-            code = event.key;
-        } else if (event.keyIdentifier !== undefined) {
-            code = event.keyIdentifier;
-        } else if (event.keyCode !== undefined) {
-            code = event.keyCode;
-        }
 
         // if (code === ' ' && !seqButton.prop('disabled'))
         // {
         //     seqButton.click();
         // }
+
+        console.log(event.code, event.shiftKey, event.altKey);
+
+		if (event.shiftKey && event.altKey && (event.code === 'KeyD')) {
+			let isHidden = $("#debugSequenceCheck").parent().prop("hidden");
+			$("#debugSequenceCheck").parent().prop("hidden", !isHidden);
+		};
 
     }
 
