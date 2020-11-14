@@ -24,6 +24,11 @@ class SensorChart
             title.marginBottom = 10;
         }
 
+        this.chart.events.on("ready", function(ev) {
+            console.log(ev);
+            ev.target.disabled = true;
+        });
+
         // Create axes (just one)
         this.xAxis = this.chart.xAxes.push(new am4charts.DurationAxis());
         this.yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
@@ -198,7 +203,6 @@ class SensorChart
 
     updateXAxis(self)
     {
-        console.log(self.chart.data[0].time, self.chart.data[self.chart.data.length-1].time);
         self.xAxis.min = self.chart.data[0].time + 4;
         self.xAxis.max = self.chart.data[self.chart.data.length-1].time;
     }
