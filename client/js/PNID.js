@@ -38,6 +38,10 @@ const SENSOR_STATUS_THRESHOLDS = {
 	thrust_Sum: [50,400],
 };
 
+$('#pnid').find(".pnid-solenoid input").each(function (elem) {
+	$(this).change();
+});
+
 $('.pnid-sensor .pnid-input').on('change',function() {
 	let id = this.parentNode.id;
 	//strip pnid
