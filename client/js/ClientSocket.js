@@ -124,6 +124,13 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
         $('#coolingPump').prop('disabled', checkbox.checked);
     }
 
+    if (delaySecondDigitalOut > 0.0) {
+        $(checkbox).prop('disabled', true);
+        setTimeout(function () {
+            $(checkbox).prop('disabled', false);
+        }, delaySecondDigitalOut * 1000);
+    }
+
     if (checkbox.checked) {
         if (delaySecondDigitalOut === 0.0)
         {
