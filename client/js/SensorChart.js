@@ -24,10 +24,11 @@ class SensorChart
             title.marginBottom = 10;
         }
 
-        this.chart.events.on("ready", function(ev) {
-            console.log(ev);
-            ev.target.disabled = true;
-        });
+        //This shall not be executed, if sensors appear directly when page is loaded
+        // this.chart.events.on("ready", function(ev) {
+        //     console.log(ev);
+        //     ev.target.disabled = true;
+        // });
 
         // Create axes (just one)
         this.xAxis = this.chart.xAxes.push(new am4charts.DurationAxis());
