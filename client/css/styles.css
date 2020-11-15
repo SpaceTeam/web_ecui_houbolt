@@ -126,13 +126,9 @@ div#servo-container > button {
 
 #myTabContent
 {
-<<<<<<< HEAD
-    height: 25rem;
-=======
     /*height: 35rem;*/
     height: auto;
     padding-bottom: 4rem;
->>>>>>> teststand
 }
 
 #titleBar {
