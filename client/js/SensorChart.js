@@ -8,6 +8,8 @@ class SensorChart
         //am4core.useTheme(am4themes_animated);
         // Themes end
 
+        am4core.options.onlyShowOnViewport = true;
+
         this.amColorSet = new am4core.ColorSet();
         this.seriesList = [];
         this.isRunning = false;
@@ -21,6 +23,11 @@ class SensorChart
             title.fontSize = 15;
             title.marginBottom = 10;
         }
+
+        this.chart.events.on("ready", function(ev) {
+            console.log(ev);
+            ev.target.disabled = true;
+        });
 
         // Create axes (just one)
         this.xAxis = this.chart.xAxes.push(new am4charts.DurationAxis());
@@ -40,6 +47,22 @@ class SensorChart
             this.addData(data);
         }
         this._createCursor();
+    }
+
+    isEnabled()
+    {
+        return !this.chart.disabled;
+    }
+
+    enable()
+    {
+        this.chart.disabled = false;
+        this.chart.validateData();
+    }
+
+    disable()
+    {
+        this.chart.disabled = true;
     }
 
     //if indicator then strokecolor must be defined
@@ -69,8 +92,20 @@ class SensorChart
         // range.endValue = 20000;
 
         var nextColor = this.amColorSet.next();
+        console.log(nextColor);
         series.stroke = nextColor;
         series.tooltip.background.fill = nextColor;
+
+        if (series.name.startsWith("oxVentV"))
+              series.stroke = am4core.color("#FF00FF");
+        else if (series.name.startsWith("ox"))
+              series.stroke = am4core.color("#0000FF");
+        else if (series.name.startsWith("fuel"))
+              series.stroke = am4core.color("#FF0000");
+	else
+              series.stroke = am4core.color("#00FF00");
+	
+
 
         // Make bullets grow on hover
         // var bullet = series.bullets.push(new am4charts.CircleBullet());
@@ -89,6 +124,8 @@ class SensorChart
 
         //TODO: only add when scrollbar is chart scrollbar
         //this.chart.scrollbarX.series.push(series);
+
+        setInterval(this.updateXAxis, 1000, this);
 
         return series;
     }
@@ -151,7 +188,7 @@ class SensorChart
         {
             this.chart.addData(
                     dataObj,
-                    1
+                    this.chart.data.length - 100
                 );
         }
         else
@@ -160,6 +197,15 @@ class SensorChart
                     dataObj,
                     0
                 );
+        }
+
+    }
+
+    updateXAxis(self)
+    {
+        if (self.chart.data.length > 0) {
+            self.xAxis.min = self.chart.data[0].time + 4;
+            self.xAxis.max = self.chart.data[self.chart.data.length - 1].time;
         }
     }
 

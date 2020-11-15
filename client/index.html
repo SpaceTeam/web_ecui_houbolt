@@ -1,17 +1,19 @@
 <!doctype html>
 <html>
 <head>
-    <title>Tanking System</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    <title>Engine Control User Interface</title>
+    <link rel="stylesheet" href="lib/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://www.amcharts.com/lib/4/core.js"></script>
-    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
-    <script src="https://www.amcharts.com/lib/4/themes/material.js"></script>
-    <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+    <script src="lib/core.js"></script>
+    <script src="lib/charts.js"></script>
+    <script src="lib/material.js"></script>
+    <script src="lib/animated.js"></script>
 
     <!--    <link href="css/styles.css" rel="stylesheet">-->
     <link href="css/slider.css" rel="stylesheet"></link>
     <link href="css/styles.css" rel="stylesheet"></link>
+
+    <link href="css/pnid.css" rel="stylesheet"></link>
 </head>
 <div id="templates" hidden>
     <div class="card">
@@ -43,14 +45,14 @@
     <div id="tempRow" class="row control-row"></div>
     <div id="tempServo" class="range-slider col">
         <label class="range-slider-label input-label">Temp Servo</label><br>
-        <input class="range-slider__range servo-slider manual-obj" id="tempServoSlider" idNum="0"
+        <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="tempServoSlider" idNum="0"
                oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                disabled>
         <span class="range-slider__value" disabled>0</span>
 
     </div>
     <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
-        <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="tempDigitalOut"
+        <input type="checkbox" class="custom-control-input ckbx manual-obj servo-enable-obj digitalOut" id="tempDigitalOut"
                onclick="onDigitalCheck(this);" disabled>
         <label class="custom-control-label ckbx-label" for="tempDigitalOut">Temp Digital Out</label>
     </div>
@@ -69,8 +71,8 @@
 </div>
 
 
-<div id="titleBar">
-    <img id="icon" src="icon.png" alt="ST Logo" style="width:8rem;">
+<div id="titleBar" style="margin-bottom: -2rem;">
+    <img id="icon" src="img/Space_Team_Logo.png" alt="ST Logo" style="width:7rem;margin-left: 1rem;">
     <p id="title">ECUI</p>
     <p id="subtitle">Tanking System</p>
     <p id="versionLabel">v<span id="version">1.0.0</span></p>
@@ -78,8 +80,8 @@
 
 <ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
 <!--    <li class="nav-item">-->
-<!--        <a class="nav-link tab-button" id="monitor-tab-button" data-toggle="tab" href="#sequence-tab" role="tab"-->
-<!--           aria-controls="sequence-tab" aria-selected="false">Monitor</a>-->
+<!--        <a class="nav-link active tab-button" id="sequence-tab-button" data-toggle="tab" href="#sequence-tab" role="tab"-->
+<!--         aria-controls="sequence-tab" aria-selected="true">Sequence</a>-->
 <!--    </li>-->
     <li class="nav-item">
         <a class="nav-link tab-button active" id="control-tab-button" data-toggle="tab" href="#control-tab" role="tab"
@@ -96,16 +98,25 @@
 
     <div class="tab-pane fade" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
         <div class="container-fluid sequence-fluid">
-            <div class="row header">
+            <div class="row header justify-content-start">
                 <div class="col col-3">
-<!--                    <h1 id="timer">0.0</h1>-->
+<!--                    <h1 id="timer" class="timer">0.0</h1>-->
                 </div>
                 <div class="col col-2">
 <!--                  <select class="btn btn-secondary ecui-select" id="sequenceSelect" onchange="onSequenceSelectChange(value);">-->
 <!--                  </select>-->
                 </div>
-                <div class="col">
-<!--                    <button class="btn btn-secondary" id="toggleSequenceButton" disabled="true">Start Sequence</button>-->
+                <div class="col col-2">
+<!--                    <button class="btn btn-secondary" id="toggleSequenceButton" disabled="true" onclick="onToggleSequenceButton(this);">Start Sequence</button>-->
+                </div>
+                <div class="col col-3 form-control-lg custom-control custom-checkbox row control-row" hidden>
+<!--                    <input type="checkbox" class="custom-control-input ckbx" id="debugSequenceCheck"-->
+<!--                           onclick="onDebugSequence(this);">-->
+<!--                    <label class="custom-control-label ckbx-label" for="debugSequenceCheck">Auto Sequence Start</label>-->
+                </div>
+                <div class="col"></div>
+                <div class="col col-2">
+<!--                    <button class="btn btn-secondary" id="sendPostSeqCommentButton" disabled="true" onclick="onSendPostSequenceComment();">Send post-Seq Comment</button>-->
                 </div>
             </div>
             <div class="row content">
@@ -143,7 +154,7 @@
             <div class="row control-row">
                 <div class="range-slider col">
                     <label class="range-slider-label input-label">Loading Tank Valve</label><br>
-                    <input class="range-slider__range servo-slider manual-obj" id="loadingTankValve" idNum="0"
+                    <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="loadingTankValve" idNum="0"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
@@ -151,7 +162,7 @@
                 </div>
                 <div class="range-slider col">
                     <label class="range-slider-label input-label">Loading Tank Vent Valve</label><br>
-                    <input class="range-slider__range servo-slider manual-obj" id="loadingTankVentValve" idNum="1"
+                    <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="loadingTankVentValve" idNum="1"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
@@ -170,7 +181,9 @@
                     <label class="custom-control-label ckbx-label" for="retractMotor">Umbilical Retract</label>
                 </div>
             </div>
-            <div class="row control-row-last container-fluid">
+
+            
+            <div class="row control-row" style="margin-left: 0rem;">
                 <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
                     <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="heatingPump"
                            onclick="onDigitalCheck(this);" disabled>
@@ -204,21 +217,20 @@
                             </div>
                         </div>
                     </label>
-                    <input id="loadingTankValveCal" class="manual-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                    <input id="loadingTankValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
-                    <button class="btn btn-secondary cal-btn manual-obj" id="loadingTankValveMin"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankValveMin"
                             onclick="onCalibrateMin($(this));" disabled>Set Close
                     </button>
-                    <button class="btn btn-secondary cal-btn manual-obj" id="loadingTankValveMax"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankValveMax"
                             onclick="onCalibrateMax($(this));" disabled>Set Open
                     </button>
                 </div>
             </div>
 
             <div class="row control-row">
-
                 <div class="col col-4 spinner">
                     <label class="input-label" for="loadingTankVentValveCal">
                         <div class="container-fluid calLabel-container">
@@ -229,14 +241,14 @@
                             </div>
                         </div>
                     </label>
-                    <input id="loadingTankVentValveCal" class="manual-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                    <input id="loadingTankVentValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
-                    <button class="btn btn-secondary cal-btn manual-obj" id="loadingTankVentValveMin"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankVentValveMin"
                             onclick="onCalibrateMin($(this));" disabled>Set Close
                     </button>
-                    <button class="btn btn-secondary cal-btn manual-obj" id="loadingTankVentValveMax"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankVentValveMax"
                             onclick="onCalibrateMax($(this));" disabled>Set Open
                     </button>
                 </div>
@@ -247,19 +259,247 @@
     </div>
 
 </div>
+
+<div class="row" style="margin-top: -2rem">
+    <button class="btn btn-secondary" id="resetButton" style="margin-left: 2rem" onclick="onResetSensors();">Reset Sensor Charts</button><br>
+    <button class="btn btn-secondary" id="tareButton" style="margin-left: 2rem;" onclick="onTareLoadCells();">Tare Thrust Sensors</button><br>
 </div>
-<div id="sensorChartDiv">
-    <button class="btn btn-secondary" id="resetButton" style="margin-left: 2rem; margin-top: -2rem;">Reset Sensor Charts</button><br>
+
+<ul class="nav nav-pills justify-content-center" id="monitorTabs" role="tablist">
+<!--    <li class="nav-item">-->
+<!--        <a class="nav-link active tab-button" id="pnid-tab-button" data-toggle="tab" href="#pnid-tab" role="tab"-->
+<!--           aria-controls="pnid-tab" aria-selected="true">P&ID</a>-->
+<!--    </li>-->
+    <li class="nav-item">
+        <a class="nav-link active tab-button" id="chart-tab-button" data-toggle="tab" href="#chart-tab" role="tab"
+           aria-controls="chart-tab" aria-selected="true">Charts</a>
+    </li>
+</ul>
+<div class="tab-content" id="monitorTabsContent">
+    <div class="tab-pane fade" id="pnid-tab" role="tabpanel" aria-labelledby="pnid-tab-button" style="background-color: #2d2d2d;">
+
+        <div id="pnid" style="margin: auto; width: 1400px; height: 1100px; border-color: #4e4e4e; position: relative; background-color: #2d2d2d; z-index: 0;"> <!--background-color: #202020-->
+            <div class="abs anchor-center" style="top: 10%; left: 10%; display: inline;">
+                <h1 style="color: white; display: inline;">Timer: </h1><h1 id="timerPNID" class="timer" style="width: 100px; display: inline-block; text-align: right;">0.0</h1>
+            </div>
+            <div id="oxSystem" class="abs pnid-container" style="height: 600px; width: 500px; top: 0%; left: 700px;">
+
+            <div id="pnid-oxTank" class="abs pnid-tank pnid-tank-ox" style="width:90px; height:180px; top: 350px; left: 140px; color: white;">
+                <div class="abs half-oval" style="left: 0%; top: 0%;"></div>
+                <div class="abs square text-center" style="height: 90%; left: 0%; top: 10%; border-radius: 0px">Oxidizer</div>
+                <div class="abs half-oval" style="left: 0%; top: 90%; transform: rotate(180deg)"></div>
+                <input value="Pressurized" type="text" class="abs pnid-input anchor-center" style="left: 50%; top: 28%; font-size: 0.8rem; color: white;" onchange="onPNIDInputChange(this);"/>
+            </div>
+            <div id="pnid-oxSuperchargeValve" class="abs pnid-motor-valve" style="width:100px; height:100px; top: 210px; left: 375px;">
+                <div class="abs" style="width:100%; height:100%; transform: scale(0.75);">
+                    <div class="abs triangle" style="top: 0%;"></div>
+                    <div class="abs triangle mirror" style="left: 50%; top: 0%"></div>
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="left: 50%; top: -20%;">M</div>
+                </div>
+                <input type="text" class="abs pnid-input anchor-center" style="left: 50%; top: 60%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+            <div id="pnid-oxVentValve" class="abs pnid-motor-valve" style="width:100px; height:100px; top: 300px; left: 375px;">
+                <div class="abs" style="width:100%; height:100%; transform: scale(0.75);">
+                    <div class="abs triangle" style="top: 0%;"></div>
+                    <div class="abs triangle mirror" style="left: 50%; top: 0%"></div>
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="left: 50%; top: -20%;">M</div>
+                </div>
+                <input type="text" class="abs pnid-input anchor-center" style="left: 50%; top: 60%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+            <div id="pnid-oxTankPressure" class="abs pnid-sensor" style="width:100px; height:100px; top: 280px; left: 135px;">
+                <div class="abs" style="width:100%; height:100%; transform: rotate(-90deg); z-index: -2;">
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%; height: 100%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="width: 40%; height: 40%; left: 50%; top: -50%;">P</div>
+                </div>
+                <input type="text" value="40" unit="bar" class="abs pnid-input anchor-center" style="left: -20%; top: 10%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+
+            <div id="pnid-oxDepressSolenoid" class="abs pnid-solenoid" style="width:100px; height:100px; top: 145px; left: 250px;">
+                <div class="abs" style="width:100%; height:100%; transform: scale(0.75);">
+                    <div class="abs triangle"></div>
+                    <div class="abs triangle mirror" style="left: 50%"></div>
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%;"></div>
+                    <div class="abs square-hollow text-center anchor-center valve-label" style="width: 30%;
+                    height: 30%; margin-left: 50%; margin-top: -20%;">S</div>
+                </div>
+                <input type="text" class="abs pnid-input anchor-center" style="left: 50%; top: 60%;" onchange="onPNIDInputChange(this);" value="Open"/>
+            </div>
+
+            <div id="pnid-oxPressSolenoid" class="abs pnid-solenoid" style="width:100px; height:100px; top: 50px; left: 154px;">
+                <div class="abs" style="width:100%; height:100%; transform: scale(0.75) rotate(-90deg);">
+                    <div class="abs triangle"></div>
+                    <div class="abs triangle mirror" style="left: 50%"></div>
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%;"></div>
+                    <div class="abs square-hollow text-center anchor-center valve-label" style="width: 30%;
+                    height: 30%; margin-left: 50%; margin-top: -20%;">S</div>
+                </div>
+                <input type="text" class="abs pnid-input anchor-center" style="left: 70%; top: 50%;" onchange="onPNIDInputChange(this);" value="Close"/>
+            </div>
+
+            <div>
+                <div class="abs pipe anchor-center pnid-oxPipes" style="height:220px; top: 240px; left: 185px; z-index: -1;"></div>
+                <div class="abs pipe anchor-center pnid-oxPipes" style="height:120px; top: 115px; left: 213px; z-index: -1; transform: rotate(-90deg)"></div>
+                <div class="abs pipe anchor-center pnid-oxPipes" style="height:200px; top: 230px; left: 285px; z-index: -1; transform: rotate(-90deg)"></div>
+                <div class="abs pipe anchor-center pnid-oxPipes" style="height:200px; top: 140px; left: 285px; z-index: -1; transform: rotate(-90deg)"></div>
+                <div class="abs pipe anchor-center pnid-oxPipes" style="height:40px; top: 565px; left: 185px; z-index: -1;"></div>
+            </div>
+
+            <div>
+                <div class="abs pipe anchor-center" style="height:200px; top: -70px; left: 280px; z-index: -1; transform: rotate(-90deg)"></div>
+                <div class="abs pipe anchor-center" style="height:40px; top: 50px; left: 185px; z-index: -1;"></div>
+                <div class="abs pipe" style="height:80px; top: 135px; left: 375px; z-index: -1; transform: rotate(-90deg)"></div>
+                <div class="abs pipe" style="height:80px; top: 200px; left: 500px; z-index: -1; transform: rotate(-90deg)"></div>
+                <div class="abs pipe" style="height:80px; top: 290px; left: 500px; z-index: -1; transform: rotate(-90deg)"></div>
+            </div>
+
+
+
+
+            <img class="abs anchor-center" style="top: 163px; left: 120px; filter: invert(1);" src="img/Gate_Valve_Spring.png" width="75" height="65">
+        </div>
+        <div id="fuelSystem" class="abs pnid-container" style="height: 600px; width: 500px; top: 0%; left: 195px;">
+
+            <div id="pnid-fuelTank" class="abs pnid-tank pnid-tank-fuel" style="width:90px; height:180px; top: 350px; left: 268px; color: white;">
+                <div class="abs half-oval" style="left: 0%; top: 0%;"></div>
+                <div class="abs square text-center" style="height: 90%; left: 0%; top: 10%; border-radius: 0px">Fuel</div>
+                <div class="abs half-oval" style="left: 0%; top: 90%; transform: rotate(180deg)"></div>
+                <input value="Pressurized" type="text" class="abs pnid-input anchor-center" style="left: 50%; top: 28%; font-size: 0.8rem; color: white;" onchange="onPNIDInputChange(this);"/>
+            </div>
+
+            <div id="pnid-fuelTankPressure" class="abs pnid-sensor" style="width:100px; height:100px; top: 280px; left: 265px;">
+                <div class="abs" style="width:100%; height:100%; transform: rotate(90deg); z-index: -2;">
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%; height: 100%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="width: 40%; height: 40%; left: 50%; top: -50%;">P</div>
+                </div>
+                <input type="text" value="40" unit="bar" class="abs pnid-input anchor-center text-center" style="left: 120%; top: 10%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+
+            <div id="pnid-fuelDepressSolenoid" class="abs pnid-solenoid" style="width:100px; height:100px; top: 145px; left: 149px; z-index: 5;">
+                <div class="abs" style="width:100%; height:100%; transform: scale(0.75);">
+                    <div class="abs triangle"></div>
+                    <div class="abs triangle mirror" style="left: 50%"></div>
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%;"></div>
+                    <div class="abs square-hollow text-center anchor-center valve-label" style="width: 30%;
+                    height: 30%; margin-left: 50%; margin-top: -20%;">S</div>
+                </div>
+                <input type="text" class="abs pnid-input anchor-center" style="left: 50%; top: 60%;" onchange="onPNIDInputChange(this);" value="Open"/>
+            </div>
+
+            <div id="pnid-fuelPressSolenoid" class="abs pnid-solenoid" style="width:100px; height:100px; top: 50px; left: 245px; z-index: 5;">
+                <div class="abs" style="width:100%; height:100%; transform: scale(0.75) rotate(90deg);">
+                    <div class="abs triangle"></div>
+                    <div class="abs triangle mirror" style="left: 50%"></div>
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%;"></div>
+                    <div class="abs square-hollow text-center anchor-center valve-label" style="width: 30%;
+                    height: 30%; margin-left: 50%; margin-top: -20%;">S</div>
+                </div>
+                <input type="text" class="abs pnid-input anchor-center" style="left: 30%; top: 50%;" onchange="onPNIDInputChange(this);" value="Close"/>
+            </div>
+
+            <div style="transform: scaleX(-1);">
+                <div class="abs pipe anchor-center pnid-fuelPipes" style="height:220px; top: 240px; left: 185px; z-index: -1;"></div>
+                <div class="abs pipe anchor-center pnid-fuelPipes" style="height:80px; top: 135px; left: 220px; z-index: -1; transform: rotate(-90deg)"></div>
+                <div class="abs pipe anchor-center pnid-fuelPipes" style="height:40px; top: 565px; left: 185px; z-index: -1;"></div>
+            </div>
+
+            <div style="transform: scaleX(-1);">
+                <div class="abs pipe anchor-center" style="height:200px; top: -70px; left: 280px; z-index: -1; transform: rotate(-90deg)"></div>
+                <div class="abs pipe anchor-center" style="height:40px; top: 50px; left: 185px; z-index: -1;"></div>
+                <div class="abs pipe" style="height:80px; top: 135px; left: 375px; z-index: -1; transform: rotate(-90deg)"></div>
+            </div>
+        </div>
+
+
+        <div id="engineSystem" class="abs pnid-container anchor-center" style="height: 350px; width: 600px; top: 700px; left: 698px;">
+            <div id="pnid-injector" class="abs pnid-injector anchor-center" style="width:75px; height:150px; top: 250px; left: 48.5%; z-index: 5; color: white; transform: scale(0.75) translate(-50%, -50%)">
+                <div class="abs square-hollow anchor-center valve-label" style="width: 90%; height: 50%; left: 50%; top: 25%;"></div>
+                <div class="abs trapezoid" style="left: 0%; top: 48.5%; border-bottom-color: #2d2d2d; z-index: 10; transform: scaleX(0.88) scaleY(0.90)"></div>
+                <div class="abs trapezoid" style="left: 0%; top: 48.5%;"></div>
+                <img id="injectorExhaust" hidden class="abs" src="img/machdiamonds.png" width="100" height="300" style="top: 90%; left: -15%; transform: rotate(0deg);"/>
+            </div>
+
+            <div id="pnid-oxMainValve" class="abs pnid-motor-valve" style="width:100px; height:100px; top: 50px; left: 457px;">
+                <div class="abs" style="width:100%; height:100%; transform: scale(0.75) rotate(-90deg);">
+                    <div class="abs triangle" style="top: 0%;"></div>
+                    <div class="abs triangle mirror" style="left: 50%; top: 0%"></div>
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="left: 50%; top: -20%;">M</div>
+                </div>
+                <input type="text" class="abs pnid-input anchor-center" style="left: 70%; top: 50%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+            <div id="pnid-fuelMainValve" class="abs pnid-motor-valve" style="width:100px; height:100px; top: 50px; left: 43px; z-index: 5;">
+                <div class="abs" style="width:100%; height:100%; transform: scale(0.75) rotate(90deg);">
+                    <div class="abs triangle" style="top: 0%;"></div>
+                    <div class="abs triangle mirror" style="left: 50%; top: 0%"></div>
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="left: 50%; top: -20%;">M</div>
+                </div>
+                <input type="text" class="abs pnid-input anchor-center" style="left: 30%; top: 50%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+
+            <div id="pnid-oxVenturiPressure" class="abs pnid-sensor anchor-center" style="width:100px; height:100px; top: 170px; left: 490px;">
+                <div class="abs" style="width:100%; height:100%; transform: rotate(90deg); z-index: -2;">
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%; height: 100%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="width: 40%; height: 40%; left: 50%; top: -50%;">P</div>
+                </div>
+                <input type="text" value="40" unit="bar" class="abs pnid-input anchor-center" style="left: 120%; top: 90%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+            <div id="pnid-fuelVenturiPressure" class="abs pnid-sensor anchor-center" style="width:100px; height:100px; top: 170px; left: 113px;">
+                <div class="abs" style="width:100%; height:100%; transform: rotate(-90deg); z-index: -6;">
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%; height: 100%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="width: 40%; height: 40%; left: 50%; top: -50%;">P</div>
+                </div>
+                <input type="text" value="40" unit="bar" class="abs pnid-input anchor-center" style="left: -20%; top: 90%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+            <div id="pnid-chamberPressure" class="abs pnid-sensor anchor-center" style="width:100px; height:100px; top: 240px; left: 275px;">
+                <div class="abs" style="width:100%; height:100%; transform: rotate(-90deg); z-index: -2;">
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%; height: 100%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="width: 40%; height: 40%; left: 50%; top: -50%;">P</div>
+                </div>
+                <input type="text" value="40" unit="bar" class="abs pnid-input anchor-center" style="left: -20%; top: 90%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+            <div id="pnid-thrust_Sum" class="abs pnid-sensor anchor-center" style="width:100px; height:100px; top: 240px; left: 50%;">
+                <div class="abs" style="width:100%; height:100%; z-index: -2;">
+                    <div class="abs line anchor-center" style="left: 50%; top: 0%; height: 100%;"></div>
+                    <div class="abs circle-hollow text-center anchor-center valve-label" style="width: 40%; height: 40%; left: 50%; top: -50%;">L</div>
+                </div>
+                <input type="text" value="40" unit="N" class="abs pnid-input anchor-center" style="left: 50%; top: -100%;" onchange="onPNIDInputChange(this);"/>
+            </div>
+
+
+            <div>
+                <div class="abs pipe anchor-center pnid-injectorOxPipes" style="height:60px; top: 165px; left: 488px; z-index: -5;"></div>
+                <div class="abs pipe anchor-center pnid-injectorOxPipes" style="height:180px; top: 102px; left: 397px; z-index: -5; transform: rotate(-90deg)"></div>
+                <div class="abs pipe anchor-center pnid-injectorOxPipes" style="height:25px; top: 203px; left: 310px; z-index: -5;"></div>
+            </div>
+
+            <div style="transform: scaleX(-1);">
+                <div class="abs pipe anchor-center pnid-injectorFuelPipes" style="height:60px; top: 165px; left: 488px; z-index: -5;"></div>
+                <div class="abs pipe anchor-center pnid-injectorFuelPipes" style="height:180px; top: 102px; left: 397px; z-index: -5; transform: rotate(-90deg)"></div>
+                <div class="abs pipe anchor-center pnid-injectorFuelPipes" style="height:25px; top: 203px; left: 310px; z-index: -5;"></div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+    <div class="tab-pane fade show active" id="chart-tab" role="tabpanel" aria-labelledby="chart-tab-button">
+        <div id="sensorChartDiv">
+
+        </div>
+    </div>
 </div>
+
 
 
 <script src="/socket.io/socket.io.js"></script>
 <script
-        src="https://code.jquery.com/jquery-3.4.1.js"
+        src="lib/jquery-3.4.1.js"
         integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
         crossorigin="anonymous"></script>
 <script
-        src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+        src="lib/jquery-ui.js"
         integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
         crossorigin="anonymous"></script>
 
@@ -270,15 +510,17 @@
 </script>
 
 <script src="lib/bootstrap-input-spinner.js"></script>
+<script src="/js/GUIControls.js"></script>
 <script src="js/Slider.js"></script>
+<script src="js/PNID.js"></script>
 <script src="js/SequenceChart.js"></script>
 <script src="js/SensorChart.js"></script>
 <script src="./js/ClientSocket.js"></script>
 <script src="./lib/responsivevoice.js?key=1KDoRqPO"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+<script src="lib/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+<script src="lib/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
 </body>

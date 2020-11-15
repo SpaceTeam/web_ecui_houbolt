@@ -1,85 +1,62 @@
 
+//-------------------------------------Global Variables | Yikes!!!---------------------------------
+
 var socket = io();
-var start = new Date();
 
-socket.on('connect', function() {socket.emit('checklist-start')});
+var sequences = [];
+var abortSequences = [];
+var jsonSequence = {};
+var jsonAbortSequence = {};
+var jsonSensors = {};
+var checklistLoaded = false;
+var isContinousTransmission = true;
 
-socket.on('connect_timeout', function() {console.log('connect-timeout')});
-socket.on('connect_error', function(error) {console.log(error)});
+var seqChart = new SequenceChart("sequenceChart", "Sequence");
 
-document.onkeydown = function (event) {
-    var seqButton = $('#toggleSequenceButton');
-    console.log(seqButton.text());
-    if (seqButton.text() === 'Abort Sequence')
-    {
-        seqButton.click();
-    }
-    else
-    {
-        var code;
+var endTime;
+var timeMillis;
+var intervalMillis;
+var intervalDelegate;
 
-        if (event.key !== undefined) {
-            code = event.key;
-        } else if (event.keyIdentifier !== undefined) {
-            code = event.keyIdentifier;
-        } else if (event.keyCode !== undefined) {
-            code = event.keyCode;
+var countdownTime;
+var countdownIntervalDelegate;
+
+var llServerConnectionActive = false;
+
+//create observer to check if sensor charts shall be rendered
+var chartTabObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.type === "attributes")
+        {
+            if(mutation.target.classList.contains("show"))
+            {
+                console.log("sensor charts enabled");
+                window.scrollTo(0,document.body.scrollHeight);
+                for (let sensorName in jsonSensors)
+                {
+                    jsonSensors[sensorName].chart.enable();
+                }
+            }
+            else
+            {
+                console.log("sensor charts disabled");
+                for (let sensorName in jsonSensors)
+                {
+                    jsonSensors[sensorName].chart.disable();
+                }
+            }
         }
-
-        // if (code === ' ' && !seqButton.prop('disabled'))
-        // {
-        //     seqButton.click();
-        // }
-
-    }
-
-
-};
-
-$('#toggleSequenceButton').click(function()
-{
-    if ($(this).text() === 'Start Sequence')
-    {
-        socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
-        $(this).text('Abort Sequence');
-        $('.tab-button').each(function () {
-            if ($(this).id !== "monitor-tab-button")
-            {
-                $(this).prop('disabled', true);
-            }
-        });
-    }
-    else if ($(this).text() === 'Abort Sequence')
-    {
-        abortSequence("abort from user");
-        $(this).text('Start Sequence');
-        $('.tab-button').each(function () {
-            if ($(this).id !== "monitor-tab-button")
-            {
-                $(this).prop('disabled', false);
-            }
-        });
-    }
-
-});
-$('#saftlButton').click(function() {
-    $('#fuel').each(function () {
-        let slider = $(this);
-        let lastVal = slider.val();
-        slider.val(slider.attr('max')).trigger('input');
-        setTimeout(function () {
-            slider.val(lastVal).trigger('input');
-        }, 2000);
-    })
+    });
 });
 
-$('#resetButton').click(function() {
+chartTabObserver.observe(document.getElementById('chart-tab'), {
+  attributes: true //configure it to listen to attribute changes
+});
+
+//-------------------------------------GUI Events---------------------------------
+
+function onResetSensors() {
     emptySensorCharts();
-});
-
-function onSequenceSelectChange(value)
-{
-    socket.emit('sequence-set', value);
 }
 
 function onServoSpinnerChange(spinner) {
@@ -105,67 +82,6 @@ function onServoSliderInput(servoSlider)
         $('#statusBar').css("background-color","transparent");
         $('#statusBar').text("");
     }
-}
-
-function sendDigitalOut(doId, doValue)
-{
-    let jsonDigitalOut = {};
-
-    jsonDigitalOut.id = doId;
-    jsonDigitalOut.value = doValue;
-    socket.emit('digital-outs-set', [jsonDigitalOut]);
-}
-
-function sendDigitalOutArr(doIds, doValue)
-{
-    let jsonDigitalOut = [];
-    let jsonDigitalOutObj = {};
-
-    for (let doIdsInd in doIds)
-    {
-        jsonDigitalOutObj = {};
-        jsonDigitalOutObj.id = doIds[doIdsInd];
-        jsonDigitalOutObj.value = doValue;
-
-        jsonDigitalOut.push(jsonDigitalOutObj);
-    }
-    socket.emit('digital-outs-set', jsonDigitalOut);
-}
-
-function sendServo(servoId, servoValue)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.value = servoValue;
-    socket.emit('servos-set', [jsonServo]);
-}
-
-function sendServoRaw(servoId, rawValue)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.value = rawValue;
-    socket.emit('servos-set-raw', [jsonServo]);
-}
-
-function sendServoMin(servoId, newServoMin)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.min = newServoMin;
-    socket.emit('servos-calibrate', [jsonServo]);
-}
-
-function sendServoMax(servoId, newServoMax)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.max = newServoMax;
-    socket.emit('servos-calibrate', [jsonServo]);
 }
 
 function onCalibrateMin(button) {
@@ -217,6 +133,13 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
         $('#coolingPump').prop('disabled', checkbox.checked);
     }
 
+    if (delaySecondDigitalOut > 0.0) {
+        $(checkbox).prop('disabled', true);
+        setTimeout(function () {
+            $(checkbox).prop('disabled', false);
+        }, delaySecondDigitalOut * 1000);
+    }
+
     if (checkbox.checked) {
         if (delaySecondDigitalOut === 0.0)
         {
@@ -245,8 +168,262 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
             }, delaySecondDigitalOut*1000);
         }
     }
+}
 
+//-------------------------------------Utility functions for ECUI,Socket,Timing---------------------------------
 
+function checkConnection()
+{
+    if (llServerConnectionActive)
+    {
+        $('#statusBar').css("background-color","transparent");
+        $('#statusBar').text(null);
+    }
+    else
+    {
+        $('#statusBar').css("background-color","#FFCD00");
+        $('#statusBar').text("No Connection to LLServer");
+    }
+}
+
+setInterval(function(){
+    checkConnection();
+    llServerConnectionActive = false;
+    },4000);
+
+function timerTick()
+{
+    //console.log(timeMillis);
+    let time = timeMillis/1000;
+    $('.timer').text(time);
+
+    if (Number.isInteger(time))
+    {
+        // if (time < 0 && time >= -5)
+        // {
+        //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.2});
+        // }
+        // else if (time === 0)
+        // {
+        //     ////responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
+        //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+        // }
+        $('.timer').append('.0');
+    }
+
+    seqChart.update(timeMillis);
+
+    //update pnid - doesn't work if timestamps overlap (don't try it anyways)
+    let latestAction = undefined;
+    for (let ind in jsonSequence.data)
+    {
+        let currCmd = jsonSequence.data[ind];
+        let currCmdTimestamp = seqChart.getTimestamp(currCmd, jsonSequence.globals.startTime, jsonSequence.globals.startTime);
+        if (currCmdTimestamp <= time)
+        {
+
+            for (let actionInd in currCmd.actions)
+            {
+                let currAction = currCmd.actions[actionInd];
+                if ((currCmdTimestamp + currAction.timestamp) <= time)
+                {
+                    latestAction = currAction;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        else
+        {
+            break;
+        }
+
+    }
+
+    for (let key in latestAction)
+    {
+        if (key.includes("Solenoid") || key.includes("igniter"))
+        {
+            updatePNID(key, latestAction[key] !== 0);
+        }
+
+    }
+
+    timeMillis += intervalMillis;
+}
+
+function sequenceButtonStop()
+{
+    $('#toggleSequenceButton').text("Start Sequence");
+
+    //disable all other tabs
+    $('.tab-button').each(function () {
+        if ($(this).id === "control-tab-button" || $(this).id === "calibration-tab-button")
+        {
+            $(this).prop('disabled', false);
+        }
+    });
+}
+
+function loadSequenceSelect()
+{
+    $('#sequenceSelect').empty();
+    for (seqInd in sequences)
+    {
+
+        if (seqInd === 0)
+        {
+            $('#sequenceSelect').append('<option value="' + sequences[seqInd] + '" selected>' + sequences[seqInd] + '</option>');
+        }
+        else
+        {
+            $('#sequenceSelect').append('<option value="' + sequences[seqInd] + '">' + sequences[seqInd] + '</option>');
+        }
+    }
+}
+
+function emptySensorCharts()
+{
+    for (let sensorName in jsonSensors)
+    {
+        jsonSensors[sensorName].chart.removeContent();
+    }
+}
+
+function countdownTimerTick()
+{
+    if (countdownTime < 0 && countdownTime >= -10)
+    {
+        responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
+    }
+    else if (countdownTime === 0)
+    {
+        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+        clearInterval(countdownIntervalDelegate);
+    }
+    countdownTime += 1;
+}
+
+//-------------------------------------Controls on sending Socket Messages---------------------------------
+
+function onSendPostSequenceComment()
+{
+    socket.emit('send-postseq-comment', $('#commentTextbox').val() + '\n');
+    $('#sendPostSeqCommentButton').prop('disabled', true);
+    setTimeout(function () {
+        $('#sendPostSeqCommentButton').prop('disabled', false);
+    }, 400);
+}
+
+function onToggleSequenceButton(btn)
+{
+    if ($(btn).text() === 'Start Sequence')
+    {
+        socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
+        $(btn).text('Abort Sequence');
+        $('.tab-button').each(function () {
+            if ($(btn).id === "control-tab-button" || $(btn).id === "calibration-tab-button")
+            {
+                //$(this).prop('disabled', true);
+            }
+        });
+        $('#sendPostSeqCommentButton').prop('disabled', false);
+
+        //scroll to pnid
+        document.getElementById('monitorTabsContent').scrollIntoView({
+            behavior: "smooth",
+            block:    "start",
+        });
+    }
+    else if ($(btn).text() === 'Abort Sequence')
+    {
+        abortSequence("abort from user");
+        $(btn).text('Start Sequence');
+        $('.tab-button').each(function () {
+            if ($(btn).id === "control-tab-button" || $(btn).id === "calibration-tab-button")
+            {
+                $(btn).prop('disabled', false);
+            }
+        });
+    }
+}
+
+function onTareLoadCells()
+{
+    socket.emit('tare');
+}
+
+function onSequenceSelectChange(value)
+{
+    socket.emit('sequence-set', value);
+}
+
+function sendDigitalOut(doId, doValue)
+{
+    let jsonDigitalOut = {};
+
+    jsonDigitalOut.id = doId;
+    jsonDigitalOut.value = doValue;
+
+    updatePNID(doId, doValue);
+
+    socket.emit('digital-outs-set', [jsonDigitalOut]);
+}
+
+function sendDigitalOutArr(doIds, doValue)
+{
+    let jsonDigitalOut = [];
+    let jsonDigitalOutObj = {};
+
+    for (let doIdsInd in doIds)
+    {
+        jsonDigitalOutObj = {};
+        jsonDigitalOutObj.id = doIds[doIdsInd];
+        jsonDigitalOutObj.value = doValue;
+
+        updatePNID(doIds[doIdsInd], doValue);
+
+        jsonDigitalOut.push(jsonDigitalOutObj);
+    }
+    socket.emit('digital-outs-set', jsonDigitalOut);
+}
+
+function sendServo(servoId, servoValue)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.value = servoValue;
+    socket.emit('servos-set', [jsonServo]);
+}
+
+function sendServoRaw(servoId, rawValue)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.value = rawValue;
+    socket.emit('servos-set-raw', [jsonServo]);
+}
+
+function sendServoMin(servoId, newServoMin)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.min = newServoMin;
+    socket.emit('servos-calibrate', [jsonServo]);
+}
+
+function sendServoMax(servoId, newServoMax)
+{
+    let jsonServo = {};
+
+    jsonServo.id = servoId;
+    jsonServo.max = newServoMax;
+    socket.emit('servos-calibrate', [jsonServo]);
 }
 
 function onServoEnable(checkbox) {
@@ -275,9 +452,6 @@ function onServoEnable(checkbox) {
 
         $('#toggleSequenceButton').prop('disabled', false);
 
-        $('.range-slider__range').each(function () {
-            //$(this).val(0).trigger('input');
-        });
         $('.range-slider__value').each(function () {
             $(this).attr('disabled', true);
         });
@@ -298,97 +472,6 @@ function onServoEnable(checkbox) {
     }
 }
 
-var llServerConnectionActive = false;
-
-function checkConnection()
-{
-    if (llServerConnectionActive)
-    {
-        $('#statusBar').css("background-color","transparent");
-        $('#statusBar').text(null);
-    }
-    else
-    {
-        $('#statusBar').css("background-color","#FFCD00");
-        $('#statusBar').text("No Connection to LLServer");
-    }
-}
-
-setInterval(function(){checkConnection();llServerConnectionActive = false;}, 4000);
-
-var sequences = [];
-var abortSequences = [];
-var jsonSequence = {};
-var jsonAbortSequence = {};
-var jsonSensors = {};
-var checklistLoaded = false;
-var isContinousTransmission = true;
-
-var seqChart = new SequenceChart("sequenceChart", "Sequence");
-
-var endTime;
-var timeMillis;
-var intervalMillis;
-var intervalDelegate;
-
-var countdownTime;
-var countdownIntervalDelegate;
-
-function timerTick()
-{
-    //console.log(timeMillis);
-    let time = timeMillis/1000;
-    $('#timer').text(time);
-
-    if (Number.isInteger(time))
-    {
-        // if (time < 0 && time >= -5)
-        // {
-        //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.2});
-        // }
-        // else if (time === 0)
-        // {
-        //     ////responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
-        //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-        // }
-        $('#timer').append('.0');
-    }
-
-    seqChart.update(timeMillis);
-
-    timeMillis += intervalMillis;
-}
-
-function sequenceButtonStop()
-{
-    $('#toggleSequenceButton').text("Start Sequence");
-
-    //disable all other tabs
-    $('.tab-button').each(function () {
-        if ($(this).id !== "monitor-tab-button")
-        {
-            $(this).prop('disabled', false);
-        }
-    });
-}
-
-function loadSequenceSelect()
-{
-    $('#sequenceSelect').empty();
-    for (seqInd in sequences)
-    {
-
-        if (seqInd === 0)
-        {
-            $('#sequenceSelect').append('<option value="' + sequences[seqInd] + '" selected>' + sequences[seqInd] + '</option>');
-        }
-        else
-        {
-            $('#sequenceSelect').append('<option value="' + sequences[seqInd] + '">' + sequences[seqInd] + '</option>');
-        }
-    }
-}
-
 function abortSequence(abortMsg)
 {
     clearInterval(countdownIntervalDelegate);
@@ -397,7 +480,7 @@ function abortSequence(abortMsg)
 
     clearInterval(intervalDelegate);
 
-    $('#timer').css("color", "red");
+    $('.timer').css("color", "red");
     socket.emit('abort');
 
     sequenceButtonStop();
@@ -429,27 +512,12 @@ function onChecklistTick(checkbox)
     socket.emit('checklist-tick', currId);
 }
 
-function emptySensorCharts()
-{
-    for (let sensorName in jsonSensors)
-    {
-        jsonSensors[sensorName].chart.removeContent();
-    }
-}
+//-------------------------------------Controls on receiving Socket Messages---------------------------------
 
-function countdownTimerTick()
-{
-    if (countdownTime < 0 && countdownTime >= -10)
-    {
-        responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
-    }
-    else if (countdownTime === 0)
-    {
-        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-        clearInterval(countdownIntervalDelegate);
-    }
-    countdownTime += 1;
-}
+socket.on('connect', function() {socket.emit('checklist-start')});
+
+socket.on('connect_timeout', function() {console.log('connect-timeout')});
+socket.on('connect_error', function(error) {console.log(error)});
 
 socket.on('abort', function(abortMsg) {
     console.log('abort');
@@ -523,12 +591,12 @@ socket.on('sequence-load', function(jsonSeqsInfo) {
 
     seqChart = new SequenceChart("sequenceChart", sequences[0]);
 
-    $('#timer').text(jsonSequence.globals.startTime);
+    $('.timer').text(jsonSequence.globals.startTime);
     if (Number.isInteger(jsonSequence.globals.startTime))
     {
-        $('#timer').append('.0')
+        $('.timer').append('.0')
     }
-    $('#timer').css("color", "green");
+    $('.timer').css("color", "green");
     console.log('sequence-load:');
     console.log(jsonSequence);
 
@@ -553,7 +621,7 @@ socket.on('sequence-start', function() {
     //responsiveVoice.speak("starting sequence", "US English Female", {rate: 1});
 
     $('#toggleSequenceButton').text("Abort Sequence");
-    $('#timer').css("color", "green");
+    $('.timer').css("color", "green");
 
     seqChart.start();
 });
@@ -597,11 +665,11 @@ socket.on('sequence-done', function() {
 
     seqChart.stop();
 
-    $('#timer').text(endTime);
+    $('.timer').text(endTime);
     clearInterval(intervalDelegate);
     if (Number.isInteger(endTime))
     {
-        $('#timer').append('.0');
+        $('.timer').append('.0');
     }
     sequenceButtonStop();
 
@@ -630,6 +698,11 @@ socket.on('sensors', function(jsonSens) {
     for (let sensorInd in jsonSens)
     {
         let jsonSen = jsonSens[sensorInd];
+
+        //update pnid
+        updatePNID(jsonSen.name, jsonSen.value);
+
+        //generate plot and or update
         let sensor;
         if (jsonSen.name in jsonSensors)
         {
@@ -657,10 +730,13 @@ socket.on('sensors', function(jsonSens) {
             sensor.series = sensor.chart.addSeries(jsonSen.name, jsonSen.name);
             sensor.name = jsonSen.name;
 
+            //sensor.chart.disable();
+
             jsonSensors[jsonSen.name] = sensor;
 
         }
         sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value, isContinousTransmission);
+
     }
 
 });
