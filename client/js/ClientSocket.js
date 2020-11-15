@@ -421,7 +421,7 @@ function sendServoMax(servoId, newServoMax)
 
 function onManualControlEnable(checkbox)
 {
-    console.log("manual control:", checkbox.checked);
+    //console.log("manual control:", checkbox.checked);
     if (checkbox.checked)
     {
         $('.manualEnableCheck').prop('checked', true);
@@ -455,7 +455,7 @@ function onManualControlEnable(checkbox)
 }
 
 function onServoEnable(checkbox) {
-    console.log("servo enable:", checkbox.checked);
+    //console.log("servo enable:", checkbox.checked);
     if (checkbox.checked)
     {
         $('.servoEnableCheck').prop('checked', true);
