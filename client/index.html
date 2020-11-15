@@ -100,7 +100,7 @@
         <div class="container-fluid sequence-fluid">
             <div class="row header justify-content-start">
                 <div class="col col-3">
-                    <h1 id="timer">0.0</h1>
+                    <h1 id="timer" class="timer">0.0</h1>
                 </div>
                 <div class="col col-2">
                   <select class="btn btn-secondary ecui-select" id="sequenceSelect" onchange="onSequenceSelectChange(value);">
@@ -314,7 +314,10 @@ Notes: Hotfire
     <div class="tab-pane fade show active" id="pnid-tab" role="tabpanel" aria-labelledby="pnid-tab-button" style="background-color: #2d2d2d;">
 
         <div id="pnid" style="margin: auto; width: 1400px; height: 1100px; border-color: #4e4e4e; position: relative; background-color: #2d2d2d; z-index: 0;"> <!--background-color: #202020-->
-        <div id="oxSystem" class="abs pnid-container" style="height: 600px; width: 500px; top: 0%; left: 700px;">
+            <div class="abs anchor-center" style="top: 10%; left: 10%; display: inline;">
+                <h1 style="color: white; display: inline;">Timer: </h1><h1 id="timerPNID" class="timer" style="width: 100px; display: inline-block; text-align: right;">0.0</h1>
+            </div>
+            <div id="oxSystem" class="abs pnid-container" style="height: 600px; width: 500px; top: 0%; left: 700px;">
 
             <div id="pnid-oxTank" class="abs pnid-tank pnid-tank-ox" style="width:90px; height:180px; top: 350px; left: 140px; color: white;">
                 <div class="abs half-oval" style="left: 0%; top: 0%;"></div>

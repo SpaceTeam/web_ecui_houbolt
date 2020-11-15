@@ -186,7 +186,7 @@ function timerTick()
 {
     //console.log(timeMillis);
     let time = timeMillis/1000;
-    $('#timer').text(time);
+    $('.timer').text(time);
 
     if (Number.isInteger(time))
     {
@@ -199,7 +199,7 @@ function timerTick()
         //     ////responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
         //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
         // }
-        $('#timer').append('.0');
+        $('.timer').append('.0');
     }
 
     seqChart.update(timeMillis);
@@ -471,7 +471,7 @@ function abortSequence(abortMsg)
 
     clearInterval(intervalDelegate);
 
-    $('#timer').css("color", "red");
+    $('.timer').css("color", "red");
     socket.emit('abort');
 
     sequenceButtonStop();
@@ -582,12 +582,12 @@ socket.on('sequence-load', function(jsonSeqsInfo) {
 
     seqChart = new SequenceChart("sequenceChart", sequences[0]);
 
-    $('#timer').text(jsonSequence.globals.startTime);
+    $('.timer').text(jsonSequence.globals.startTime);
     if (Number.isInteger(jsonSequence.globals.startTime))
     {
-        $('#timer').append('.0')
+        $('.timer').append('.0')
     }
-    $('#timer').css("color", "green");
+    $('.timer').css("color", "green");
     console.log('sequence-load:');
     console.log(jsonSequence);
 
@@ -612,7 +612,7 @@ socket.on('sequence-start', function() {
     //responsiveVoice.speak("starting sequence", "US English Female", {rate: 1});
 
     $('#toggleSequenceButton').text("Abort Sequence");
-    $('#timer').css("color", "green");
+    $('.timer').css("color", "green");
 
     seqChart.start();
 });
@@ -656,11 +656,11 @@ socket.on('sequence-done', function() {
 
     seqChart.stop();
 
-    $('#timer').text(endTime);
+    $('.timer').text(endTime);
     clearInterval(intervalDelegate);
     if (Number.isInteger(endTime))
     {
-        $('#timer').append('.0');
+        $('.timer').append('.0');
     }
     sequenceButtonStop();
 
