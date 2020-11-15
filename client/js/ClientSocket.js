@@ -55,6 +55,34 @@ chartTabObserver.observe(document.getElementById('chart-tab'), {
 
 //-------------------------------------GUI Events---------------------------------
 
+$('#closeTankValve').click(function() {
+    $('#closeTankValve').prop('disabled', true);
+    $('.manualEnableCheck').prop('disabled', true);
+    $('.servoEnableCheck').prop('disabled', true);
+    $('#loadingTankValve').each(function () {
+        let slider = $(this);
+        let closingIntervalTime = 10;
+        let closingTime = 500;
+        let steps = closingTime / closingIntervalTime;
+        let sliderStep = slider.val() / steps;
+        let sliderCount = 0;
+        let currSliderVal = slider.val();
+
+        let closingInterval = setInterval(function () {
+            currSliderVal -= sliderStep;
+            slider.val(currSliderVal).trigger('input');
+            sliderCount++;
+            if (sliderCount === steps)
+            {
+                clearInterval(closingInterval);
+                $('#closeTankValve').prop('disabled', false);
+                $('.manualEnableCheck').prop('disabled', false);
+                $('.servoEnableCheck').prop('disabled', false);
+            }
+        }, closingIntervalTime);
+    })
+});
+
 function onResetSensors() {
     emptySensorCharts();
 }
