@@ -424,27 +424,25 @@ function onManualControlEnable(checkbox)
     console.log("manual control:", checkbox.checked);
     if (checkbox.checked)
     {
-        $('.manualEnableCheck').each(function(){$(this).prop('checked', true);});
+        $('.manualEnableCheck').prop('checked', true);
 
-        $('.servoEnableCheck').each(function(){$(this).prop('disabled', false);});
+        $('.servoEnableCheck').prop('disabled', false);
+        //only click one item, the others get updated automatically
+        $('.servoEnableCheck').first().click();
 
         $('#toggleSequenceButton').prop('disabled', true);
 
-        $('.manual-obj:not(.servo-enable-obj)').each(function () {
-            $(this).prop('disabled', false);
-        });
+        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);
     }
     else
     {
-        $('.manualEnableCheck').each(function(){$(this).prop('checked', false);});
+        $('.manualEnableCheck').prop('checked', false);
 
-        $('.servoEnableCheck').each(function(){$(this).prop('disabled', true);});
+        $('.servoEnableCheck').prop('disabled', true);
 
         $('#toggleSequenceButton').prop('disabled', false);
 
-        $('.manual-obj:not(.servo-enable-obj)').each(function () {
-            $(this).prop('disabled', true);
-        });
+        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', true);
 
         $('.digitalOut, .servoEnableCheck').each(function () {
             if ($(this).prop("checked"))
@@ -460,35 +458,21 @@ function onServoEnable(checkbox) {
     console.log("servo enable:", checkbox.checked);
     if (checkbox.checked)
     {
-        $('#servoEnableCheck').prop('checked', true);
-        $('#servoEnableCheck1').prop('checked', true);
+        $('.servoEnableCheck').prop('checked', true);
 
-        $('#toggleSequenceButton').prop('disabled', true);
+        $('.range-slider__value').attr('disabled', false);
 
-        $('.range-slider__value').each(function () {
-            $(this).attr('disabled', false);
-        });
-
-        $('.servo-enable-obj').each(function () {
-            $(this).prop('disabled', false);
-        });
+        $('.servo-enable-obj').prop('disabled', false);
 
         socket.emit('servos-enable');
     }
     else
     {
-        $('#servoEnableCheck').prop('checked', false);
-        $('#servoEnableCheck1').prop('checked', false);
+        $('.servoEnableCheck').prop('checked', false);
 
-        $('#toggleSequenceButton').prop('disabled', false);
+        $('.range-slider__value').attr('disabled', true);
 
-        $('.range-slider__value').each(function () {
-            $(this).attr('disabled', true);
-        });
-
-        $('.servo-enable-obj').each(function () {
-            $(this).prop('disabled', true);
-        });
+        $('.servo-enable-obj').prop('disabled', true);
 
         socket.emit('servos-disable');
     }
