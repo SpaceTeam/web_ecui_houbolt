@@ -195,7 +195,7 @@ Notes: Hotfire
             <div class="row control-row" style="margin-left: 0rem;">
                 <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
                     <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="igniter"
-                           onclick="onDigitalCheck(this);" disabled>
+                           onclick="onCheckboxModal(this);" disabled>
                     <label class="custom-control-label ckbx-label" for="igniter">Igniter</label>
                 </div>
                 <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
@@ -309,6 +309,27 @@ Notes: Hotfire
     </div>
 
 </div>
+
+<!-- Modal -->
+            <div class="modal fade" id="outputAssuranceModal" tabindex="-1" role="dialog" aria-labelledby="outputAssuranceModalTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="outputAssuranceModalHeader">Are you sure you want to set this Output?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+<!--                  <div class="modal-body">-->
+<!--                    ...-->
+<!--                  </div>-->
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" style="margin-top: 0;" data-dismiss="modal" onclick="onModalAccept();">Set Output</button>
+                    <button type="button" class="btn btn-dark" data-dismiss="modal" onclick="onModalReject();">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
 <div class="row" style="margin-top: -2rem">
     <button class="btn btn-secondary" id="resetButton" style="margin-left: 2rem" onclick="onResetSensors();">Reset Sensor Charts</button><br>
