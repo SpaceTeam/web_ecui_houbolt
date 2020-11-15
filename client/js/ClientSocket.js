@@ -61,7 +61,7 @@ $('#closeTankValve').click(function() {
     $('.servoEnableCheck').prop('disabled', true);
     $('#loadingTankValve').each(function () {
         let slider = $(this);
-        let closingIntervalTime = 10;
+        let closingIntervalTime = 5;
         let closingTime = 500;
         let steps = closingTime / closingIntervalTime;
         let sliderStep = slider.val() / steps;
