@@ -115,8 +115,8 @@
                     <label class="custom-control-label ckbx-label" for="debugSequenceCheck">Auto Sequence Start</label>
                 </div>
                 <div class="col"></div>
-                <div class="col col-2">
-                    <button class="btn btn-secondary" id="sendPostSeqCommentButton" disabled="true" onclick="onSendPostSequenceComment();">Send post-Seq Comment</button>
+                <div class="col col-3">
+                    <button class="btn btn-secondary float-right" id="sendPostSeqCommentButton" disabled="true" onclick="onSendPostSequenceComment();">Send post-Seq Comment</button>
                 </div>
             </div>
             <div class="row content">
@@ -145,12 +145,19 @@ Notes: Hotfire
     </div>
     <div class="tab-pane fade" id="control-tab" role="tabpanel" aria-labelledby="control-tab-button">
         <div id="servo-container" class="container-fluid">
-            <div class="form-control-lg custom-control custom-checkbox servo-enable-container row control-row">
-                <input type="checkbox" class="custom-control-input ckbx" id="servoEnableCheck"
-                       onclick="onServoEnable(this);">
-                <label class="custom-control-label ckbx-label" for="servoEnableCheck">Enable Manual Control</label>
+            <div class="servo-enable-container row control-row">
+                <div class="form-control-lg custom-control custom-checkbox col">
+                    <input type="checkbox" class="custom-control-input ckbx manualEnableCheck" id="manualEnableCheck"
+                           onclick="onManualControlEnable(this);">
+                    <label class="custom-control-label ckbx-label" for="manualEnableCheck">Enable Manual Control</label>
+                </div>
+                <div class="form-control-lg custom-control custom-checkbox col">
+                    <input type="checkbox" class="custom-control-input ckbx servoEnableCheck" id="servoEnableCheck"
+                           onclick="onServoEnable(this);" disabled>
+                    <label class="custom-control-label ckbx-label" for="servoEnableCheck">Enable Servos</label>
+                </div>
+                <div class="col"></div>
             </div>
-
             <div class="row control-row">
                 <div class="range-slider col">
                     <label class="range-slider-label input-label">Fuel Main Valve</label><br>
@@ -209,10 +216,18 @@ Notes: Hotfire
     </div>
     <div class="tab-pane fade" id="calibration-tab" role="tabpanel" aria-labelledby="calibration-tab-button">
         <div id="calibration-container" class="container-fluid">
-            <div class="form-control-lg custom-control custom-checkbox servo-enable-container row control-row">
-                <input type="checkbox" class="custom-control-input ckbx" id="servoEnableCheck1"
-                       onclick="onServoEnable(this);">
-                <label class="custom-control-label ckbx-label" for="servoEnableCheck1">Enable Manual Control</label>
+            <div class="servo-enable-container row control-row">
+                <div class="form-control-lg custom-control custom-checkbox col">
+                    <input type="checkbox" class="custom-control-input ckbx manualEnableCheck" id="manualEnableCheck1"
+                           onclick="onManualControlEnable(this);">
+                    <label class="custom-control-label ckbx-label" for="manualEnableCheck1">Enable Manual Control</label>
+                </div>
+                <div class="form-control-lg custom-control custom-checkbox col">
+                    <input type="checkbox" class="custom-control-input ckbx servoEnableCheck" id="servoEnableCheck1"
+                           onclick="onServoEnable(this);" disabled>
+                    <label class="custom-control-label ckbx-label" for="servoEnableCheck1">Enable Servos</label>
+                </div>
+                <div class="col"></div>
             </div>
 
             <div class="row control-row">

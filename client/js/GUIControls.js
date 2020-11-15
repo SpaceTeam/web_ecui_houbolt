@@ -31,7 +31,7 @@ document.onkeydown = function (event) {
                 $("#tareButton").click();
             }
         }
-		
+
     }
 
 
@@ -57,6 +57,8 @@ function onDebugSequence(checkbox)
 
 $('#saftlButton').click(function() {
     $('#saftlButton').prop('disabled', true);
+    $('.manualEnableCheck').each(function(){$(this).prop('disabled', true);});
+    $('.servoEnableCheck').each(function(){$(this).prop('disabled', true);});
     $('#fuelMainValve').each(function () {
         let slider = $(this);
         let lastVal = slider.val();
@@ -64,6 +66,8 @@ $('#saftlButton').click(function() {
         setTimeout(function () {
             slider.val(lastVal).trigger('input');
             $('#saftlButton').prop('disabled', false);
+            $('.manualEnableCheck').each(function(){$(this).prop('disabled', false);});
+            $('.servoEnableCheck').each(function(){$(this).prop('disabled', false);});
         }, 2000);
     })
 });

@@ -288,3 +288,8 @@ hr {
     float: left;
     width: 100%;
 }
+
+#sendPostSeqCommentButton
+{
+    margin-right: 2rem;
+}
