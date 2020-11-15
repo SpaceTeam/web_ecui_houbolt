@@ -446,7 +446,7 @@ function onManualControlEnable(checkbox)
             $(this).prop('disabled', true);
         });
 
-        $('.digitalOut').each(function () {
+        $('.digitalOut, .servoEnableCheck').each(function () {
             if ($(this).prop("checked"))
             {
                 $(this).prop('checked', false);
