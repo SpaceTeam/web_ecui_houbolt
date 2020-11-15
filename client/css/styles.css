@@ -293,3 +293,9 @@ hr {
 {
     margin-right: 2rem;
 }
+
+#modal-output-name
+{
+    color: #522e63;
+    font-weight: bold;
+}
