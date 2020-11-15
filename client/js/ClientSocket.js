@@ -133,10 +133,12 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
         $('#coolingPump').prop('disabled', checkbox.checked);
     }
 
-    if (delaySecondDigitalOut > 0.0) {
+    if (delaySecondDigitalOut > 0.0 && ($('.manualEnableCheck:checked').length > 0)) {
         $(checkbox).prop('disabled', true);
+        $('.manualEnableCheck').each(function(){$(this).prop('disabled', true);});
         setTimeout(function () {
             $(checkbox).prop('disabled', false);
+            $('.manualEnableCheck').each(function(){$(this).prop('disabled', false);});
         }, delaySecondDigitalOut * 1000);
     }
 
@@ -426,47 +428,60 @@ function sendServoMax(servoId, newServoMax)
     socket.emit('servos-calibrate', [jsonServo]);
 }
 
-function onServoEnable(checkbox) {
-    console.log(checkbox.checked);
+function onManualControlEnable(checkbox)
+{
+    //console.log("manual control:", checkbox.checked);
     if (checkbox.checked)
     {
-        $('#servoEnableCheck').prop('checked', true);
-        $('#servoEnableCheck1').prop('checked', true);
+        $('.manualEnableCheck').prop('checked', true);
+
+        $('.servoEnableCheck').prop('disabled', false);
+        //only click one item, the others get updated automatically
+        $('.servoEnableCheck').first().click();
 
         $('#toggleSequenceButton').prop('disabled', true);
 
-        $('.range-slider__value').each(function () {
-            $(this).attr('disabled', false);
-        });
+        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);
+    }
+    else
+    {
+        $('.manualEnableCheck').prop('checked', false);
 
-        $('.manual-obj').each(function () {
-            $(this).prop('disabled', false);
+        $('.servoEnableCheck').prop('disabled', true);
+
+        $('#toggleSequenceButton').prop('disabled', false);
+
+        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', true);
+
+        $('.digitalOut, .servoEnableCheck').each(function () {
+            if ($(this).prop("checked"))
+            {
+                $(this).prop('checked', false);
+                $(this).click();
+            }
         });
+    }
+}
+
+function onServoEnable(checkbox) {
+    //console.log("servo enable:", checkbox.checked);
+    if (checkbox.checked)
+    {
+        $('.servoEnableCheck').prop('checked', true);
+
+        $('.range-slider__value').attr('disabled', false);
+
+        $('.servo-enable-obj').prop('disabled', false);
 
         socket.emit('servos-enable');
     }
     else
     {
-        $('#servoEnableCheck').prop('checked', false);
-        $('#servoEnableCheck1').prop('checked', false);
+        $('.servoEnableCheck').prop('checked', false);
 
-        $('#toggleSequenceButton').prop('disabled', false);
+        $('.range-slider__value').attr('disabled', true);
 
-        $('.range-slider__value').each(function () {
-            $(this).attr('disabled', true);
-        });
-
-        $('.manual-obj').each(function () {
-            $(this).prop('disabled', true);
-        });
-
-        $('.digitalOut').each(function () {
-            // if ($(this).prop("checked") === true)
-            // {
-            //     $(this).prop('checked', false);
-            //     $(this).click();
-            // }
-        });
+        $('.servo-enable-obj').prop('disabled', true);
 
         socket.emit('servos-disable');
     }
