@@ -20,6 +20,18 @@ document.onkeydown = function (event) {
 			$("#debugSequenceCheck").parent().prop("hidden", !isHidden);
 		};
 
+		if (event.code === "KeyR")
+        {
+            $("#resetButton").click();
+        }
+		else if (event.code === "KeyT")
+        {
+            if ($("#tareButton").length > 0)
+            {
+                $("#tareButton").click();
+            }
+        }
+		
     }
 
 
