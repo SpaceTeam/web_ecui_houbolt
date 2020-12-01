@@ -211,23 +211,19 @@ ioClient.on('connection', function(socket){
 
     clientsCount++;
     console.log(clientsCount);
-    if (clientsCount === 1)
+    if (llServer === undefined)
     {
-        if (llServer === undefined)
-        {
-            var intDel = setInterval(function () {
-                if (llServer !== undefined)
-                {
-                    llServerMod.sendMessage(llServer, 'sensors-start');
-                    clearInterval(intDel);
-                }
-            }, 1000);
-        }
-        else
-        {
-            llServerMod.sendMessage(llServer, 'sensors-start');
-        }
-
+        var intDel = setInterval(function () {
+            if (llServer !== undefined)
+            {
+                llServerMod.sendMessage(llServer, 'sensors-start');
+                clearInterval(intDel);
+            }
+        }, 1000);
+    }
+    else
+    {
+        llServerMod.sendMessage(llServer, 'sensors-start');
     }
     console.log('userID: ' + socket.id + ' userAddress: ' + socket.handshake.address + ' connected');
     // if (master == null)

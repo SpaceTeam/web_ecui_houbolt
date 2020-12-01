@@ -623,7 +623,10 @@ socket.on('checklist-done', function() {
     //TODO: check with user credentials and only display them when master
     //$('#checklistCol').hide('slide', { direction: 'right' }, 300);
     $('#startChecklistButton').attr('hidden', '');
-    $('#toggleSequenceButton').prop('disabled', false);
+    if (!$('.manualEnableCheck').prop('checked'))
+    {
+        $('#toggleSequenceButton').prop('disabled', false);
+    }
 });
 
 socket.on('sequence-load', function(jsonSeqsInfo) {
