@@ -83,6 +83,9 @@
 					"timestamp": 0,
                     "fuelMainValve": 0,
 					"oxMainValve": 0,
+				},
+				{
+					"timestamp": 0.2,
 					"igniter": 100
 				},
 				{
@@ -95,7 +98,7 @@
 					}
 				},
 				{
-					"timestamp": 2,
+					"timestamp": 1.5,
 					"igniter": 0
 				}
 			]

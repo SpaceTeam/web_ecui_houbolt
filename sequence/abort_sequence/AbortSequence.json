@@ -10,6 +10,6 @@
 		"oxDepressSolenoid": 0,
 		"fuelPressSolenoid": 0,
 		"oxPressSolenoid": 0,
-        "oxSuperchargeValve": 100
+        "oxSuperchargeValve": 0
     }
 }
