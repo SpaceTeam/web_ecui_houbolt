@@ -45,6 +45,12 @@ var onSequenceLoad = function (ioClient, socket)
     //send new socket up to date sequence
     let jsonSeq = sequenceManMod.loadSequence();
     let jsonAbortSeq = sequenceManMod.loadAbortSequence();
+    if (jsonSeq === undefined || jsonAbortSeq === undefined)
+    {
+        console.error("can't start sequence, sequence or " +
+            "abort-sequence not loaded yet, check sequences for errors!");
+        return;
+    }
     let sequences = sequenceManMod.getAllSequences();
     let abortSequences = sequenceManMod.getAllAbortSequences();
 
@@ -104,7 +110,17 @@ var onSequenceStart = function (ioClient, socket, msg) {
         //     function(time){onSequenceSync(ioClient,socket,time);},
         //     function(){onSequenceDone(ioClient,socket);}
         //     );
-        llServerMod.sendMessage(llServer, 'sequence-start', [sequenceManMod.loadSequence(), sequenceManMod.loadAbortSequence(), msg]);
+
+        let jsonSeq = sequenceManMod.loadSequence();
+        let jsonAbortSeq = sequenceManMod.loadAbortSequence();
+        if (jsonSeq === undefined || jsonAbortSeq === undefined)
+        {
+            console.error("can't start sequence, sequence or " +
+                "abort-sequence not loaded yet, check sequences for errors!");
+            return;
+        }
+
+        llServerMod.sendMessage(llServer, 'sequence-start', [jsonSeq, jsonAbortSeq, msg]);
     }
     else
     {
@@ -211,23 +227,19 @@ ioClient.on('connection', function(socket){
 
     clientsCount++;
     console.log(clientsCount);
-    if (clientsCount === 1)
+    if (llServer === undefined)
     {
-        if (llServer === undefined)
-        {
-            var intDel = setInterval(function () {
-                if (llServer !== undefined)
-                {
-                    llServerMod.sendMessage(llServer, 'sensors-start');
-                    clearInterval(intDel);
-                }
-            }, 1000);
-        }
-        else
-        {
-            llServerMod.sendMessage(llServer, 'sensors-start');
-        }
-
+        var intDel = setInterval(function () {
+            if (llServer !== undefined)
+            {
+                llServerMod.sendMessage(llServer, 'sensors-start');
+                clearInterval(intDel);
+            }
+        }, 1000);
+    }
+    else
+    {
+        llServerMod.sendMessage(llServer, 'sensors-start');
     }
     console.log('userID: ' + socket.id + ' userAddress: ' + socket.handshake.address + ' connected');
     // if (master == null)

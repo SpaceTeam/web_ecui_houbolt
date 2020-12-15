@@ -23,20 +23,24 @@ module.exports = class SequenceManager {
     }
 
     static startSequence(syncInterval, syncCallback, stopCallback) {
-        if (!SequenceManager._running) {
-            SequenceManager._running = true;
-            SequenceManager._syncInterval = syncInterval * 1000;
-            SequenceManager._syncCallback = syncCallback;
-            SequenceManager._stopCallback = stopCallback;
+        if (SequenceManager._sequence !== undefined && SequenceManager._abortSequence !== undefined) {
+            if (!SequenceManager._running) {
+                SequenceManager._running = true;
+                SequenceManager._syncInterval = syncInterval * 1000;
+                SequenceManager._syncCallback = syncCallback;
+                SequenceManager._stopCallback = stopCallback;
 
-            let seq = SequenceManager._sequence;
+                let seq = SequenceManager._sequence;
 
-            SequenceManager._timer = new timerMod(seq.globals.interval, seq.globals.startTime, seq.globals.endTime, SequenceManager._timerTick, SequenceManager._timerDone);
-            SequenceManager._timer.start();
+                SequenceManager._timer = new timerMod(seq.globals.interval, seq.globals.startTime, seq.globals.endTime, SequenceManager._timerTick, SequenceManager._timerDone);
+                SequenceManager._timer.start();
+            } else {
+                console.error("can't start sequence, already running");
+            }
         }
         else
         {
-            console.error("can't start sequence, already running");
+            console.error("can't start sequence, sequence or abort-sequence not loaded yet, check sequences for errors!");
         }
     }
 
@@ -164,14 +168,24 @@ module.exports = class SequenceManager {
     static loadSequence()
     {
         let rawdata = fs.readFileSync(SequenceManager._sequencePath);
-        let seq = JSON.parse(rawdata);
+        let seq;
+        try {
+            seq = JSON.parse(rawdata);
+        } catch(e) {
+            console.error(e); // error in the above string (in this case, yes)!
+        }
         return seq
     }
 
     static loadAbortSequence()
     {
         let rawdata = fs.readFileSync(SequenceManager._abortSequencePath);
-        let seq = JSON.parse(rawdata);
+        let seq;
+        try {
+            seq = JSON.parse(rawdata);
+        } catch(e) {
+            console.error(e); // error in the above string (in this case, yes)!
+        }
         return seq
     }
 };
