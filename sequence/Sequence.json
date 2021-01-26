@@ -5,6 +5,7 @@
         "interval": 0.01,
         "interpolation": {
             "igniter": "none",
+	    "igniter1": "none",
             "fuel": "linear",
             "oxidizer": "linear"
         },
@@ -21,6 +22,7 @@
                 {
                     "fuel": 0,
                     "igniter": 0,
+		    "igniter": 0,
                     "oxidizer": 0,
                     "sensorsNominalRange" : {
                         "chamberPressure" : [-5.0, 20.0]
@@ -41,6 +43,7 @@
                 },
 		        {
                     "igniter": 100,
+		    "igniter1": 100,
                     "timestamp": 0.1
                 },
                 {
@@ -61,6 +64,7 @@
                 },
                 {
                     "igniter": 0,
+		    "igniter1": 0,
                     "timestamp": 2.5
                 }
             ]
@@ -73,6 +77,7 @@
                 {
                     "fuel": 100,
                     "igniter": 0,
+		    "igniter1": 0,
                     "oxidizer": 100,
                     "sensorsNominalRange" : {
                         "chamberPressure" : [5.0, 20.0]
@@ -88,18 +93,21 @@
                 {
                     "fuel": 0,
                     "igniter": 0,
+		    "igniter1": 0,
                     "oxidizer": 100,
                     "timestamp": 1.2
                 },
                 {
                     "fuel": 0,
                     "igniter": 0,
+		    "igniter1": 0,
                     "oxidizer": 100,
                     "timestamp": 1.3
                 },
                 {
                     "fuel": 0,
                     "igniter": 0,
+		    "igniter1": 0,
                     "oxidizer": 0,
                     "timestamp": 1.5
                 }
@@ -113,6 +121,7 @@
                 {
                     "fuel": 0,
                     "igniter": 0,
+		    "igniter1": 0,
                     "oxidizer": 0,
                     "timestamp": 0.0
                 }
