@@ -144,6 +144,14 @@ function onServosLoad(jsonServosData)
     }
 }
 
+function onSetPoint(button)
+{
+    let id = $('#' + 'setPoint').attr('id');
+    let num = parseFloat($('#' + 'setPoint').val());
+    sendSetPoint(id, num);
+}
+
+
 //BE CAREFUL when using the delay feature: when enabling first digital gets set instantly and others
 //after the delay, when disabling however, the others get set first then the first one (mainly used for solenoid timing
 //when this was written)
@@ -455,6 +463,15 @@ function sendServoMax(servoId, newServoMax)
     jsonServo.id = servoId;
     jsonServo.max = newServoMax;
     socket.emit('servos-calibrate', [jsonServo]);
+}
+
+function sendSetPoint(setPointId, newSetPoint)
+{
+    let jsonSetPoint = {};
+
+    jsonSetPoint.id = setPointId;
+    jsonSetPoint.value = newSetPoint;
+    socket.emit('setpoint-set', [jsonSetPoint]);
 }
 
 function onManualControlEnable(checkbox)

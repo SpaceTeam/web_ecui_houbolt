@@ -5,7 +5,7 @@ var app = express();
 var http = require('http').Server(app);
 var ioClient = require('socket.io')(http);
 var clientsCount = 0;
-var port = process.env.PORT || 80;
+var port = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/client/'));
 
@@ -367,6 +367,15 @@ ioClient.on('connection', function(socket){
         console.log(jsonDigitalOutputs)
         if (master === socket.id) {
             llServerMod.sendMessage(llServer, 'digital-outs-set', jsonDigitalOutputs);
+        }
+
+    });
+
+    socket.on('setpoint-set', function(jsonSetPoint){
+        console.log('setpoint-set');
+		console.log(jsonSetPoint);
+        if (master === socket.id) {
+            llServerMod.sendMessage(llServer, 'setpoint-set', jsonSetPoint);
         }
 
     });
