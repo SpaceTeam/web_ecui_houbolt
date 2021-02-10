@@ -171,7 +171,7 @@ hr {
     color: #522e63;
 }
 
-#servo-container, #calibration-container, #table-container {
+#servo-container, #calibration-container {
     display: block !important;
     margin-left: 40px;
     font-family: sans-serif;

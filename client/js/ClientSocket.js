@@ -144,11 +144,11 @@ function onServosLoad(jsonServosData)
     }
 }
 
-function onSetPoint(button)
+function onSuperchargeSet(button)
 {
-    let id = $('#' + 'setPoint').attr('id');
-    let num = parseFloat($('#' + 'setPoint').val());
-    sendSetPoint(id, num);
+    let setpoint = parseFloat($('#' + 'setpoint').val());
+    let hysteresis = parseFloat($('#' + 'hysteresis').val())*10; //multiply by 10 to convert from 1 decimal place to int
+    sendSupercharge(setpoint, hysteresis);
 }
 
 
@@ -465,13 +465,13 @@ function sendServoMax(servoId, newServoMax)
     socket.emit('servos-calibrate', [jsonServo]);
 }
 
-function sendSetPoint(setPointId, newSetPoint)
+function sendSupercharge(setpoint, hysteresis)
 {
-    let jsonSetPoint = {};
+    let jsonSupercharge = {};
 
-    jsonSetPoint.id = setPointId;
-    jsonSetPoint.value = newSetPoint;
-    socket.emit('setpoint-set', [jsonSetPoint]);
+    jsonSupercharge.setpoint = setpoint;
+    jsonSupercharge.hysteresis = hysteresis;
+    socket.emit('supercharge-set', [jsonSupercharge]);
 }
 
 function onManualControlEnable(checkbox)

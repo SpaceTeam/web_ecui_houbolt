@@ -371,11 +371,11 @@ ioClient.on('connection', function(socket){
 
     });
 
-    socket.on('setpoint-set', function(jsonSetPoint){
-        console.log('setpoint-set');
-		console.log(jsonSetPoint);
+    socket.on('supercharge-set', function(jsonSupercharge){
+        console.log('supercharge-set');
+		console.log(jsonSupercharge);
         if (master === socket.id) {
-            llServerMod.sendMessage(llServer, 'setpoint-set', jsonSetPoint);
+            llServerMod.sendMessage(llServer, 'supercharge-set', jsonSupercharge);
         }
 
     });

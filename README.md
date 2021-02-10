@@ -239,7 +239,9 @@ For TCP Sockets this is not the case. For consistency a message over TCP Sockets
 | servos-calibrate | [JSON Servos Calibrate Format](#servos-calibrate-format) | set new min or max position for an array of servos |
 | servos-set | [JSON Servos Set Format](#servos-set-format) | set servo position between 0% and 100% |
 | servos-set-raw | [JSON Servos Set Raw Format](#servos-set-raw-format) | set servo raw position in microseconds |
+| supercharge-set | [JSON Supercharge Set Format](#supercharge-set-format) | set setpoint and hysteresis for supercharge (overpressure) |
 | tare | none | tares all load cells |
+
 ---
 ### Web-Server ---> Web-Client
 
@@ -291,6 +293,7 @@ These messages are sent from the Server to each connected client
 | servos-calibrate | [JSON Servos Calibrate Format](#servos-calibrate-format) | tells LLServer to set new endpoints and feedbacks if there are any |
 | servos-set | [JSON Servos Set Format](#servos-set-format) | set servo position between 0% and 100% |
 | servos-set-raw | [JSON Servos Set Raw Format](#servos-set-raw-format) | set servo raw position in microseconds |
+| supercharge-set | [JSON Supercharge Set Format](#supercharge-set-format) | set setpoint and hysteresis for supercharge (overpressure) |
 | tare | none | tares all load cells |
 
 ---
@@ -506,6 +509,17 @@ List of Abort Sequences: all available Abort Sequences saved on server
 [JSON Abort Sequence Format](#abort-sequence-format)
 Comment Text: A string which should be saved alongside the log files
 
+
+#### Supercharge Set Format
+
+A JSON object that needs to have a setpoint and a hysteresis value of type uint8.
+	
+	[{  
+		"setpoint": 40,					//uint8    
+		"hysteresis": 10  				//uint8
+	}]
+
+> Note: hysteresis contains the actual hystereris*10 because hysteresis is a number with a single decimal place and an integer representation is desired.
 
 ## Mapping
 
