@@ -206,19 +206,23 @@ function refreshServoFeedback(jsonSen){
 
 	if(jsonSen.name.includes("Valve") && document.getElementById("manualEnableCheck1").checked){
 
-		var sliderId;
+		console.log(jsonSen.name + " with value " + jsonSen.value);
+
+		var sliderId = null;
 		if(jsonSen.name.includes("fuel")){ sliderId = "#fuelMainValve";}
 		else if(jsonSen.name.includes("Supercharge")){ sliderId = "#oxSuperchargeValve"; }
-		else{ sliderId = "#oxMainValve";}
+		else if(jsonSen.name.includes("MainValve")){ sliderId = "#oxMainValve";}
+		
+		if(sliderId != null){
+			// Should probably do something different in production on an out of range feedback value
+			var servoPercent = 0;
+			if(jsonSen.value <= $(sliderId).prop('max') && jsonSen.value >= $(sliderId).prop('min')) servoPercent = jsonSen.value / ($(sliderId).prop('max') - $(sliderId).prop('min'));
+			servoPercent = Math.trunc(servoPercent);
 
-		// Should probably do something different in production on an out of range feedback value
-		var servoPercent = 0;
-		if(jsonSen.value <= $(sliderId).prop('max') && jsonSen.value >= $(sliderId).prop('min')) servoPercent = jsonSen.value / ($(sliderId).prop('max') - $(sliderId).prop('min'));
-		servoPercent = Math.trunc(servoPercent);
-
-		// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
-		$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, #522E63), color-stop('+servoPercent+'%, #D7DCDF))');
-		$(sliderId+"Fb").text(Math.trunc(jsonSen.value));
+			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
+			$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, #522E63), color-stop('+servoPercent+'%, #D7DCDF))');
+			$(sliderId+"Fb").text(Math.trunc(jsonSen.value));
+		}
 	}
 }
 
