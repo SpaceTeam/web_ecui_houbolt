@@ -220,7 +220,8 @@ function refreshServoFeedback(jsonSen){
 			servoPercent = Math.trunc(servoPercent);
 
 			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
-			$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, #522E63), color-stop('+servoPercent+'%, #D7DCDF))');
+			if(sliderId != "#oxSuperchargeValve")
+				$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, #522E63), color-stop('+servoPercent+'%, #D7DCDF))');
 			$(sliderId+"Fb").text(Math.trunc(jsonSen.value));
 		}
 	}
