@@ -216,7 +216,7 @@ function refreshServoFeedback(jsonSen){
 		if(sliderId != null){
 			// Should probably do something different in production on an out of range feedback value
 			var servoPercent = 0;
-			if(jsonSen.value <= $(sliderId).prop('max') && jsonSen.value >= $(sliderId).prop('min')) servoPercent = jsonSen.value / ($(sliderId).prop('max') - $(sliderId).prop('min'));
+			if(jsonSen.value <= $(sliderId).prop('max') && jsonSen.value >= $(sliderId).prop('min')) servoPercent = jsonSen.value;
 			servoPercent = Math.trunc(servoPercent);
 
 			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
