@@ -204,7 +204,7 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 // Set colored progress bar in servo slider for visual feedback
 function refreshServoFeedback(jsonSen){
 
-	if(jsonSen.name.includes("Valve") && document.getElementById("manualEnableCheck1").checked){
+	if(jsonSen.name.includes("Valve")){
 
 		console.log(jsonSen.name + " with value " + jsonSen.value);
 
@@ -215,9 +215,9 @@ function refreshServoFeedback(jsonSen){
 		
 		if(sliderId != null){
 			// Should probably do something different in production on an out of range feedback value
-			var servoPercent = 0;
-			if(jsonSen.value <= $(sliderId).prop('max') && jsonSen.value >= $(sliderId).prop('min')) servoPercent = jsonSen.value;
-			servoPercent = Math.trunc(servoPercent);
+			var servoPercent = jsonSen.value;
+			if(jsonSen.value > $(sliderId).prop('max')) servoPercent = $(sliderId).prop('max');
+			if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
 
 			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
 			if(sliderId != "#oxSuperchargeValve")
@@ -530,8 +530,6 @@ function onServoEnable(checkbox) {
 
         $('.range-slider__value').attr('disabled', false);
 
-        $('.range-slider__feedback').attr('disabled', false);
-
         $('.servo-enable-obj').prop('disabled', false);
 
         socket.emit('servos-enable');
@@ -541,8 +539,6 @@ function onServoEnable(checkbox) {
         $('.servoEnableCheck').prop('checked', false);
 
         $('.range-slider__value').attr('disabled', true);
-
-        $('.range-slider__feedback').attr('disabled', true);
 
         $('.servo-enable-obj').prop('disabled', true);
 
