@@ -220,8 +220,11 @@ function refreshServoFeedback(jsonSen){
 			if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
 
 			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
-			if(sliderId != "#oxSuperchargeValve")
-				$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, #522E63), color-stop('+servoPercent+'%, #D7DCDF))');
+			if(sliderId != "#oxSuperchargeValve"){
+				var color = "#9C9C9C";
+				if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
+				$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
+			}
 			$(sliderId+"Fb").text(Math.trunc(jsonSen.value));
 		}
 	}
@@ -530,6 +533,8 @@ function onServoEnable(checkbox) {
 
         $('.range-slider__value').attr('disabled', false);
 
+	$('.range-slider__feedback').css('background', '#522E63');
+
         $('.servo-enable-obj').prop('disabled', false);
 
         socket.emit('servos-enable');
@@ -539,6 +544,8 @@ function onServoEnable(checkbox) {
         $('.servoEnableCheck').prop('checked', false);
 
         $('.range-slider__value').attr('disabled', true);
+
+	$('.range-slider__feedback').css('background', '#9C9C9C');
 
         $('.servo-enable-obj').prop('disabled', true);
 
