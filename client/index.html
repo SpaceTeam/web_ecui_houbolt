@@ -161,12 +161,11 @@ Notes: Hotfire
            <div class="row control-row">
                 <div class="range-slider col">
                     <label class="range-slider-label input-label">Fuel Main Valve</label><br> 
-                    <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="fuelMainValve" idNum="0" list="servoMarks"
+                    <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="fuelMainValve" idNum="0"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>  
-		    <datalist id="servoMarks"> <option value="0" label="0%"></option><option value="100" label="100%"></option></datalist>
                     <span class="range-slider__value" disabled>0</span>
-                    <span class="range-slider__feedback servo-feedback" id="fuelMainValveFb">0</span>
+                    <span class="range-slider__feedback servo-feedback" id="fuelMainValveFb" disabled>0</span>
                 </div>
             </div>
 
@@ -177,7 +176,7 @@ Notes: Hotfire
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span> 
-                    <span class="range-slider__feedback servo-feedback" id="oxMainValveFb">0</span>
+                    <span class="range-slider__feedback servo-feedback" id="oxMainValveFb" disabled>0</span>
                 </div>
 
             </div>
@@ -189,7 +188,7 @@ Notes: Hotfire
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
-                    <span class="range-slider__feedback servo-feedback" id="oxSuperchargeValveFb">0</span>
+                    <span class="range-slider__feedback servo-feedback" id="oxSuperchargeValveFb" disabled>0</span>
                 </div>
 
             </div>

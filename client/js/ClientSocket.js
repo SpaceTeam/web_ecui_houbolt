@@ -495,11 +495,7 @@ function onManualControlEnable(checkbox)
 
         $('#toggleSequenceButton').prop('disabled', true);
 
-        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);
-	
-	$('.servo-feedback').each(function (){	
-		$(this).css('visibility', 'visible');
-	});
+        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);	
     }
     else
     {
@@ -522,10 +518,6 @@ function onManualControlEnable(checkbox)
 	$('.servo-slider').each(function (){
 		$(this).css('background', '#D7DCDF');
 	});
-
-	$('.servo-feedback').each(function (){	
-		$(this).css('visibility', 'hidden');
-	});
     }
 }
 
@@ -537,6 +529,8 @@ function onServoEnable(checkbox) {
 
         $('.range-slider__value').attr('disabled', false);
 
+        $('.range-slider__feedback').attr('disabled', false);
+
         $('.servo-enable-obj').prop('disabled', false);
 
         socket.emit('servos-enable');
@@ -546,6 +540,8 @@ function onServoEnable(checkbox) {
         $('.servoEnableCheck').prop('checked', false);
 
         $('.range-slider__value').attr('disabled', true);
+
+        $('.range-slider__feedback').attr('disabled', true);
 
         $('.servo-enable-obj').prop('disabled', true);
 
