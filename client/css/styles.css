@@ -192,6 +192,14 @@ hr {
     width: 100%;
 }
 
+.servo-util-label {
+   font-size: 16px;
+}
+
+.range-table-col {
+   text-align: center;
+}
+
 .ecui-select {
     width: 100%;
     height: 2.4rem;

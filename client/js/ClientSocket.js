@@ -30,7 +30,7 @@ var chartTabObserver = new MutationObserver(function(mutations) {
         {
             if(mutation.target.classList.contains("show"))
             {
-                console.log("sensor charts enabled");
+                console.log("sensor charts d");
                 window.scrollTo(0,document.body.scrollHeight);
                 for (let sensorName in jsonSensors)
                 {
@@ -207,6 +207,35 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
             }, delaySecondDigitalOut*1000);
         }
     }
+}
+
+// Set colored progress bar in servo slider for visual feedback
+function refreshServoFeedback(jsonSen){
+
+	if(jsonSen.name.includes("Valve")){
+
+		console.log(jsonSen.name + " with value " + jsonSen.value);
+
+		var sliderId = null;
+		if(jsonSen.name.includes("fuel")){ sliderId = "#fuelMainValve";}
+		else if(jsonSen.name.includes("Supercharge")){ sliderId = "#oxSuperchargeValve"; }
+		else if(jsonSen.name.includes("MainValve")){ sliderId = "#oxMainValve";}
+		
+		if(sliderId != null){
+			// Should probably do something different in production on an out of range feedback value
+			var servoPercent = jsonSen.value;
+			if(jsonSen.value > $(sliderId).prop('max')) servoPercent = $(sliderId).prop('max');
+			if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
+
+			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
+			if(sliderId != "#oxSuperchargeValve"){
+				var color = "#9C9C9C";
+				if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
+				$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
+			}
+			$(sliderId+"Fb").text(Math.trunc(jsonSen.value));
+		}
+	}
 }
 
 //-------------------------------------Utility functions for ECUI,Socket,Timing---------------------------------
@@ -487,7 +516,7 @@ function onManualControlEnable(checkbox)
 
         $('#toggleSequenceButton').prop('disabled', true);
 
-        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);
+        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);	
     }
     else
     {
@@ -506,6 +535,10 @@ function onManualControlEnable(checkbox)
                 $(this).click();
             }
         });
+
+	$('.servo-slider').each(function (){
+		$(this).css('background', '#D7DCDF');
+	});
     }
 }
 
@@ -517,6 +550,8 @@ function onServoEnable(checkbox) {
 
         $('.range-slider__value').attr('disabled', false);
 
+	$('.range-slider__feedback').css('background', '#522E63');
+
         $('.servo-enable-obj').prop('disabled', false);
 
         socket.emit('servos-enable');
@@ -526,6 +561,8 @@ function onServoEnable(checkbox) {
         $('.servoEnableCheck').prop('checked', false);
 
         $('.range-slider__value').attr('disabled', true);
+
+	$('.range-slider__feedback').css('background', '#9C9C9C');
 
         $('.servo-enable-obj').prop('disabled', true);
 
@@ -801,6 +838,7 @@ socket.on('sensors', function(jsonSens) {
         }
         sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value, isContinousTransmission);
 
+        refreshServoFeedback(jsonSen);
     }
 
 });

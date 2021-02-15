@@ -96,11 +96,11 @@ class SensorChart
         series.stroke = nextColor;
         series.tooltip.background.fill = nextColor;
 
-        if (series.name.startsWith("oxVentV"))
+        if (series.name.includes("_P_"))
               series.stroke = am4core.color("#FF00FF");
-        else if (series.name.startsWith("ox"))
+        else if (series.name.includes("_T_"))
               series.stroke = am4core.color("#0000FF");
-        else if (series.name.startsWith("fuel"))
+        else if (series.name.endsWith("Fb"))
               series.stroke = am4core.color("#FF0000");
 	else
               series.stroke = am4core.color("#00FF00");
