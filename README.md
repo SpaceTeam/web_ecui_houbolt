@@ -515,7 +515,7 @@ Comment Text: A string which should be saved alongside the log files
 A JSON object that needs to have a setpoint and a hysteresis value of type uint8.
 	
 	[{  
-		"setpoint": 40,					//uint8    
+		"setpoint": 40,					//int8    
 		"hysteresis": 10  				//uint8
 	}]
 
