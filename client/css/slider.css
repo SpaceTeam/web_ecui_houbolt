@@ -10,9 +10,12 @@
   width: 100%;
 }
 
+.range-slider__range, .range-slider-caption {
+	width: 25rem;
+}
+
 .range-slider__range {
   -webkit-appearance: none;
-  width: 25rem;
   height: 10px;
   border-radius: 5px;
   background: #D7DCDF;
@@ -113,11 +116,6 @@
 input::-moz-focus-inner,
 input::-moz-focus-outer {
   border: 0;
-}
-
-
-.range-slider-caption {
-	width: 25rem;
 }
 
 .range-slider-caption_left, .range-slider-caption_right {
