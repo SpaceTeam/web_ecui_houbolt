@@ -375,15 +375,14 @@ ioClient.on('connection', function(socket){
 		console.log(jsonSupercharge);
         if (master === socket.id) {
             llServerMod.sendMessage(llServer, 'supercharge-set', jsonSupercharge);
+			llServerMod.sendMessage(llServer, 'supercharge-get');
         }
 
     });
 
     socket.on('supercharge-get', function(){
         console.log('supercharge-get');
-        if (master === socket.id) {
-            llServerMod.sendMessage(llServer, 'supercharge-get');
-        }
+        llServerMod.sendMessage(llServer, 'supercharge-get');
 
     });
 
