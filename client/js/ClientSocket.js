@@ -622,7 +622,7 @@ function onSuperchargeGet()
 
 //-------------------------------------Controls on receiving Socket Messages---------------------------------
 
-socket.on('connect', function() {socket.emit('checklist-start')});
+socket.on('connect', function() {socket.emit('checklist-start'); onSuperchargeGet();});
 
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
 socket.on('connect_error', function(error) {console.log(error)});
