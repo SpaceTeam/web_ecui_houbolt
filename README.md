@@ -239,6 +239,7 @@ For TCP Sockets this is not the case. For consistency a message over TCP Sockets
 | servos-calibrate | [JSON Servos Calibrate Format](#servos-calibrate-format) | set new min or max position for an array of servos |
 | servos-set | [JSON Servos Set Format](#servos-set-format) | set servo position between 0% and 100% |
 | servos-set-raw | [JSON Servos Set Raw Format](#servos-set-raw-format) | set servo raw position in microseconds |
+| supercharge-get | none | get setpoint and hysteresis for supercharge (overpressure) |
 | supercharge-set | [JSON Supercharge Set Format](#supercharge-set-format) | set setpoint and hysteresis for supercharge (overpressure) |
 | tare | none | tares all load cells |
 
@@ -261,6 +262,7 @@ These messages are sent from the Server to each connected client
 | servos-load | [JSON Servos Load Format](#servos-load-format) | sends all servo names and min and max values to all clients | 
 | sensors-load | (to be implemented) | sends all sensor names |
 | sensors | [JSON Sensors Format](#sensors-format) | sends current value of an array of sensors with corresponding timestamp |
+| supercharge-load | [JSON Supercharge Set Format](#supercharge-set-format) | sends setpoint and hysteresis for supercharge (overpressure) |
 
 
 #### Broadcasts except to Client who sent the message before
@@ -293,6 +295,7 @@ These messages are sent from the Server to each connected client
 | servos-calibrate | [JSON Servos Calibrate Format](#servos-calibrate-format) | tells LLServer to set new endpoints and feedbacks if there are any |
 | servos-set | [JSON Servos Set Format](#servos-set-format) | set servo position between 0% and 100% |
 | servos-set-raw | [JSON Servos Set Raw Format](#servos-set-raw-format) | set servo raw position in microseconds |
+| supercharge-get | none | get setpoint and hysteresis for supercharge (overpressure) |
 | supercharge-set | [JSON Supercharge Set Format](#supercharge-set-format) | set setpoint and hysteresis for supercharge (overpressure) |
 | tare | none | tares all load cells |
 
@@ -307,6 +310,7 @@ These messages are sent from the Server to each connected client
 | timer-done | none | tells Web-Server that Sequence is done | 
 | sensors | [JSON Sensors Format](#sensors-format) | sends current value of an array of sensors with corresponding timestamp |
 | servos-load | [JSON Servos Load Format](#servos-load-format) | sends all servo names and min and max values to the Web-Server | 
+| supercharge-load | [JSON Supercharge Set Format](#supercharge-set-format) | sends setpoint and hysteresis for supercharge (overpressure) |
 
 ## JSON Formats
 
