@@ -159,71 +159,53 @@ Notes: Hotfire
                 <div class="col"></div>
             </div>
            <div class="row control-row">
-                <div class="range-slider col">
+                <div class="range-slider col col-6">
                     <label class="range-slider-label input-label">Fuel Main Valve</label><br> 
                     <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="fuelMainValve" idNum="0"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>  
                     <span class="range-slider__value" disabled>0</span>
-		    <span class="range-slider__feedback servo-feedback" id="fuelMainValveFb">0</span>
-		    <div class="range-slider-caption">
-			    <div class="range-slider-caption_left"> Closed</div>
-			    <div class="range-slider-caption_right"> Open </div>
-		    </div>
+		    		<span class="range-slider__feedback servo-feedback" id="fuelMainValveFb">0</span>
+					<div class="range-slider-caption">
+						<div class="range-slider-caption_left"> Closed</div>
+						<div class="range-slider-caption_right"> Open </div>
+					</div>
                 </div>
             </div>
 
             <div class="row control-row">
-                <div class="range-slider col">
+                <div class="range-slider col col-6">
                     <label class="range-slider-label input-label">Oxidizer Main Valve</label><br>
                     <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="oxMainValve" idNum="1"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span> 
                     <span class="range-slider__feedback servo-feedback" id="oxMainValveFb">0</span>
-		    <div class="range-slider-caption">
-			    <div class="range-slider-caption_left"> Closed </div>
-			    <div class="range-slider-caption_right"> Open </div>
-		    </div>
+					<div class="range-slider-caption">
+						<div class="range-slider-caption_left"> Closed </div>
+						<div class="range-slider-caption_right"> Open </div>
+		    		</div>
                 </div>
             </div>
             
             <div class="row control-row">
-                <div class="range-slider col">
+                <div class="range-slider col col-6">
                     <label class="range-slider-label input-label">Oxidizer Supercharge Valve</label><br>
                     <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="oxSuperchargeValve" idNum="1"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
                     <span class="range-slider__feedback servo-feedback" id="oxSuperchargeValveFb">0</span>
-		    <br>
-		    <div class="range-slider-caption">
-			    <div class="range-slider-caption_left"> Pressure Controlled </div>
-			    <div class="range-slider-caption_right"> Closed </div>
-		    </div>
-                </div>
-            </div>
- 
-            <div class="row control-row" style="margin-left: 0rem;">
-                <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
-                    <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="igniter"
-                           onclick="onCheckboxModal(this);" disabled>
-                    <label class="custom-control-label ckbx-label" for="igniter">Igniter</label>
-                </div>
-                <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
-                    <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="fuelDepressSolenoid;fuelPressSolenoid"
-                           onclick="onDigitalCheck(this,0.5);" disabled>
-                    <label class="custom-control-label ckbx-label" for="fuelDepressSolenoid;fuelPressSolenoid">Pressurize Fuel</label>
-                </div>
-                <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
-                    <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="oxDepressSolenoid;oxPressSolenoid"
-                           onclick="onDigitalCheck(this,0.5);" disabled>
-                    <label class="custom-control-label ckbx-label" for="oxDepressSolenoid;oxPressSolenoid">Pressurize Oxidizer</label>
+					<br>
+					<div class="range-slider-caption">
+						<div class="range-slider-caption_left"> Pressure Controlled </div>
+						<div class="range-slider-caption_right"> Closed </div>
+					</div>
                 </div>
             </div>
 
-            <div class="row control-row">
-                <div class="col col-2 spinner">
+			<div class="row control-row">
+				<div class="col col-2 spinner">
                     <label class="input-label" for="setpoint" style="width: 100%;">
                         <div class="container-fluid">
                             <div class="row">
@@ -255,6 +237,25 @@ Notes: Hotfire
                     </button>
                 </div>
             </div>
+ 
+            <div class="row control-row" style="margin-left: 0rem;">
+                <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
+                    <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="igniter"
+                           onclick="onCheckboxModal(this);" disabled>
+                    <label class="custom-control-label ckbx-label" for="igniter">Igniter</label>
+                </div>
+                <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
+                    <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="fuelDepressSolenoid;fuelPressSolenoid"
+                           onclick="onDigitalCheck(this,0.5);" disabled>
+                    <label class="custom-control-label ckbx-label" for="fuelDepressSolenoid;fuelPressSolenoid">Pressurize Fuel</label>
+                </div>
+                <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
+                    <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="oxDepressSolenoid;oxPressSolenoid"
+                           onclick="onDigitalCheck(this,0.5);" disabled>
+                    <label class="custom-control-label ckbx-label" for="oxDepressSolenoid;oxPressSolenoid">Pressurize Oxidizer</label>
+                </div>
+            </div>
+
             <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="saftlButton" disabled>Saftl</button>
         </div>
 

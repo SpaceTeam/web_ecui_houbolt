@@ -650,34 +650,36 @@ socket.on('checklist-load', function(jsonChecklist) {
     console.log('checklist-load:');
     console.log(jsonChecklist);
 
-    if (!checklistLoaded) {
-        checklistLoaded = true;
-        for (itemInd in jsonChecklist)
-        {
-            let currItem = jsonChecklist[itemInd];
-            let currId = currItem.id;
-            console.log(itemInd);
-            let newCard = $('#templates').children().first().clone();
-            newCard.find('#headingTemp').attr('id', 'checklistItemHeading' + currId)
-                .find('button').attr('data-target', '#checklistItemCollapse' + currId)
-                .attr('aria-controls', 'checklistItemCollapse' + currId)
-                .attr('for', 'checklistCheck' + currId);
-            newCard.find('#checklistCheckTemp').attr('id', 'checklistCheck' + currId);
-            newCard.find('#collapseTemp').attr('id', 'checklistItemCollapse' + currId)
-                .attr('aria-labelledby', 'checklistItemHeading' + currId);
+	// deactivate checklist and enable toggle sequence button directly
+	$('#toggleSequenceButton').prop('disabled', false);
+    // if (!checklistLoaded) {
+    //     checklistLoaded = true;
+    //     for (itemInd in jsonChecklist)
+    //     {
+    //         let currItem = jsonChecklist[itemInd];
+    //         let currId = currItem.id;
+    //         console.log(itemInd);
+    //         let newCard = $('#templates').children().first().clone();
+    //         newCard.find('#headingTemp').attr('id', 'checklistItemHeading' + currId)
+    //             .find('button').attr('data-target', '#checklistItemCollapse' + currId)
+    //             .attr('aria-controls', 'checklistItemCollapse' + currId)
+    //             .attr('for', 'checklistCheck' + currId);
+    //         newCard.find('#checklistCheckTemp').attr('id', 'checklistCheck' + currId);
+    //         newCard.find('#collapseTemp').attr('id', 'checklistItemCollapse' + currId)
+    //             .attr('aria-labelledby', 'checklistItemHeading' + currId);
 
-            newCard.find('button').text(currItem.name);
+    //         newCard.find('button').text(currItem.name);
 
-            let notes = $('<ul>');
-            for (noteInd in currItem.notes)
-            {
-                notes.append($('<li>').text(currItem.notes[noteInd]));
-            }
-            newCard.find('.card-body').append(notes);
+    //         let notes = $('<ul>');
+    //         for (noteInd in currItem.notes)
+    //         {
+    //             notes.append($('<li>').text(currItem.notes[noteInd]));
+    //         }
+    //         newCard.find('.card-body').append(notes);
 
-            $('#checklist').append(newCard);
-        }
-    }
+    //         $('#checklist').append(newCard);
+    //     }
+    // }
 });
 
 socket.on('checklist-update', function(id) {

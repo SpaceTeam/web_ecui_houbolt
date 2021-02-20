@@ -11,7 +11,8 @@
 }
 
 .range-slider__range, .range-slider-caption {
-	width: 25rem;
+	/* width: 25rem; */
+	width: calc(100% - 120px - 16px - 10px);
 }
 
 .range-slider__range {

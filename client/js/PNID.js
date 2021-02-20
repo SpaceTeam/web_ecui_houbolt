@@ -67,7 +67,7 @@ $('.pnid-sensor .pnid-input').on('change',function() {
 	}
 	else
 	{
-		console.error("pressure sensor in status object not found!");
+		//console.error("pressure sensor in status object not found!");
 	}
 
 });
