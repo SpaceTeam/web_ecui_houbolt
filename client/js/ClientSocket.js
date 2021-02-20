@@ -144,13 +144,18 @@ function onServosLoad(jsonServosData)
     }
 }
 
-function onSuperchargeSet(button)
+function onSuperchargeSet()
 {
     let setpoint = parseFloat($('#' + 'setpoint').val());
     let hysteresis = parseFloat($('#' + 'hysteresis').val())*10; //multiply by 10 to convert from 1 decimal place to int
     sendSupercharge(setpoint, hysteresis);
 }
 
+function onSuperchargeLoad(jsonSuperchargeData)
+{
+	$('#' + 'setpoint').val(jsonSuperchargeData.setpoint);
+	$('#' + 'hysteresis').val(jsonSuperchargeData.hysteresis/10);
+}
 
 //BE CAREFUL when using the delay feature: when enabling first digital gets set instantly and others
 //after the delay, when disabling however, the others get set first then the first one (mainly used for solenoid timing
@@ -610,6 +615,11 @@ function onChecklistTick(checkbox)
     socket.emit('checklist-tick', currId);
 }
 
+function onSuperchargeGet()
+{
+    socket.emit('supercharge-get');
+}
+
 //-------------------------------------Controls on receiving Socket Messages---------------------------------
 
 socket.on('connect', function() {socket.emit('checklist-start')});
@@ -628,6 +638,12 @@ socket.on('servos-load', function(jsonServosData) {
     console.log(jsonServosData);
     onServosLoad(jsonServosData);
 
+});
+
+socket.on('supercharge-load', function(jsonSuperchargeData) {
+    console.log('supercharge-load');
+    console.log(jsonSuperchargeData);
+    onSuperchargeLoad(jsonSuperchargeData);
 });
 
 socket.on('checklist-load', function(jsonChecklist) {

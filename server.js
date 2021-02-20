@@ -304,7 +304,6 @@ ioClient.on('connection', function(socket){
         }
     });
 
-
     socket.on('sequence-set', function(msg){
         console.log('sequence-set');
         if (master === socket.id) {
@@ -376,6 +375,14 @@ ioClient.on('connection', function(socket){
 		console.log(jsonSupercharge);
         if (master === socket.id) {
             llServerMod.sendMessage(llServer, 'supercharge-set', jsonSupercharge);
+        }
+
+    });
+
+    socket.on('supercharge-get', function(){
+        console.log('supercharge-get');
+        if (master === socket.id) {
+            llServerMod.sendMessage(llServer, 'supercharge-get');
         }
 
     });
@@ -459,6 +466,10 @@ function processLLServerMessage(data) {
                 case "servos-load":
                     console.log("servos-load");
                     ioClient.emit('servos-load', jsonData.content);
+                    break;
+                case "supercharge-load":
+                    console.log("supercharge-load");
+                    ioClient.emit('supercharge-load', jsonData.content);
                     break;
                 case "abort":
                     console.log("abort from llserver");

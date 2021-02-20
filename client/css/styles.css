@@ -250,6 +250,11 @@ hr {
     margin-right: 1rem;
 }
 
+.cntl-btn {
+    width: 6rem;
+    margin-right: 1rem;
+}
+
 .custom-control-input:checked ~ .custom-control-label::before {
     color: #fff;
     border-color: #522e63;

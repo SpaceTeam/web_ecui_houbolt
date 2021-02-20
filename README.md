@@ -512,7 +512,7 @@ Comment Text: A string which should be saved alongside the log files
 
 #### Supercharge Set Format
 
-A JSON object that needs to have a setpoint and a hysteresis value of type uint8.
+A JSON object that needs to have a setpoint of type int8 and a hysteresis value of type uint8.
 	
 	[{  
 		"setpoint": 40,					//int8    
