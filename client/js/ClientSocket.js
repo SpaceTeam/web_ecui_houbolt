@@ -1,6 +1,5 @@
 
 //-------------------------------------Global Variables | Yikes!!!---------------------------------
-
 var socket = io();
 
 var sequences = [];
@@ -22,6 +21,8 @@ var countdownTime;
 var countdownIntervalDelegate;
 
 var llServerConnectionActive = false;
+
+var isMaster = false;
 
 //create observer to check if sensor charts shall be rendered
 var chartTabObserver = new MutationObserver(function(mutations) {
@@ -218,9 +219,6 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 function refreshServoFeedback(jsonSen){
 
 	if(jsonSen.name.includes("Valve")){
-
-		console.log(jsonSen.name + " with value " + jsonSen.value);
-
 		var sliderId = null;
 		if(jsonSen.name.includes("fuel")){ sliderId = "#fuelMainValve";}
 		else if(jsonSen.name.includes("Supercharge")){ sliderId = "#oxSuperchargeValve"; }
@@ -380,6 +378,15 @@ function countdownTimerTick()
 }
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------
+
+function onMasterLockClicked(cbox) {
+    if(cbox.checked) socket.emit('master-lock', 1);
+    else socket.emit('master-lock', 0);
+}
+
+function onMasterRequestPressed() {
+	socket.emit('request-master');
+}
 
 function onSendPostSequenceComment()
 {
@@ -611,8 +618,7 @@ function onChecklistTick(checkbox)
     let currId = checkbox.id.substr(14);
     checkbox.setAttribute('disabled', '');
 
-    //TODO: with user authentification: check if user is master and only then send message (performance)
-    socket.emit('checklist-tick', currId);
+    if(master) socket.emit('checklist-tick', currId);
 }
 
 function onSuperchargeGet()
@@ -621,6 +627,33 @@ function onSuperchargeGet()
 }
 
 //-------------------------------------Controls on receiving Socket Messages---------------------------------
+
+socket.on('master-change', (flag) => {
+	if(flag === 'master'){
+		master = true;
+        	$('.master-only').css('visibility', 'visible');
+        	$('.master-only').css('height', 'auto');
+		    $('.client-only').css('visibility', 'hidden');
+        	$('.client-only').css('height', '0px');
+	}
+	else {	
+		master = false;
+        	$('.master-only').css('visibility', 'hidden');
+        	$('.master-only').css('height', '0px');
+		    $('.client-only').css('visibility', 'visible');
+        	$('.client-only').css('height', 'auto');
+	}
+});
+
+socket.on('master-lock', (flag) => {
+    if(flag == 1) $('#masterLockBox').prop('checked', true);
+    else $('#masterLockBox').prop('checked', false);
+});
+
+socket.on('servos-sync', function(jsonServosData) {
+	$('#' + jsonServosData.id).prop('value', jsonServosData.value);
+	$('#' + jsonServosData.id + 'Val').html(jsonServosData.value);
+});
 
 socket.on('connect', function() {socket.emit('checklist-start'); onSuperchargeGet();});
 

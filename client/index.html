@@ -75,27 +75,36 @@
     <img id="icon" src="img/Space_Team_Logo.png" alt="ST Logo" style="width:7rem;margin-left: 1rem;">
     <p id="title">ECUI</p>
     <p id="subtitle">Test Stand</p>
-    <p id="versionLabel">v<span id="version">1.0.0</span></p>
+    <div class="master-client-controls">
+        <p id="versionLabel">v<span id="version">1.0.0</span></p>
+        <div class="master-only" id="masterLock">
+            <input type="checkbox" id="masterLockBox" onclick="onMasterLockClicked(this);">
+            Master Locked
+        </div>
+        <div class="client-only">
+            <button class="btn-master-request" id="masterRequest" onclick="onMasterRequestPressed(this);">Request Master</button>
+        </div>
+    </div>
 </div>
 
 <ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
-    <li class="nav-item">
+    <li class="nav-item master-only">
         <a class="nav-link active tab-button" id="sequence-tab-button" data-toggle="tab" href="#sequence-tab" role="tab"
            aria-controls="sequence-tab" aria-selected="true">Sequence</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item master-only">
         <a class="nav-link tab-button" id="control-tab-button" data-toggle="tab" href="#control-tab" role="tab"
            aria-controls="control-tab" aria-selected="false">Control</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item master-only">
         <a class="nav-link tab-button" id="calibration-tab-button" data-toggle="tab" href="#calibration-tab" role="tab"
            aria-controls="calibration-tab" aria-selected="false">Calibrate</a>
     </li>
 </ul>
 <hr>
 <div id="statusBar"></div>
-<div class="tab-content" id="myTabContent">
 
+<div class="tab-content master-only " id="myTabContent">
     <div class="tab-pane fade show active" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
         <div class="container-fluid sequence-fluid">
             <div class="row header justify-content-start">
@@ -164,7 +173,7 @@ Notes: Hotfire
                     <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="fuelMainValve" idNum="0"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>  
-                    <span class="range-slider__value" disabled>0</span>
+                    <span id="fuelMainValveVal" class="range-slider__value" disabled>0</span>
 		    		<span class="range-slider__feedback servo-feedback" id="fuelMainValveFb">0</span>
 					<div class="range-slider-caption">
 						<div class="range-slider-caption_left"> Closed</div>
@@ -179,7 +188,7 @@ Notes: Hotfire
                     <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="oxMainValve" idNum="1"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
-                    <span class="range-slider__value" disabled>0</span> 
+                    <span id="oxMainValveVal" class="range-slider__value" disabled>0</span> 
                     <span class="range-slider__feedback servo-feedback" id="oxMainValveFb">0</span>
 					<div class="range-slider-caption">
 						<div class="range-slider-caption_left"> Closed </div>
@@ -194,7 +203,7 @@ Notes: Hotfire
                     <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="oxSuperchargeValve" idNum="1"
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
-                    <span class="range-slider__value" disabled>0</span>
+                    <span id="oxSuperchargeValveVal" class="range-slider__value" disabled>0</span>
                     <span class="range-slider__feedback servo-feedback" id="oxSuperchargeValveFb">0</span>
 					<br>
 					<div class="range-slider-caption">
@@ -377,7 +386,7 @@ Notes: Hotfire
               </div>
             </div>
 
-<div class="row" style="margin-top: -2rem; width: 100%">
+<div class="row master-only" style="margin-top: -2rem; width: 100%">
     <button class="btn btn-secondary" id="resetButton" style="margin-left: 2rem" onclick="onResetSensors();">Reset Sensor Charts</button><br>
     <button class="btn btn-secondary" id="tareButton" style="margin-left: 2rem;" onclick="onTareLoadCells();">Tare Thrust Sensors</button><br>
 </div>

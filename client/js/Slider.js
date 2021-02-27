@@ -11,7 +11,7 @@ var rangeSlider = function(){
     });
 
     range.on('input', function(){
-      $(this).next(value).html(this.value);
+      $('#' + this.id + 'Val').html(this.value);
     });
   });
 };

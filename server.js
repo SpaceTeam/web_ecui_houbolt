@@ -4,7 +4,7 @@ const path = __dirname + '/client/';
 var app = express();
 var http = require('http').Server(app);
 var ioClient = require('socket.io')(http);
-var clientsCount = 0;
+var clients = [];
 var port = process.env.PORT || 80;
 
 app.use(express.static(__dirname + '/client/'));
@@ -202,6 +202,21 @@ var onTimerStart = function (ioClient) {
 
 }
 
+var onMasterChange = function (socket) {
+    if(master === socket.id){
+	    socket.emit('master-change', 'master');
+    }
+    else {
+	    socket.emit('master-change', 'client');
+    }
+}
+
+var onMasterLock = function (socket, flag) {
+    masterLocked = flag == 1 ? true : false;
+    socket.broadcast.emit('master-lock', flag);
+    console.log('master lock ' + flag);
+}
+
 //Assign the event handler to an event:
 //TODO: check if events slowing down process and instead emit messages of sockets directly inside incoming message events
 eventEmitter.on('onChecklistStart', onChecklistStart);
@@ -219,14 +234,17 @@ eventEmitter.on('onAbortAll', onAbortAll);
 
 eventEmitter.on('onTimerStart', onTimerStart);
 
+eventEmitter.on('onMasterChange', onMasterChange);
+eventEmitter.on('onMasterLock', onMasterLock);
 
 //senDataInterval = setInterval(function(){onSendTestSensorData(ioClient)}, 100);
 var master = null;
+var masterLocked = false;
 
 ioClient.on('connection', function(socket){
 
-    clientsCount++;
-    console.log(clientsCount);
+    clients.push(socket);
+    console.log(clients.length);
     if (llServer === undefined)
     {
         var intDel = setInterval(function () {
@@ -247,12 +265,31 @@ ioClient.on('connection', function(socket){
     //     //TODO: change to ip address after development (socket.handshake.address)
     //     master = socket.handshake.address;
     // }
-    //choose last one connected for testing
+    
     if (master === null)
     {
         master = socket.id;
+        eventEmitter.emit('onMasterChange', socket);
     }
 
+    socket.on('request-master', function() {
+        var masterSocket = getClientSocketById(master);
+
+        // If the master is not locked or the same device requests a master switch (e.g. when using multiple tabs)
+        if(!masterLocked || (masterSocket != null && socket.handshake.address ===  masterSocket.handshake.address)) {
+            console.log('change master to ' + socket.id + ' ' + socket.handshake.address);
+            master = socket.id;
+            eventEmitter.emit('onMasterChange', socket);
+            // In case the old master disconnected
+            if(masterSocket != null) eventEmitter.emit('onMasterChange', masterSocket);
+        }
+    });
+
+    socket.on('master-lock', (flag) => {
+	    // Although the master lock is only visible for the master, prevent malicious user that tinker around with the html/css
+	    if(socket.id === master)
+        	eventEmitter.emit('onMasterLock', socket, flag);
+    });
 
     eventEmitter.emit('onSequenceLoad', ioClient, socket);
 
@@ -402,9 +439,13 @@ ioClient.on('connection', function(socket){
                 eventEmitter.emit('onAbort', ioClient, socket);
             }
             master = null;
+            masterLocked = false;
         }
-        clientsCount--;
-        if (clientsCount === 0)
+        
+        var socketIndex = clients.indexOf(socket);
+        clients.splice(socketIndex, 1);
+   
+        if (clients.length === 0)
         {
             llServerMod.sendMessage(llServer, 'abort');
             llServerMod.sendMessage(llServer, 'sensors-stop');
@@ -471,6 +512,11 @@ function processLLServerMessage(data) {
 					console.log(jsonData.content)
                     ioClient.emit('supercharge-load', jsonData.content);
                     break;
+                case "servos-sync":
+                    console.log("servos-sync");
+                    console.log(jsonData.content);
+                    ioClient.emit('servos-sync', jsonData.content);
+                    break;
                 case "abort":
                     console.log("abort from llserver");
                     eventEmitter.emit('onAbortAll', ioClient, jsonData.content);
@@ -479,6 +525,13 @@ function processLLServerMessage(data) {
             }
         }
     }
+}
+
+function getClientSocketById (id) {
+	for(var i = 0; i < clients.length; i++) {
+		if(clients[i].id === id) return clients[i];
+	}
+	return null;
 }
 
 app.get('/', function(req, res){
