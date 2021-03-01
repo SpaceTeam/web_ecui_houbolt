@@ -5,7 +5,7 @@ var app = express();
 var http = require('http').Server(app);
 var ioClient = require('socket.io')(http);
 var clients = [];
-var port = process.env.PORT || 80;
+var port = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/client/'));
 
@@ -275,8 +275,8 @@ ioClient.on('connection', function(socket){
     socket.on('request-master', function() {
         var masterSocket = getClientSocketById(master);
 
-        // If the master is not locked or the same device requests a master switch (e.g. when using multiple tabs)
-        if(!masterLocked || (masterSocket != null && socket.handshake.address ===  masterSocket.handshake.address)) {
+        // If the master is not locked or the same device requests a master switch (e.g. when using multiple tabs) and no sequence is running
+        if((!masterLocked || (masterSocket != null && socket.handshake.address ===  masterSocket.handshake.address)) && !sequenceRunning) {
             console.log('change master to ' + socket.id + ' ' + socket.handshake.address);
             master = socket.id;
             eventEmitter.emit('onMasterChange', socket);
@@ -286,7 +286,7 @@ ioClient.on('connection', function(socket){
     });
 
     socket.on('master-lock', (flag) => {
-	    // Although the master lock is only visible for the master, prevent malicious user that tinker around with the html/css
+	    // Although the master lock is only visible for the master, prevent malicious user that tinkers around with the html/css
 	    if(socket.id === master)
         	eventEmitter.emit('onMasterLock', socket, flag);
     });

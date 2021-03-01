@@ -775,6 +775,7 @@ socket.on('sequence-start', function() {
 
     $('#toggleSequenceButton').text("Abort Sequence");
     $('.timer').css("color", "green");
+    $('#masterRequest').prop('disabled', true);
 
     seqChart.start();
 });
@@ -784,7 +785,7 @@ socket.on('timer-start', function () {
     intervalMillis = 100; //hard code timer step to 100 for client
     timeMillis = jsonSequence.globals.startTime * 1000;
     endTime = jsonSequence.globals.endTime;
-    responsiveVoice.enableEstimationTimeout = false;
+    responsiveVoice.enableEstimationTimeout = true;
 
     countdownTime = jsonSequence.globals.startTime;
     countdownTimerTick();
@@ -837,6 +838,7 @@ socket.on('sequence-done', function() {
             $('#toggleSequenceButton').removeAttr("disabled");
         }, 3000);
 
+        $('#masterRequest').prop('disabled', false);
 });
 
 socket.on('sensors', function(jsonSens) {

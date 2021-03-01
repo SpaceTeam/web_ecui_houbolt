@@ -32,7 +32,7 @@ form input {
     margin-right: 1rem;
 }
 
-.btn-master-request {
+#masterRequest {
     margin-left: auto;
 	background: #522E63;
 	color: white;
@@ -41,8 +41,11 @@ form input {
     padding: 6px;
 }
 
+#masterRequest:disabled {
+    background: #9C9C9C;
+}
 
-#masterLock, .btn-master-request {
+#masterLock, #masterRequest {
     margin-bottom: 8px;
 }
 
