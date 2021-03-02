@@ -13,6 +13,19 @@ body {
     margin-top: 0px;
 }
 
+#disableAll {
+    display: none;
+    z-index: 1001;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+
+    background-color: #9C9C9C;
+    opacity: 0.5;
+}
+
 form input {
     border: 0;
     padding: 10px;
@@ -24,6 +37,17 @@ form input {
     font-weight: bolder;
     height: 1.4rem;
     padding-left: 2rem;
+    padding-top: 0.3rem;
+}
+
+#errorBar {
+    display: none;
+    position: relative;
+    z-index: 1002;
+    font-size: 1.5rem;
+    font-weight: bolder;
+    height: auto;
+    padding: 1rem 2rem;
 }
 
 .master-client-controls {
@@ -191,10 +215,6 @@ hr {
    margin-left: 1rem;
    font-size: 1rem;
  }
-
-#statusBar {
-  padding-top: 0.3rem;
-}
 
 .tab-button.active {
     background-color: #522e63 !important;

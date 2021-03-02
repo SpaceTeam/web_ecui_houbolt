@@ -139,7 +139,7 @@ function onServosLoad(jsonServosData)
     for (let dataInd in jsonServosData)
     {
         let dataItem = jsonServosData[dataInd];
-
+        
         $('#' + dataItem.name + 'MinLabel').text(dataItem.endpoints[0]);
         $('#' + dataItem.name + 'MaxLabel').text(dataItem.endpoints[1]);
     }
@@ -659,12 +659,22 @@ socket.on('servos-sync', function(jsonServosData) {
 socket.on('connect', function() {socket.emit('checklist-start'); onSuperchargeGet();});
 
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
-socket.on('connect_error', function(error) {console.log(error)});
+socket.on('connect_error', function(error) {
+    console.log('Connection error: ' + error);
+    $('#disableAll').css("display", "block");
+    $('#errorBar').css("display","block");
+    $('#errorBar').css("background-color","#FF0000");
+    $('#errorBar').text("Error during connection attempt: " + error);
+    // Disable scrolling (as the page is not supposed to work, allow as low interaction as possible + cope with variable pnid height)
+    document.body.style.overflow = 'hidden';
+});
 
 socket.on('abort', function(abortMsg) {
     console.log('abort');
 
     abortSequence(abortMsg);
+
+    $('#masterRequest').prop('disabled', false);
 });
 
 socket.on('servos-load', function(jsonServosData) {
@@ -838,7 +848,7 @@ socket.on('sequence-done', function() {
             $('#toggleSequenceButton').removeAttr("disabled");
         }, 3000);
 
-        $('#masterRequest').prop('disabled', false);
+    $('#masterRequest').prop('disabled', false);
 });
 
 socket.on('sensors', function(jsonSens) {
