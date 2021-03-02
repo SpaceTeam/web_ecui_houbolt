@@ -5,7 +5,7 @@ var app = express();
 var http = require('http').Server(app);
 var ioClient = require('socket.io')(http);
 var clients = [];
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 80;
 
 app.use(express.static(__dirname + '/client/'));
 
@@ -135,7 +135,6 @@ var onPostSeqComment = function (ioClient, socket, msg) {
 
 var onSequenceSync = function (ioClient, time) {
     console.log('sequence sync');
-
 
     ioClient.emit('sequence-sync', time);
 }
@@ -420,7 +419,11 @@ ioClient.on('connection', function(socket){
     socket.on('supercharge-get', function(){
         console.log('supercharge-get');
         llServerMod.sendMessage(llServer, 'supercharge-get');
+    });
 
+    socket.on('servos-get', function(){
+        console.log('servos-get');
+        llServerMod.sendMessage(llServer, 'servos-get');
     });
 
     socket.on('tare', function(){
