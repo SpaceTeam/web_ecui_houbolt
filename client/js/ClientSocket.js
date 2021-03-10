@@ -216,7 +216,7 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 }
 
 // Set colored progress bar in servo slider for visual feedback
-function refreshServoFeedback(jsonSen){
+function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
 	if(jsonSen.name.includes("Valve")){
 		var sliderId = null;
@@ -236,7 +236,13 @@ function refreshServoFeedback(jsonSen){
 				if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
 				$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
 			}
-			$(sliderId+"Fb").text(Math.trunc(jsonSen.value));
+			feedbackValue = Math.trunc(jsonSen.value)
+			$(sliderId+"Fb").text(feedbackValue);
+
+			if (shallSetSliderToFeedbackPosition)
+			{
+				$(sliderId).val(feedbackValue)
+			}
 		}
 	}
 }
@@ -851,6 +857,8 @@ socket.on('sequence-done', function() {
     $('#masterRequest').prop('disabled', false);
 });
 
+var firstSensorFetch = true;
+
 socket.on('sensors', function(jsonSens) {
     //console.log('sensors');
 
@@ -902,7 +910,8 @@ socket.on('sensors', function(jsonSens) {
         }
         sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value, isContinousTransmission);
 
-        refreshServoFeedback(jsonSen);
+        refreshServoFeedback(jsonSen, firstSensorFetch);
     }
+	firstSensorFetch = false;
 
 });
