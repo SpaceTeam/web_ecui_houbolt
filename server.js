@@ -268,7 +268,8 @@ ioClient.on('connection', function(socket){
         if (master === null)
         {
             master = socket.id;
-			socket.emit('servos-disable');
+			//disable servos here since old master isn't allowed to do so anymore
+			llServerMod.sendMessage(llServer, 'servos-disable');
             eventEmitter.emit('onMasterChange', socket);
         }
 
