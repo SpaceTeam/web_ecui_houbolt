@@ -268,8 +268,6 @@ ioClient.on('connection', function(socket){
         if (master === null)
         {
             master = socket.id;
-			//disable servos here since old master isn't allowed to do so anymore
-			llServerMod.sendMessage(llServer, 'servos-disable');
             eventEmitter.emit('onMasterChange', socket);
         }
 
@@ -279,6 +277,10 @@ ioClient.on('connection', function(socket){
             // If the master is not locked or the same device requests a master switch (e.g. when using multiple tabs) and no sequence is running
             if((!masterLocked || (masterSocket != null && socket.handshake.address ===  masterSocket.handshake.address)) && !sequenceRunning) {
                 console.log('change master to ' + socket.id + ' ' + socket.handshake.address);
+
+				//disable servos here since old master isn't allowed to do so anymore
+				llServerMod.sendMessage(llServer, 'servos-disable');
+
                 master = socket.id;
                 eventEmitter.emit('onMasterChange', socket);
                 // In case the old master disconnected
