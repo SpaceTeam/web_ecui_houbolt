@@ -577,9 +577,7 @@ function onServoEnable(checkbox) {
     {
         $('.servoEnableCheck').prop('checked', true);
 
-        $('.range-slider__value').attr('disabled', false);
-
-	$('.range-slider__feedback').css('background', '#522E63');
+        $('.range-slider__value, .range-slider__feedback').attr('disabled', false);
 
         $('.servo-enable-obj').prop('disabled', false);
 
@@ -589,9 +587,7 @@ function onServoEnable(checkbox) {
     {
         $('.servoEnableCheck').prop('checked', false);
 
-        $('.range-slider__value').attr('disabled', true);
-
-	$('.range-slider__feedback').css('background', '#9C9C9C');
+        $('.range-slider__value, .range-slider__feedback').attr('disabled', true);
 
         $('.servo-enable-obj').prop('disabled', true);
 
