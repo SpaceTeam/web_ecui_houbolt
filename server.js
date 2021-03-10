@@ -268,6 +268,7 @@ ioClient.on('connection', function(socket){
         if (master === null)
         {
             master = socket.id;
+			socket.emit('servos-disable');
             eventEmitter.emit('onMasterChange', socket);
         }
 

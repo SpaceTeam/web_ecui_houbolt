@@ -655,7 +655,10 @@ socket.on('master-change', (flag) => {
         	$('.master-only').css('height', '0px');
 		    $('.client-only').css('visibility', 'visible');
         	$('.client-only').css('height', 'auto');
-            $('#manualEnableCheck').trigger('click');
+			if ($('.manualEnableCheck').prop('checked'))
+			{
+				$('#manualEnableCheck1').click();
+			}
 	}
 });
 
