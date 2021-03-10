@@ -231,6 +231,8 @@ function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 			if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
 
 			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
+			feedbackValue = Math.trunc(jsonSen.value)
+			
 			if(sliderId != "#oxSuperchargeValve"){
 				var color = "#9C9C9C";
 				if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
@@ -241,7 +243,7 @@ function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 					$(sliderId).val(feedbackValue)
 				}
 			}
-			feedbackValue = Math.trunc(jsonSen.value)
+			
 			$(sliderId+"Fb").text(feedbackValue);
 		}
 	}
