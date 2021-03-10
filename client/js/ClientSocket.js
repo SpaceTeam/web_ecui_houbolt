@@ -65,10 +65,12 @@ $('#outputAssuranceModal').on('show.bs.modal', function (event) {
 });
 
 var mouseDown = false;
-$('.servo-sloder').mousedown(function() {
+$('.servo-slider').mousedown(function() {
     mouseDown = true;
+	console.log('mouse down')
 }).mouseup(function() {
-    mouseDown = false;  
+    mouseDown = false;
+	console.log('mouse up')
 });
 
 function onCheckboxModal(checkbox)
