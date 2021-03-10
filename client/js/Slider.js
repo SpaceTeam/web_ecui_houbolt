@@ -6,12 +6,12 @@ var rangeSlider = function(){
   slider.each(function(){
 
     value.each(function(){
-      var value = $(this).prev().attr('value');
+      var value = $(this).parent().find('.range-slider__range').attr('value');
       $(this).html(value);
     });
 
     range.on('input', function(){
-      $('#' + this.id + 'Val').html(this.value);
+      $(this).parent().find('.range-slider__value').html(this.value);
     });
   });
 };

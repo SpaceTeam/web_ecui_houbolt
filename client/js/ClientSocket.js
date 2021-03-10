@@ -64,6 +64,13 @@ $('#outputAssuranceModal').on('show.bs.modal', function (event) {
     modal.find('#modal-output-name').text(event.relatedTarget.id);
 });
 
+var mouseDown = false;
+$('.servo-sloder').mousedown(function() {
+    mouseDown = true;
+}).mouseup(function() {
+    mouseDown = false;  
+});
+
 function onCheckboxModal(checkbox)
 {
     if (checkbox.checked)
@@ -660,8 +667,11 @@ socket.on('master-lock', (flag) => {
 });
 
 socket.on('servos-sync', function(jsonServosData) {
-	$('#' + jsonServosData.id).prop('value', jsonServosData.value);
-	$('#' + jsonServosData.id + 'Val').html(jsonServosData.value);
+	if (!mouseDown)
+	{
+		$('#' + jsonServosData.id).val(jsonServosData.value);
+		console.log('servos sync')
+	}
 });
 
 socket.on('connect', function() {socket.emit('checklist-start'); onSuperchargeGet();});
