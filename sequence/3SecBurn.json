@@ -1,7 +1,7 @@
 {
 	"globals":
 	{
-		"endTime": 10,
+		"endTime": 12,
 		"interpolation":
 		{
 			"fuelMainValve": "linear",
@@ -91,7 +91,7 @@
 				},
 				{
 					"timestamp": 0.2,
-					"igniter": 100, 
+					"igniter": 100,
 					"igniter1": 100
 				},
 				{
@@ -115,7 +115,7 @@
 			]
 		},
 		{
-			"timestamp": 2,
+			"timestamp": 4,
 			"name": "shutdown",
 			"desc": "shutting down",
 			"actions":
@@ -140,7 +140,7 @@
 			]
 		},
 		{
-			"timestamp": 3,
+			"timestamp": 5,
 			"name": "depress",
 			"desc": "depressurizing",
 			"actions":
