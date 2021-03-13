@@ -151,6 +151,7 @@ function onServosLoad(jsonServosData)
         
         $('#' + dataItem.name + 'MinLabel').text(dataItem.endpoints[0]);
         $('#' + dataItem.name + 'MaxLabel').text(dataItem.endpoints[1]);
+        $('#' + dataItem.name).val(dataItem.percent);
     }
 }
 
@@ -225,7 +226,7 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 }
 
 // Set colored progress bar in servo slider for visual feedback
-function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
+function refreshServoFeedback(jsonSen){
 
 	if(jsonSen.name.includes("Valve")){
 		var sliderId = null;
@@ -246,11 +247,6 @@ function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 				var color = "#9C9C9C";
 				if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
 				$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
-
-				if (shallSetSliderToFeedbackPosition)
-				{
-					$(sliderId).val(feedbackValue)
-				}
 			}
 			
 			$(sliderId+"Fb").text(feedbackValue);
@@ -870,8 +866,6 @@ socket.on('sequence-done', function() {
     $('#masterRequest').prop('disabled', false);
 });
 
-var firstSensorFetch = true;
-
 socket.on('sensors', function(jsonSens) {
     //console.log('sensors');
 
@@ -923,8 +917,7 @@ socket.on('sensors', function(jsonSens) {
         }
         sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value, isContinousTransmission);
 
-        refreshServoFeedback(jsonSen, firstSensorFetch);
+        refreshServoFeedback(jsonSen);
     }
-	firstSensorFetch = false;
 
 });
