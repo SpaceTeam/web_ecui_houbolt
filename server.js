@@ -393,6 +393,7 @@ ioClient.on('connection', function(socket){
         });
 
         socket.on('servos-calibrate', function(jsonServos){
+            console.log('servos-calibrate');
             if (master === socket.id) {
                 llServerMod.sendMessage(llServer, 'servos-calibrate', jsonServos);
             }
