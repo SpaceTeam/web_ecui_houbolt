@@ -152,6 +152,7 @@ function onServosLoad(jsonServosData)
         $('#' + dataItem.name + 'MinLabel').text(dataItem.endpoints[0]);
         $('#' + dataItem.name + 'MaxLabel').text(dataItem.endpoints[1]);
         $('#' + dataItem.name).val(dataItem.percent);
+        $('#' + dataItem.name).trigger('input');
     }
 }
 
@@ -667,7 +668,8 @@ socket.on('servos-sync', function(jsonServosData) {
 	if (!mouseDown)
 	{
 		$('#' + jsonServosData.id).val(jsonServosData.value);
-		console.log('servos sync')
+        console.log('servos-sync');
+        $('#' + jsonServosData.id).trigger('input');
 	}
 });
 
