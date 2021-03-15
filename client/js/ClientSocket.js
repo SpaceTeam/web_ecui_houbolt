@@ -124,14 +124,13 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 
     let ids = id.split(";");
     console.log(ids);
-
-    // Check that the cooling pump and heating pump cannot be enabled at the same time
-    // Therefore, we disable the other button.
-    if (id === "coolingPump") {
-        $('#heatingPump').prop('disabled', checkbox.checked);
-    } else if (id === "heatingPump") {
-        $('#coolingPump').prop('disabled', checkbox.checked);
-    }
+	
+	//If coolingNotHeating is enabled -> only coolingPump can be enabled
+	//If it is not enabled 			  -> only heatingPunp can be enabled    
+    if (id === "coolingNotHeatingValve"){
+		$('#heatingPump').prop('disabled', checkbox.checked);
+		$('#coolingPump').prop('disabled', !(checkbox.checked));
+	}
 
     if (delaySecondDigitalOut > 0.0 && ($('.manualEnableCheck:checked').length > 0)) {
         $(checkbox).prop('disabled', true);
@@ -442,6 +441,7 @@ function onManualControlEnable(checkbox)
         $('#toggleSequenceButton').prop('disabled', true);
 
         $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);
+		$('#coolingPump').prop('disabled', true);
     }
     else
     {
@@ -460,6 +460,11 @@ function onManualControlEnable(checkbox)
                 $(this).click();
             }
         });
+		//there is probably a better way to do this if you understand how the 
+		//line  $('.manual-obj:not(.servo-enable-obj)').prop('disabled', true); works
+		//but the line below fixes the problem that the heating pump could be enabled 
+		//after disabling manual control
+		$('#heatingPump').prop('disabled', true);
     }
 }
 
