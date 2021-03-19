@@ -81,10 +81,6 @@
   margin-left: 8px;
 }
 
-.range-slider__feedback {
-  background: #9C9C9C;
-}
-
 .range-slider__value:after{
   position: absolute;
   top: 8px;
@@ -98,7 +94,7 @@
   content: '';
 }
 
-.range-slider__value[disabled] {
+.range-slider__value[disabled], .range-slider__feedback[disabled] {
     background: #9C9C9C;
 }
 

@@ -1,6 +1,5 @@
 
 //-------------------------------------Global Variables | Yikes!!!---------------------------------
-
 var socket = io();
 
 var sequences = [];
@@ -22,6 +21,8 @@ var countdownTime;
 var countdownIntervalDelegate;
 
 var llServerConnectionActive = false;
+
+var isMaster = false;
 
 //create observer to check if sensor charts shall be rendered
 var chartTabObserver = new MutationObserver(function(mutations) {
@@ -61,6 +62,15 @@ $('#outputAssuranceModal').on('show.bs.modal', function (event) {
     lastModalTriggeredElement = event.relatedTarget;
     var modal = $(this)
     modal.find('#modal-output-name').text(event.relatedTarget.id);
+});
+
+var mouseDown = false;
+$('.servo-slider').mousedown(function() {
+    mouseDown = true;
+	console.log('mouse down')
+}).mouseup(function() {
+    mouseDown = false;
+	console.log('mouse up')
 });
 
 function onCheckboxModal(checkbox)
@@ -138,7 +148,7 @@ function onServosLoad(jsonServosData)
     for (let dataInd in jsonServosData)
     {
         let dataItem = jsonServosData[dataInd];
-
+        
         $('#' + dataItem.name + 'MinLabel').text(dataItem.endpoints[0]);
         $('#' + dataItem.name + 'MaxLabel').text(dataItem.endpoints[1]);
     }
@@ -215,12 +225,9 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 }
 
 // Set colored progress bar in servo slider for visual feedback
-function refreshServoFeedback(jsonSen){
+function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
 	if(jsonSen.name.includes("Valve")){
-
-		console.log(jsonSen.name + " with value " + jsonSen.value);
-
 		var sliderId = null;
 		if(jsonSen.name.includes("fuel")){ sliderId = "#fuelMainValve";}
 		else if(jsonSen.name.includes("Supercharge")){ sliderId = "#oxSuperchargeValve"; }
@@ -233,12 +240,20 @@ function refreshServoFeedback(jsonSen){
 			if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
 
 			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
+			feedbackValue = Math.trunc(jsonSen.value)
+			
 			if(sliderId != "#oxSuperchargeValve"){
 				var color = "#9C9C9C";
 				if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
 				$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
+
+				if (shallSetSliderToFeedbackPosition)
+				{
+					$(sliderId).val(feedbackValue)
+				}
 			}
-			$(sliderId+"Fb").text(Math.trunc(jsonSen.value));
+			
+			$(sliderId+"Fb").text(feedbackValue);
 		}
 	}
 }
@@ -380,6 +395,15 @@ function countdownTimerTick()
 }
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------
+
+function onMasterLockClicked(cbox) {
+    if(cbox.checked) socket.emit('master-lock', 1);
+    else socket.emit('master-lock', 0);
+}
+
+function onMasterRequestPressed() {
+	socket.emit('request-master');
+}
 
 function onSendPostSequenceComment()
 {
@@ -553,9 +577,7 @@ function onServoEnable(checkbox) {
     {
         $('.servoEnableCheck').prop('checked', true);
 
-        $('.range-slider__value').attr('disabled', false);
-
-	$('.range-slider__feedback').css('background', '#522E63');
+        $('.range-slider__value, .range-slider__feedback').attr('disabled', false);
 
         $('.servo-enable-obj').prop('disabled', false);
 
@@ -565,9 +587,7 @@ function onServoEnable(checkbox) {
     {
         $('.servoEnableCheck').prop('checked', false);
 
-        $('.range-slider__value').attr('disabled', true);
-
-	$('.range-slider__feedback').css('background', '#9C9C9C');
+        $('.range-slider__value, .range-slider__feedback').attr('disabled', true);
 
         $('.servo-enable-obj').prop('disabled', true);
 
@@ -611,8 +631,7 @@ function onChecklistTick(checkbox)
     let currId = checkbox.id.substr(14);
     checkbox.setAttribute('disabled', '');
 
-    //TODO: with user authentification: check if user is master and only then send message (performance)
-    socket.emit('checklist-tick', currId);
+    if(master) socket.emit('checklist-tick', currId);
 }
 
 function onSuperchargeGet()
@@ -622,15 +641,59 @@ function onSuperchargeGet()
 
 //-------------------------------------Controls on receiving Socket Messages---------------------------------
 
+socket.on('master-change', (flag) => {
+	if(flag === 'master'){
+		master = true;
+        	$('.master-only').css('visibility', 'visible');
+        	$('.master-only').css('height', 'auto');
+		    $('.client-only').css('visibility', 'hidden');
+        	$('.client-only').css('height', '0px');
+	}
+	else {	
+		master = false;
+        	$('.master-only').css('visibility', 'hidden');
+        	$('.master-only').css('height', '0px');
+		    $('.client-only').css('visibility', 'visible');
+        	$('.client-only').css('height', 'auto');
+			if ($('.manualEnableCheck').prop('checked'))
+			{
+				$('#manualEnableCheck1').click();
+			}
+	}
+});
+
+socket.on('master-lock', (flag) => {
+    if(flag == 1) $('#masterLockBox').prop('checked', true);
+    else $('#masterLockBox').prop('checked', false);
+});
+
+socket.on('servos-sync', function(jsonServosData) {
+	if (!mouseDown)
+	{
+		$('#' + jsonServosData.id).val(jsonServosData.value);
+		console.log('servos sync')
+	}
+});
+
 socket.on('connect', function() {socket.emit('checklist-start'); onSuperchargeGet();});
 
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
-socket.on('connect_error', function(error) {console.log(error)});
+socket.on('connect_error', function(error) {
+    console.log('Connection error: ' + error);
+    $('#disableAll').css("display", "block");
+    $('#errorBar').css("display","block");
+    $('#errorBar').css("background-color","#FF0000");
+    $('#errorBar').text("Error during connection attempt: " + error);
+    // Disable scrolling (as the page is not supposed to work, allow as low interaction as possible + cope with variable pnid height)
+    document.body.style.overflow = 'hidden';
+});
 
 socket.on('abort', function(abortMsg) {
     console.log('abort');
 
     abortSequence(abortMsg);
+
+    $('#masterRequest').prop('disabled', false);
 });
 
 socket.on('servos-load', function(jsonServosData) {
@@ -741,6 +804,7 @@ socket.on('sequence-start', function() {
 
     $('#toggleSequenceButton').text("Abort Sequence");
     $('.timer').css("color", "green");
+    $('#masterRequest').prop('disabled', true);
 
     seqChart.start();
 });
@@ -750,7 +814,7 @@ socket.on('timer-start', function () {
     intervalMillis = 100; //hard code timer step to 100 for client
     timeMillis = jsonSequence.globals.startTime * 1000;
     endTime = jsonSequence.globals.endTime;
-    responsiveVoice.enableEstimationTimeout = false;
+    responsiveVoice.enableEstimationTimeout = true;
 
     countdownTime = jsonSequence.globals.startTime;
     countdownTimerTick();
@@ -803,7 +867,10 @@ socket.on('sequence-done', function() {
             $('#toggleSequenceButton').removeAttr("disabled");
         }, 3000);
 
+    $('#masterRequest').prop('disabled', false);
 });
+
+var firstSensorFetch = true;
 
 socket.on('sensors', function(jsonSens) {
     //console.log('sensors');
@@ -856,7 +923,8 @@ socket.on('sensors', function(jsonSens) {
         }
         sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value, isContinousTransmission);
 
-        refreshServoFeedback(jsonSen);
+        refreshServoFeedback(jsonSen, firstSensorFetch);
     }
+	firstSensorFetch = false;
 
 });

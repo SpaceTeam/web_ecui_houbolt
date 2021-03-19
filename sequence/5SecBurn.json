@@ -1,7 +1,7 @@
 {
 	"globals":
 	{
-		"endTime": 10,
+		"endTime": 14,
 		"interpolation":
 		{
 			"fuelMainValve": "linear",
