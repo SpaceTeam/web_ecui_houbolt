@@ -78,14 +78,15 @@
     <p id="title">ECUI</p>
     <p id="subtitle">Test Stand</p>
     <div class="master-client-controls">
-        <p id="versionLabel">v<span id="version">1.0.0</span></p>
-        <div class="master-only" id="masterLock">
+        
+        <div class="master-only" id="masterLock" hidden>
             <input type="checkbox" id="masterLockBox" onclick="onMasterLockClicked(this);">
             Master Locked
         </div>
         <div class="client-only">
             <button class="btn" id="masterRequest" onclick="onMasterRequestPressed(this);">Request Master</button>
         </div>
+		<p id="versionLabel">v<span id="version">1.0.0</span></p>
     </div>
 </div>
 

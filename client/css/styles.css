@@ -54,6 +54,7 @@ form input {
     margin-left: auto;
     margin-top: auto;
     margin-right: 1rem;
+	height: 10rem;
 }
 
 #masterRequest {
@@ -65,12 +66,19 @@ form input {
     padding: 6px;
 }
 
-#masterRequest:disabled {
-    background: #9C9C9C;
+#masterLock {
+	margin-top: 1rem;
+	margin-bottom: 10px;
+	text-align: right;
+}
+
+#masterRequest {
+	margin-top: 0.5rem;	
 }
 
 #masterLock, #masterRequest {
-    margin-bottom: 8px;
+	height: 2.1rem;
+	
 }
 
 .master-only {
@@ -192,12 +200,13 @@ div#servo-container > button {
 }
 
 #titleBar {
-  margin-top: 0rem;
-  margin-bottom: -1rem;
-  display: flex;
-  align-items: center;
-    width: 100%;
+	margin-top: 0rem;
+	margin-bottom: -1rem;
+	display: flex;
+	align-items: center;
+	width: 100%;
     font-weight: lighter;
+	height: 5rem;
 }
 
 hr {
@@ -282,6 +291,7 @@ hr {
 #versionLabel {
     margin-top: 8px;
     font-size: 1rem;
+	float: right;
 }
 
 .header {

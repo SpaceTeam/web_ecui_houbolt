@@ -646,6 +646,7 @@ socket.on('master-change', (flag) => {
 		master = true;
         	$('.master-only').css('visibility', 'visible');
         	$('.master-only').css('height', 'auto');
+			$('#masterLock').removeAttr('hidden')
 		    $('.client-only').css('visibility', 'hidden');
         	$('.client-only').css('height', '0px');
 	}
@@ -653,6 +654,7 @@ socket.on('master-change', (flag) => {
 		master = false;
         	$('.master-only').css('visibility', 'hidden');
         	$('.master-only').css('height', '0px');
+			$('#masterLock').attr('hidden', '')
 		    $('.client-only').css('visibility', 'visible');
         	$('.client-only').css('height', 'auto');
 			if ($('.manualEnableCheck').prop('checked'))
