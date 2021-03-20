@@ -24,6 +24,8 @@ var llServerConnectionActive = false;
 
 var isMaster = false;
 
+var disableSensorChartsOnLoad = true;
+
 //create observer to check if sensor charts shall be rendered
 var chartTabObserver = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
@@ -914,7 +916,7 @@ socket.on('sensors', function(jsonSens) {
             }
 
             sensor.div = newChartDiv;
-            sensor.chart = new SensorChart(jsonSen.name + "Chart", sensor.chartTitle);
+            sensor.chart = new SensorChart(jsonSen.name + "Chart", sensor.chartTitle, disableSensorChartsOnLoad);
             sensor.series = sensor.chart.addSeries(jsonSen.name, jsonSen.name);
             sensor.name = jsonSen.name;
 
