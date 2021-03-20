@@ -1,0 +1,15 @@
+Description=Service for ECUI Webserver
+
+Wants=network.target
+After=syslog.target network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/pi/.nvm/versions/node/v12.10.0/bin/node /home/pi/TXV_ECUI_WEB/server.js -smallOxfill
+WorkingDirectory=/home/pi/TXV_ECUI_WEB/
+Restart=always
+RestartSec=10
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
