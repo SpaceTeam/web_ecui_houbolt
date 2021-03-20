@@ -10,11 +10,11 @@ export NVM_DIR="$HOME/.nvm"
 nvm install 12.10.0
 npm install
 
-sudo cp ecui-web-small-oxfill-small-teststand.service /etc/systemd/system/
+sudo cp ecui-web-small-oxfill.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable ecui-web-small-oxfill-small-teststand.service
-sudo systemctl start ecui-web-small-oxfill-small-teststand.service
-sudo systemctl status ecui-web-small-oxfill-small-teststand.service
+sudo systemctl enable ecui-web-small-oxfill.service
+sudo systemctl start ecui-web-small-oxfill.service
+sudo systemctl status ecui-web-small-oxfill.service
 
 sudo chmod +x update.sh
 ./update.sh
