@@ -18,11 +18,34 @@ var checklistMan = new checklistManMod();
 
 var sequenceRunning = false;
 
+const ServerMode = {
+    LARGE_TESTSTAND: 0,
+    SMALL_TESTSTAND: 1,
+    SMALL_OXFILL: 2
+}
+var serverMode = ServerMode.LARGE_TESTSTAND
+if (process.argv[2] == "-smallTeststand")
+{
+	serverMode = ServerMode.SMALL_TESTSTAND
+	console.log("Using Small Teststand Profile");
+}
+else if (process.argv[2] == "-smallOxfill")
+{
+	serverMode = ServerMode.SMALL_OXFILL
+	console.log("Using Small Oxfill Profile");
+}
+else
+{
+	console.log("Defaulting to Large Teststand Profile...");
+}
+
 // Import net module.
 var net = require('net');
 var llServerMod = require('./server/LLServerSocket');
 
 console.log(llServerMod);
+
+
 // Create and return a net.Server object, the function will be invoked when client connect to this server.
 var llServer;
 var server = net.createServer(function(client){llServer = llServerMod.onLLServerConnect(client, processLLServerMessage);});
@@ -38,6 +61,7 @@ server.listen(5555, function(){ llServerMod.onCreateTCP(server)});
 // sm.saveAbortSequence(sm.loadAbortSequence());
 
 var events = require('events');
+const { NONAME } = require('dns');
 var eventEmitter = new events.EventEmitter();
 
 var onSequenceLoad = function (ioClient, socket)
@@ -547,7 +571,19 @@ function getClientSocketById (id) {
 }
 
 app.get('/', function(req, res){
-    res.sendFile(path + 'index.html');
+	if (serverMode == ServerMode.SMALL_TESTSTAND)
+	{
+		res.sendFile(path + 'small_teststand.html')
+	}
+	else if (serverMode == ServerMode.SMALL_OXFILL)
+	{
+		res.sendFile(path + 'small_oxfill.html')
+	}
+	else
+	{
+		res.sendFile(path + '404.html')
+	}
+	
 });
 
 app.get('/pnid', function(req, res){
