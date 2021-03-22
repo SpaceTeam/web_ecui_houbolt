@@ -99,10 +99,6 @@ form input {
     margin-bottom: 1rem;
 }
 
-.col {
-    background-color: white;
-}
-
 .content {
     height: 100%;
 }
@@ -163,7 +159,8 @@ form input {
 }
 
 .ckbx-label {
-    padding-left: 2rem;
+    padding-left: 1rem;
+    margin-right: 1rem;
 }
 
 .digitalOut-div {
