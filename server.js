@@ -38,12 +38,12 @@ const ServerMode = {
     SMALL_OXFILL: 2
 }
 var serverMode = ServerMode.LARGE_TESTSTAND
-if (process.argv[2] == "-smallTeststand")
+if (process.argv[2] == "--smallTeststand")
 {
 	serverMode = ServerMode.SMALL_TESTSTAND
 	console.log("Using Small Teststand Profile");
 }
-else if (process.argv[2] == "-smallOxfill")
+else if (process.argv[2] == "--smallOxfill")
 {
 	serverMode = ServerMode.SMALL_OXFILL
 	console.log("Using Small Oxfill Profile");
