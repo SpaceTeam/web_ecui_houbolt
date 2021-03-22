@@ -5,7 +5,21 @@ var app = express();
 var http = require('http').Server(app);
 var ioClient = require('socket.io')(http);
 var clients = [];
-var port = process.env.PORT || 80;
+var port = 80;
+
+// Search for argument port= in node cli arguments
+process.argv.forEach(arg => {
+    if(arg.startsWith("port=")){
+        var reqPort = arg.slice(arg.indexOf("=") + 1);
+        reqPort = Number.parseInt(reqPort);
+        
+        // check validity of requested port
+        if(reqPort >= 0 && reqPort <= 65353) port = reqPort;
+        else console.log(arg + " doesn't include a valid port number, using default port instead: " + port);
+    }
+  });
+
+port = process.env.PORT || port;
 
 app.use(express.static(__dirname + '/client/'));
 
