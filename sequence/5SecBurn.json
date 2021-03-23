@@ -78,24 +78,24 @@
 			]
 		},
 		{
-			"timestamp": 0.0,
+			"timestamp": -3.0,
 			"name": "ignition",
 			"desc": "lets light this candle",
 			"actions":
 			[
 				{
 					"timestamp": 0,
+					"igniter": 100, 
+					"igniter1": 100
+				},
+				{
+					"timestamp": 3,
                     "fuelMainValve": 0,
 					"oxMainValve": 0,
 					"syncLed": 100
 				},
 				{
-					"timestamp": 0.2,
-					"igniter": 100,
-					"igniter1": 100
-				},
-				{
-					"timestamp": 0.1,
+					"timestamp": 4,
 					"fuelMainValve": 100,
 					"oxMainValve": 100,
 					"sensorsNominalRange":
@@ -104,12 +104,13 @@
 					}
 				},
 				{
-					"timestamp": 1,
+					"timestamp": 4,
 					"syncLed": 0
 				},
 				{
-					"timestamp": 1.5,
-					"igniter": 0
+					"timestamp": 4.5,
+					"igniter": 0,
+					"igniter1": 0
 				}
 			]
 		},
