@@ -306,6 +306,30 @@ hr {
     margin-right: 1rem;
 }
 
+.wl-btn {
+	background: #522e63;
+	color: #fff	!important;
+	border-color: transparent;
+}
+
+.wl-btn[disabled] {
+    background: #9C9C9C;
+}
+
+.wl-btn[disabled]:hover {
+	border-color: transparent;
+}
+
+.wl-btn.active[disabled] {
+	background-color: #9C9C9C !important;
+	border-color: transparent !important;
+}
+
+.wl-btn-group {
+    display: flex;
+    margin-bottom: .5rem;
+}
+
 .custom-control-input:checked ~ .custom-control-label::before {
     color: #fff;
     border-color: #522e63;

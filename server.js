@@ -407,7 +407,6 @@ ioClient.on('connection', function(socket){
             if (master === socket.id) {
                 llServerMod.sendMessage(llServer, 'digital-outs-set', jsonDigitalOutputs);
             }
-
         });
 
         socket.on('supercharge-set', function(jsonSupercharge){
@@ -417,8 +416,28 @@ ioClient.on('connection', function(socket){
                 llServerMod.sendMessage(llServer, 'supercharge-set', jsonSupercharge);
                 llServerMod.sendMessage(llServer, 'supercharge-get');
             }
+		});
 
-        });
+    	socket.on('wl-red-set', function(){
+	    	console.log('wl-red-set');
+    		if (master === socket.id) {
+        		llServerMod.sendMessage(llServer, 'wl-red-set');
+       	 	}
+    	});
+
+    	socket.on('wl-yellow-set', function(){
+        	console.log('wl-yellow-set');
+        	if (master === socket.id) {
+            	llServerMod.sendMessage(llServer, 'wl-yellow-set');
+        	}
+    	});
+
+    	socket.on('wl-green-set', function(){
+        	console.log('wl-green-set');
+        	if (master === socket.id) {
+            	llServerMod.sendMessage(llServer, 'wl-green-set');
+        	}
+    	});
 
         socket.on('supercharge-get', function(){
             console.log('supercharge-get');
@@ -435,7 +454,6 @@ ioClient.on('connection', function(socket){
             if (master === socket.id) {
                 llServerMod.sendMessage(llServer, 'tare');
             }
-
         });
 
         socket.on('disconnect', function(msg){

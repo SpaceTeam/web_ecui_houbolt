@@ -170,6 +170,24 @@ Notes: Hotfire
                 </div>
                 <div class="col"></div>
             </div>
+
+            <div class="row control-row">
+                <div class="col col-6">
+                    <label class="range-slider-label input-label">Warning Light</label><br>
+                    <div class="btn-group btn-group-toggle wl-btn-group" data-toggle="buttons">
+                        <label class="btn btn-danger wl-btn manual-obj" disabled onclick="onWlRed();">
+                            <input type="radio" name="options" class="btn-check manual-obj" id="danger" autocomplete="off">Critical
+                        </label>
+                        <label class="btn btn-warning wl-btn manual-obj" disabled onclick="onWlYellow();">
+                            <input type="radio" name="options" class="btn-check manual-obj" id="warning" autocomplete="off">Restricted
+                        </label>
+                        <label class="btn btn-success wl-btn manual-obj" disabled onclick="onWlGreen();">
+                            <input type="radio" name="options" class="btn-check manual-obj" id="success" autocomplete="off">Safe
+                        </label>
+                    </div>
+                </div>
+            </div>
+
            <div class="row control-row">
                 <div class="range-slider col col-6">
                     <label class="range-slider-label input-label">Fuel Main Valve</label><br> 

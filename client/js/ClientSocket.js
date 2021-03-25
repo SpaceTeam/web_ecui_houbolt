@@ -167,6 +167,21 @@ function onSuperchargeLoad(jsonSuperchargeData)
 	$('#' + 'hysteresis').val(jsonSuperchargeData.hysteresis/10);
 }
 
+function onWlRed()
+{
+    socket.emit('wl-red-set');
+}
+
+function onWlYellow()
+{
+    socket.emit('wl-yellow-set');
+}
+
+function onWlGreen()
+{
+    socket.emit('wl-green-set');
+}
+
 //BE CAREFUL when using the delay feature: when enabling first digital gets set instantly and others
 //after the delay, when disabling however, the others get set first then the first one (mainly used for solenoid timing
 //when this was written)
@@ -545,7 +560,9 @@ function onManualControlEnable(checkbox)
 
         $('#toggleSequenceButton').prop('disabled', true);
 
-        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);	
+        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);
+
+        $('.wl-btn').removeAttr("disabled");	
     }
     else
     {
@@ -557,6 +574,8 @@ function onManualControlEnable(checkbox)
 
         $('.manual-obj:not(.servo-enable-obj)').prop('disabled', true);
 
+        $('.wl-btn').attr("disabled", true);
+
         $('.digitalOut, .servoEnableCheck').each(function () {
             if ($(this).prop("checked"))
             {
@@ -565,9 +584,9 @@ function onManualControlEnable(checkbox)
             }
         });
 
-	$('.servo-slider').each(function (){
-		$(this).css('background', '#D7DCDF');
-	});
+	    $('.servo-slider').each(function (){
+		    $(this).css('background', '#D7DCDF');
+	    });
     }
 }
 
