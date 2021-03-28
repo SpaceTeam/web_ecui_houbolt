@@ -124,20 +124,20 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 
     let ids = id.split(";");
     console.log(ids);
-	
-	//If coolingNotHeating is enabled -> only coolingPump can be enabled
-	//If it is not enabled 			  -> only heatingPunp can be enabled    
+
+    //If coolingNotHeating is enabled -> only coolingPump can be enabled
+    //If it is not enabled            -> only heatingPunp can be enabled
     if (id === "coolingNotHeatingValve"){
 		$('#heatingPump').prop('disabled', checkbox.checked);
 		$('#coolingPump').prop('disabled', !(checkbox.checked));
-	}
-	if (id === "heatingPump"){
-		$('#coolingNotHeatingValve').prop('disabled', checkbox.checked);
-	}
-	if (id === "coolingPump"){
-		$('#coolingNotHeatingValve').prop('disabled', checkbox.checked);
-	}
-	
+    }
+    if (id === "heatingPump"){
+        $('#coolingNotHeatingValve').prop('disabled', checkbox.checked);
+    }
+    if (id === "coolingPump"){
+        $('#coolingNotHeatingValve').prop('disabled', checkbox.checked);
+    }
+
     if (delaySecondDigitalOut > 0.0 && ($('.manualEnableCheck:checked').length > 0)) {
         $(checkbox).prop('disabled', true);
         $('.manualEnableCheck').each(function(){$(this).prop('disabled', true);});
@@ -447,7 +447,7 @@ function onManualControlEnable(checkbox)
         $('#toggleSequenceButton').prop('disabled', true);
 
         $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);
-		$('#coolingPump').prop('disabled', true);
+        $('#coolingPump').prop('disabled', true);
     }
     else
     {
@@ -466,9 +466,9 @@ function onManualControlEnable(checkbox)
                 $(this).click();
             }
         });
-		// avoids that heatingPump or coolingNotHeatingValve aren't disabled after disabling manual control
-		$('#heatingPump').prop('disabled', true);
-		$('#coolingNotHeatingValve').prop('disabled', true);
+        // avoids that heatingPump or coolingNotHeatingValve aren't disabled after disabling manual control
+        $('#heatingPump').prop('disabled', true);
+        $('#coolingNotHeatingValve').prop('disabled', true);
     }
 }
 
