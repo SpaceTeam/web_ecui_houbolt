@@ -128,8 +128,8 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
     //If coolingNotHeating is enabled -> only coolingPump can be enabled
     //If it is not enabled            -> only heatingPunp can be enabled
     if (id === "coolingNotHeatingValve"){
-		$('#heatingPump').prop('disabled', checkbox.checked);
-		$('#coolingPump').prop('disabled', !(checkbox.checked));
+        $('#heatingPump').prop('disabled', checkbox.checked);
+        $('#coolingPump').prop('disabled', !(checkbox.checked));
     }
     if (id === "heatingPump"){
         $('#coolingNotHeatingValve').prop('disabled', checkbox.checked);
