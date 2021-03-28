@@ -229,17 +229,14 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 // Set colored progress bar in servo slider for visual feedback
 function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
-    // Don't
-	if(jsonSen.name.includes("Valve") || jsonSen.name.includes("Tank")){
+	if(jsonSen.name.includes("Valve")) {
 		var sliderId = null;
 
 		if(jsonSen.name.includes("fuelMainValveFb")){ sliderId = "#fuelMainValve";}
 		else if(jsonSen.name.includes("oxSuperchargeValveFb")){ sliderId = "#oxSuperchargeValve";}
 		else if(jsonSen.name.includes("oxMainValveFb")){ sliderId = "#oxMainValve";}
-		else if(jsonSen.name.includes("loadingTankFeedback")){ sliderId = "#oxfillMainValve";}
-		else if(jsonSen.name.includes("loadingTankVentFeedback")){ sliderId = "#oxfillVentValve";}
-		//else if(jsonSen.name.includes("oxfillMainValveFb")){ sliderId = "#oxfillMainValve";}
-		//else if(jsonSen.name.includes("oxfillVentValveFb")){ sliderId = "#oxfillVentValve";}
+		else if(jsonSen.name.includes("oxfillMainValveFb")){ sliderId = "#oxfillMainValve";}
+		else if(jsonSen.name.includes("oxfillVentValveFb")){ sliderId = "#oxfillVentValve";}
 		
 		if(sliderId != null){
 			// Should probably do something different in production on an out of range feedback value
