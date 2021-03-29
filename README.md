@@ -86,8 +86,11 @@ In the TXV_ECUI_WEB folder execute one of the following (depending on what you w
 	
 and in TXV_ECUI_LLServer, if no console ouputs are required
 
-	bash install.sh
+	bash install-large-teststand.sh
+	bash install-small-teststand.sh
+	bash install-small-oxfill.sh
 	
+Make sure your selection here matches the one for WEB-Server.
 else exec
 
 	cmake . -DCMAKE_BUILD_TYPE:STRING=Release
