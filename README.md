@@ -45,7 +45,7 @@ To run ECUI on your device change to the WEB-Server directory and start the web 
 	cd TXV_ECUI_WEB
 	nodemon server.js [--mode] [port=xxxx]
 
-where mode can be smallOxfill, smallTeststand or largeTeststand (this is the default mode).
+where mode can be smallOxfill, smallTeststand or largeTeststand (this is the default mode). Make sure that the mode for the WEB-Server is the same as for the LL-Server.
 You can use the port option to change the web servers port (the default for one is 80), e.g. 3000.
 After that you can go into Google Chrome and type in the search bar
 
@@ -78,9 +78,11 @@ If the Warning Light Neopixel is also desired, ask an avionics guy for help
 
 Commands to run the ecui
 
-In the TXV_ECUI_WEB folder execute
+In the TXV_ECUI_WEB folder execute one of the following (depending on what you want to use ECUI for)
 
-	bash install.sh
+	bash install-large-teststand.sh
+	bash install-small-teststand.sh
+	bash install-small-oxfill.sh
 	
 and in TXV_ECUI_LLServer, if no console ouputs are required
 
