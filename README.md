@@ -33,7 +33,7 @@ Then open your Terminal (CMD) and open an ssh connection to the raspberry pi
 Password is raspberry
 Then change to the LLServer directory
 
-	cd TXV_ECUI_LLServer/
+	cd llserver_ecui_houbolt/
 	./llserver_ecui_houbolt [--mode]
 	
 If something goes wrong you can restart it with
@@ -42,7 +42,7 @@ If something goes wrong you can restart it with
 		
 To run ECUI on your device change to the WEB-Server directory and start the web server
 	
-	cd TXV_ECUI_WEB
+	cd web_ecui_houbolt
 	nodemon server.js [--mode] [port=xxxx]
 
 where mode can be smallOxfill, smallTeststand or largeTeststand (this is the default mode). Make sure that the mode for the WEB-Server is the same as for the LL-Server.
@@ -57,7 +57,7 @@ or
 
 if you run the server on your local device.
 To edit a Sequence or Checklist open FileZilla on your PC and connect to the ECUI
-Then open the TXV_ECUI_WEB -> sequence folder and Rightclick on 
+Then open the web_ecui_houbolt -> sequence folder and Rightclick on 
 Sequence.json or Checklist.json and and choose edit
 
 then you can edit the sequence or checklist
@@ -65,31 +65,47 @@ then you can edit the sequence or checklist
 when you're done press STRG+S and go back to FileZilla. Choose "Delete Local File and upload" and click Yes
 then you can refresh the Webpage in the Browser.
 
-To view the logs go in FileZilla into the TXV_ECUI_LLServer -> logs folder and download the desired log file
+To view the logs go in FileZilla into the llserver_ecui_houbolt -> logs folder and download the desired log file
 	
 	
 
 ## Install
 
-To install the ecui, pull both the TXV_ECUI_WEB and the TXV_ECUI_LLServer Repositories. 
+To install the ecui, pull both the web_ecui_houbolt and the llserver_ecui_houbolt Repositories.
+
+	git clone git@github.com:SpaceTeam/web_ecui_houbolt.git
+	git clone git@github.com:SpaceTeam/llserver_ecui_houbolt.git
+	
 For the WebServer **node** and **Socket.io** are required. 
 For the LLServer you only need gcc and cmake
 If the Warning Light Neopixel is also desired, ask an avionics guy for help
 
 Commands to run the ecui
 
-In the TXV_ECUI_WEB folder execute one of the following (depending on what you want to use ECUI for)
+In the web_ecui_houbolt folder execute one of the following (depending on what you want to use ECUI for)
 
 	bash install-large-teststand.sh
 	bash install-small-teststand.sh
 	bash install-small-oxfill.sh
 	
-and in TXV_ECUI_LLServer, if no console ouputs are required
+and in llserver_ecui_houbolt, if no console ouputs are required
 
 	bash install-large-teststand.sh
 	bash install-small-teststand.sh
 	bash install-small-oxfill.sh
 	
+According to the mode you selected when installing, change the update.sh file in the web_ecui_houbolt directory. The changes you have to do are uncommenting the line corresponding to your chosen mode and commenting the the lines corresponding to the other modes. E.g for the mode smallOxfill your update.sh file should look like this:
+
+	#!/bin/bash
+
+	cd "$(dirname "$0")"
+
+	git pull
+
+	#sudo systemctl restart ecui-web-large-teststand.service
+	#sudo systemctl restart ecui-web-small-teststand.service
+	sudo systemctl restart ecui-web-small-oxfill.service
+
 Make sure your selection here matches the one for WEB-Server.
 else exec
 
@@ -105,7 +121,7 @@ if Warning Light is installed execute
 beforehand
 
 ## Docker
-Alternatively TXV_ECUI_WEB (GUI) could be deployed via docker. Use the docker file found in the repo.
+Alternatively web_ecui_houbolt (GUI) could be deployed via docker. Use the docker file found in the repo.
 
 ```
 cd TXV_ECUI_WEB
