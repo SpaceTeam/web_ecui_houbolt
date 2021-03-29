@@ -310,6 +310,7 @@ hr {
 	background: #522e63;
 	color: #fff	!important;
 	border-color: transparent;
+	pointer-events: none;
 }
 
 .wl-btn[disabled] {

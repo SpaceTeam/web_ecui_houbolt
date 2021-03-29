@@ -417,27 +417,20 @@ ioClient.on('connection', function(socket){
                 llServerMod.sendMessage(llServer, 'supercharge-get');
             }
 		});
+		
+		socket.on('parameter-set', function(jsonParameter){
+			console.log('parameter-set');
+			console.log(jsonParameter);
+			if (master === socket.id) {
+				llServerMod.sendMessage(llServer, 'parameter-set', jsonParameter);
+				llServerMod.sendMessage(llServer, 'parameter-get', jsonParameter);
+			}
+		});
 
-    	socket.on('wl-red-set', function(){
-	    	console.log('wl-red-set');
-    		if (master === socket.id) {
-        		llServerMod.sendMessage(llServer, 'wl-red-set');
-       	 	}
-    	});
-
-    	socket.on('wl-yellow-set', function(){
-        	console.log('wl-yellow-set');
-        	if (master === socket.id) {
-            	llServerMod.sendMessage(llServer, 'wl-yellow-set');
-        	}
-    	});
-
-    	socket.on('wl-green-set', function(){
-        	console.log('wl-green-set');
-        	if (master === socket.id) {
-            	llServerMod.sendMessage(llServer, 'wl-green-set');
-        	}
-    	});
+		socket.on('parameter-get', function(jsonParameter){
+			console.log('parameter-get');
+			llServerMod.sendMessage(llserver, 'parameter-get', jsonParameter);
+		});
 
         socket.on('supercharge-get', function(){
             console.log('supercharge-get');
@@ -541,6 +534,11 @@ function processLLServerMessage(data) {
                     console.log("supercharge-load");
 					console.log(jsonData.content)
                     ioClient.emit('supercharge-load', jsonData.content);
+                    break;
+                case "parameter-load":
+                    console.log("parameter-load");
+					console.log(jsonData.content)
+                    ioClient.emit('parameter-load', jsonData.content);
                     break;
                 case "servos-sync":
                     console.log("servos-sync");

@@ -175,14 +175,14 @@ Notes: Hotfire
                 <div class="col col-6">
                     <label class="range-slider-label input-label">Warning Light</label><br>
                     <div class="btn-group btn-group-toggle wl-btn-group" data-toggle="buttons">
-                        <label class="btn btn-danger wl-btn manual-obj" disabled onclick="onWlRed();">
-                            <input type="radio" name="options" class="btn-check manual-obj" id="danger" autocomplete="off">Critical
+						<label class="btn btn-danger wl-btn manual-obj" disabled onclick="onParameterSet(this.control)"> 
+                            <input type="radio" id="wlRed" class="btn-check manual-obj" autocomplete="off" value="0">Critical
                         </label>
-                        <label class="btn btn-warning wl-btn manual-obj" disabled onclick="onWlYellow();">
-                            <input type="radio" name="options" class="btn-check manual-obj" id="warning" autocomplete="off">Restricted
+                        <label class="btn btn-warning wl-btn manual-obj" disabled onclick="onParameterSet(this.control);">
+                            <input type="radio" id="wlYellow" class="btn-check manual-obj" autocomplete="off" value="0">Restricted
                         </label>
-                        <label class="btn btn-success wl-btn manual-obj" disabled onclick="onWlGreen();">
-                            <input type="radio" name="options" class="btn-check manual-obj" id="success" autocomplete="off">Safe
+                        <label class="btn btn-success wl-btn manual-obj" disabled onclick="onParameterSet(this.control);">
+                            <input type="radio" id="wlGreen" class="btn-check manual-obj" autocomplete="off" value="0">Safe
                         </label>
                     </div>
                 </div>

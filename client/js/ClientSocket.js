@@ -154,6 +154,34 @@ function onServosLoad(jsonServosData)
     }
 }
 
+function onParameterSet(param)
+{
+	let id = param.id;
+	let val = parseFloat(param.value);
+	sendParameter(id, val);
+}
+
+function onParameterLoad(jsonParameterData)
+{
+	let id = jsonParameterData.id;
+	let val = jsonParameterData.value;
+    if (id === "wlRed") {
+		if (val === 1) {
+        	$('#wlRed').label.addClass('active');
+        	$('#wlYello').label.removeClass('active');
+        	$('#wlGreen').label.removeClass('active');
+		}
+	} else if (id === "wlYellow") {
+        	$('#wlRed').label.removeClass('active');
+        	$('#wlYello').label.addClass('active');
+        	$('#wlGreen').label.removeClass('active');
+    } else if (id === "wlGreen") {
+        	$('#wlRed').label.removeClass('active');
+        	$('#wlYello').label.removeClass('active');
+        	$('#wlGreen').label.addClass('active');
+    }
+}
+
 function onSuperchargeSet()
 {
     let setpoint = parseFloat($('#' + 'setpoint').val());
@@ -165,21 +193,6 @@ function onSuperchargeLoad(jsonSuperchargeData)
 {
 	$('#' + 'setpoint').val(jsonSuperchargeData.setpoint);
 	$('#' + 'hysteresis').val(jsonSuperchargeData.hysteresis/10);
-}
-
-function onWlRed()
-{
-    socket.emit('wl-red-set');
-}
-
-function onWlYellow()
-{
-    socket.emit('wl-yellow-set');
-}
-
-function onWlGreen()
-{
-    socket.emit('wl-green-set');
 }
 
 //BE CAREFUL when using the delay feature: when enabling first digital gets set instantly and others
@@ -538,6 +551,15 @@ function sendServoMax(servoId, newServoMax)
     socket.emit('servos-calibrate', [jsonServo]);
 }
 
+function sendParameter(id, value)
+{
+	let jsonParameter = {};
+
+	jsonParameter.id = id;
+	jsonParameter.value = value;
+	socket.emit('parameter-set', [jsonParameter]);
+}
+
 function sendSupercharge(setpoint, hysteresis)
 {
     let jsonSupercharge = {};
@@ -563,6 +585,8 @@ function onManualControlEnable(checkbox)
         $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);
 
         $('.wl-btn').removeAttr("disabled");	
+
+		$('.wl-btn').css('pointer-events', 'auto');
     }
     else
     {
@@ -575,6 +599,8 @@ function onManualControlEnable(checkbox)
         $('.manual-obj:not(.servo-enable-obj)').prop('disabled', true);
 
         $('.wl-btn').attr("disabled", true);
+
+		$('.wl-btn').css('pointer-events', 'none');	
 
         $('.digitalOut, .servoEnableCheck').each(function () {
             if ($(this).prop("checked"))
@@ -726,6 +752,12 @@ socket.on('supercharge-load', function(jsonSuperchargeData) {
     console.log('supercharge-load');
     console.log(jsonSuperchargeData);
     onSuperchargeLoad(jsonSuperchargeData);
+});
+
+socket.on('parameter-load', function(jsonParameterData) {
+    console.log('parameter-load');
+    console.log(jsonParameterData);
+    onSuperchargeLoad(jsonParameterData);
 });
 
 socket.on('checklist-load', function(jsonChecklist) {
