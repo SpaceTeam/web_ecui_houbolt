@@ -34,16 +34,28 @@ Password is raspberry
 Then change to the LLServer directory
 
 	cd TXV_ECUI_LLServer/
-	./TXV_ECUI_LLSERVER
+	./llserver_ecui_houbolt [--mode]
 	
 If something goes wrong you can restart it with
 
-	./TXV_ECUI_LLSERVER
+	./llserver_ecui_houbolt [--mode]
+		
+To run ECUI on your device change to the WEB-Server directory and start the web server
 	
+	cd TXV_ECUI_WEB
+	nodemon server.js [--mode] [port=xxxx]
+
+where mode can be smallOxfill, smallTeststand or largeTeststand (this is the default mode).
+You can use the port option to change the web servers port (the default for one is 80), e.g. 3000.
 After that you can go into Google Chrome and type in the search bar
 
 	raspberrypi.local:3000
 	
+or
+
+	localhost:3000
+
+if you run the server on your local device.
 To edit a Sequence or Checklist open FileZilla on your PC and connect to the ECUI
 Then open the TXV_ECUI_WEB -> sequence folder and Rightclick on 
 Sequence.json or Checklist.json and and choose edit
@@ -78,8 +90,9 @@ else exec
 
 	cmake . -DCMAKE_BUILD_TYPE:STRING=Release
 	make -j 3
-	./TXV_ECUI_LLSERVER
+	./llserver_ecui_houbolt [--mode]
 
+where mode can be smallOxfill, smallTeststand or largeTeststand (this is the default mode)
 if Warning Light is installed execute
 
 	sudo python3 ../warnlight/testapp_sock.py &
