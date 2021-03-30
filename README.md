@@ -75,7 +75,7 @@ To install the ecui, pull both the web_ecui_houbolt and the llserver_ecui_houbol
 
 	git clone git@github.com:SpaceTeam/web_ecui_houbolt.git
 	git clone git@github.com:SpaceTeam/llserver_ecui_houbolt.git
-	
+
 For the WebServer **node** and **Socket.io** are required. 
 For the LLServer you only need gcc and cmake
 If the Warning Light Neopixel is also desired, ask an avionics guy for help
@@ -93,7 +93,12 @@ and in llserver_ecui_houbolt, if no console ouputs are required
 	bash install-large-teststand.sh
 	bash install-small-teststand.sh
 	bash install-small-oxfill.sh
-	
+
+If you encounter the error "/.git/logs directory doesn't exist! Create it!" during execution of one of the above install scripts, manually create the logs folder inside the .git directory:
+
+	cd .git
+	mkdir logs
+
 According to the mode you selected when installing, change the update.sh file in the web_ecui_houbolt directory. The changes you have to do are uncommenting the line corresponding to your chosen mode and commenting the the lines corresponding to the other modes. E.g for the mode smallOxfill your update.sh file should look like this:
 
 	#!/bin/bash
