@@ -88,7 +88,7 @@ In the web_ecui_houbolt folder execute one of the following (depending on what y
 	bash install-small-teststand.sh
 	bash install-small-oxfill.sh
 	
-and in llserver_ecui_houbolt, if no console ouputs are required
+If you can't execute the script, you might have to permit its execution. Depending on your operating system this is done differently. For example, on Ubuntu you can simply right click on the script, select Properties and in the Permissions tab click the checkbox for  "Allow executing this file as a program". Do the same in the llserver_ecui_houbolt directory:
 
 	bash install-large-teststand.sh
 	bash install-small-teststand.sh
