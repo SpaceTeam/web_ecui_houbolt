@@ -10,7 +10,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 nvm install 12.10.0
-nvm use
+nvm use 12.10.0
 npm install
 
 sudo cp ecui-web-small-teststand.service /etc/systemd/system/
