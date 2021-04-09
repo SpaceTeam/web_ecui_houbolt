@@ -186,7 +186,23 @@
                     <span class="range-slider__value" disabled>0</span>
                 </div>
             </div>
+            <div class="row control-row">
+                <div class="range-slider col">
+                    <label class="range-slider-label input-label">Pressurant Tank Load Valve</label><br>
+                    <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="pressurantTankLoadValve" idNum="2"
+                           oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
+                           disabled>
+                    <span class="range-slider__value" disabled>0</span>
 
+                </div>
+                <div class="range-slider col">
+                    <label class="range-slider-label input-label">Pressurant Tank Vent Valve</label><br>
+                    <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="pressurantTankVentValve" idNum="3"
+                           oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
+                           disabled>
+                    <span class="range-slider__value" disabled>0</span>
+                </div>
+            </div>
             <div class="row control-row container-fluid">
                 <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
                     <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="coolingNotHeatingValve"
@@ -234,6 +250,7 @@
                 <div class="col"></div>
             </div>
 
+
             <div class="row control-row">
                 <div class="col col-4 spinner">
                     <label class="input-label" for="loadingTankValveCal" style="width: 100%;">
@@ -257,7 +274,6 @@
                     </button>
                 </div>
             </div>
-
             <div class="row control-row">
                 <div class="col col-4 spinner">
                     <label class="input-label" for="loadingTankVentValveCal">
@@ -281,6 +297,56 @@
                     </button>
                 </div>
             </div>
+
+            <div class="row control-row">
+                <div class="col col-4 spinner">
+                    <label class="input-label" for="pressurantTankLoadValveCal" style="width: 100%;">
+                        <div class="container-fluid calLabel-container">
+                            <div class="row">
+                                <div id="pressurantTankLoadValveMinLabel" class="col col-3 minLabel">1200</div>
+                                <div id="pressurantTankLoadValveLabel" class="col centerLabel">Pressurant Tank Load Valve</div>
+                                <div id="pressurantTankLoadValveMaxLabel" class="col col-3 maxLabel">2000</div>
+                            </div>
+                        </div>
+                    </label>
+                    <input id="pressurantTankLoadValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                           step="1" onchange="onServoSpinnerChange($(this));" disabled/>
+                </div>
+                <div class="col col-5">
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="pressurantTankLoadValveMin"
+                            onclick="onCalibrateMin($(this));" disabled>Set Close
+                    </button>
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="pressurantTankLoadValveMax"
+                            onclick="onCalibrateMax($(this));" disabled>Set Open
+                    </button>
+                </div>
+            </div>
+
+            <div class="row control-row">
+                <div class="col col-4 spinner">
+                    <label class="input-label" for="pressurantTankVentValveCal">
+                        <div class="container-fluid calLabel-container">
+                            <div class="row">
+                                <div id="pressurantTankVentValveMinLabel" class="col col-3 minLabel">1200</div>
+                                <div id="pressurantTankVentValveLabel" class="col centerLabel">Pressurant Tank Vent Valve</div>
+                                <div id="pressurantTankVentValveMaxLabel" class="col col-3 maxLabel">2000</div>
+                            </div>
+                        </div>
+                    </label>
+                    <input id="pressurantTankVentValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                           step="1" onchange="onServoSpinnerChange($(this));" disabled/>
+                </div>
+                <div class="col col-5">
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="pressurantTankVentValveMin"
+                            onclick="onCalibrateMin($(this));" disabled>Set Close
+                    </button>
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="pressurantTankVentValveMax"
+                            onclick="onCalibrateMax($(this));" disabled>Set Open
+                    </button>
+                </div>
+            </div>
+
+
 
         </div>
 
