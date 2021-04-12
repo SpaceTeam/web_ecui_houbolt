@@ -109,123 +109,6 @@ function onResetSensors() {
     emptySensorCharts();
 }
 
-function onServoSpinnerChange(spinner) {
-
-    let spinnerId = spinner.attr('id');
-    let sliderId = spinnerId.substr(0, spinnerId.length-3);
-    let id = $('#' + sliderId).attr('id');
-    let val = parseFloat(spinner.val());
-    sendServoRaw(id, val);
-}
-
-function onServoSliderInput(servoSlider)
-{
-    let id = servoSlider.attr('id');
-    let val = parseFloat(servoSlider.val());
-    sendServo(id, val);
-}
-
-function onCalibrateMin(button) {
-
-    let buttonId = button.attr('id');
-    let sliderId = buttonId.substr(0, buttonId.length-3);
-
-    let id = $('#' + sliderId).attr('id');
-    let min = parseFloat($('#' + sliderId + 'Cal').val());
-
-    sendServoMin(id, min);
-}
-
-function onCalibrateMax(button) {
-
-    let buttonId = button.attr('id');
-    let sliderId = buttonId.substr(0, buttonId.length-3);
-    let id = $('#' + sliderId).attr('id');
-    let max = parseFloat($('#' + sliderId + 'Cal').val());
-    sendServoMax(id, max);
-}
-
-function onServosLoad(jsonServosData)
-{
-    for (let dataInd in jsonServosData)
-    {
-        let dataItem = jsonServosData[dataInd];
-        
-        $('#' + dataItem.name + 'MinLabel').text(dataItem.endpoints[0]);
-        $('#' + dataItem.name + 'MaxLabel').text(dataItem.endpoints[1]);
-    }
-}
-
-function onSuperchargeSet()
-{
-    let setpoint = parseFloat($('#' + 'setpoint').val());
-    let hysteresis = parseFloat($('#' + 'hysteresis').val())*10; //multiply by 10 to convert from 1 decimal place to int
-    sendSupercharge(setpoint, hysteresis);
-}
-
-function onSuperchargeLoad(jsonSuperchargeData)
-{
-	$('#' + 'setpoint').val(jsonSuperchargeData.setpoint);
-	$('#' + 'hysteresis').val(jsonSuperchargeData.hysteresis/10);
-}
-
-//BE CAREFUL when using the delay feature: when enabling first digital gets set instantly and others
-//after the delay, when disabling however, the others get set first then the first one (mainly used for solenoid timing
-//when this was written)
-function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
-{
-    let id = $(checkbox).attr('id');
-
-    let ids = id.split(";");
-    console.log(ids);
-
-    // Check that the cooling pump and heating pump cannot be enabled at the same time
-    // Therefore, we disable the other button.
-    if (id === "coolingPump") {
-        $('#heatingPump').prop('disabled', checkbox.checked);
-    } else if (id === "heatingPump") {
-        $('#coolingPump').prop('disabled', checkbox.checked);
-    }
-
-    if (delaySecondDigitalOut > 0.0 && ($('.manualEnableCheck:checked').length > 0)) {
-        $(checkbox).prop('disabled', true);
-        $('.manualEnableCheck').each(function(){$(this).prop('disabled', true);});
-        setTimeout(function () {
-            $(checkbox).prop('disabled', false);
-            $('.manualEnableCheck').each(function(){$(this).prop('disabled', false);});
-        }, delaySecondDigitalOut * 1000);
-    }
-
-    if (checkbox.checked) {
-        if (delaySecondDigitalOut === 0.0)
-        {
-            sendDigitalOutArr(ids, true);
-        }
-        else
-        {
-            sendDigitalOut(ids[0], true);
-            setTimeout(function () {
-                sendDigitalOutArr(ids.slice(1), true);
-            }, delaySecondDigitalOut*1000);
-        }
-    }
-    else
-    {
-        if (delaySecondDigitalOut === 0.0)
-        {
-            sendDigitalOutArr(ids, false);
-        }
-        else
-        {
-            sendDigitalOutArr(ids.slice(1), false);
-
-            setTimeout(function () {
-                sendDigitalOut(ids[0], false);
-            }, delaySecondDigitalOut*1000);
-        }
-    }
-}
-
 // Set colored progress bar in servo slider for visual feedback
 function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
@@ -449,44 +332,9 @@ function onToggleSequenceButton(btn)
     }
 }
 
-function onTareLoadCells()
-{
-    socket.emit('tare');
-}
-
 function onSequenceSelectChange(value)
 {
     socket.emit('sequence-set', value);
-}
-
-function sendDigitalOut(doId, doValue)
-{
-    let jsonDigitalOut = {};
-
-    jsonDigitalOut.id = doId;
-    jsonDigitalOut.value = doValue;
-
-    updatePNID(doId, doValue);
-
-    socket.emit('digital-outs-set', [jsonDigitalOut]);
-}
-
-function sendDigitalOutArr(doIds, doValue)
-{
-    let jsonDigitalOut = [];
-    let jsonDigitalOutObj = {};
-
-    for (let doIdsInd in doIds)
-    {
-        jsonDigitalOutObj = {};
-        jsonDigitalOutObj.id = doIds[doIdsInd];
-        jsonDigitalOutObj.value = doValue;
-
-        updatePNID(doIds[doIdsInd], doValue);
-
-        jsonDigitalOut.push(jsonDigitalOutObj);
-    }
-    socket.emit('digital-outs-set', jsonDigitalOut);
 }
 
 function sendServo(servoId, servoValue)
@@ -495,43 +343,7 @@ function sendServo(servoId, servoValue)
 
     jsonServo.id = servoId;
     jsonServo.value = servoValue;
-    socket.emit('servos-set', [jsonServo]);
-}
-
-function sendServoRaw(servoId, rawValue)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.value = rawValue;
-    socket.emit('servos-set-raw', [jsonServo]);
-}
-
-function sendServoMin(servoId, newServoMin)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.min = newServoMin;
-    socket.emit('servos-calibrate', [jsonServo]);
-}
-
-function sendServoMax(servoId, newServoMax)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.max = newServoMax;
-    socket.emit('servos-calibrate', [jsonServo]);
-}
-
-function sendSupercharge(setpoint, hysteresis)
-{
-    let jsonSupercharge = {};
-
-    jsonSupercharge.setpoint = setpoint;
-    jsonSupercharge.hysteresis = hysteresis;
-    socket.emit('supercharge-set', [jsonSupercharge]);
+    socket.emit('states-set', [jsonServo]);
 }
 
 function onManualControlEnable(checkbox)
@@ -570,30 +382,6 @@ function onManualControlEnable(checkbox)
 	$('.servo-slider').each(function (){
 		$(this).css('background', '#D7DCDF');
 	});
-    }
-}
-
-function onServoEnable(checkbox) {
-    //console.log("servo enable:", checkbox.checked);
-    if (checkbox.checked)
-    {
-        $('.servoEnableCheck').prop('checked', true);
-
-        $('.range-slider__value, .range-slider__feedback').attr('disabled', false);
-
-        $('.servo-enable-obj').prop('disabled', false);
-
-        socket.emit('servos-enable');
-    }
-    else
-    {
-        $('.servoEnableCheck').prop('checked', false);
-
-        $('.range-slider__value, .range-slider__feedback').attr('disabled', true);
-
-        $('.servo-enable-obj').prop('disabled', true);
-
-        socket.emit('servos-disable');
     }
 }
 
@@ -636,11 +424,6 @@ function onChecklistTick(checkbox)
     if(master) socket.emit('checklist-tick', currId);
 }
 
-function onSuperchargeGet()
-{
-    socket.emit('supercharge-get');
-}
-
 //-------------------------------------Controls on receiving Socket Messages---------------------------------
 
 socket.on('master-change', (flag) => {
@@ -671,14 +454,6 @@ socket.on('master-lock', (flag) => {
     else $('#masterLockBox').prop('checked', false);
 });
 
-socket.on('servos-sync', function(jsonServosData) {
-	if (!mouseDown)
-	{
-		$('#' + jsonServosData.id).val(jsonServosData.value);
-		console.log('servos sync')
-	}
-});
-
 socket.on('connect', function() {socket.emit('checklist-start'); onSuperchargeGet();});
 
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
@@ -698,19 +473,6 @@ socket.on('abort', function(abortMsg) {
     abortSequence(abortMsg);
 
     $('#masterRequest').prop('disabled', false);
-});
-
-socket.on('servos-load', function(jsonServosData) {
-    console.log('servos-load');
-    console.log(jsonServosData);
-    onServosLoad(jsonServosData);
-
-});
-
-socket.on('supercharge-load', function(jsonSuperchargeData) {
-    console.log('supercharge-load');
-    console.log(jsonSuperchargeData);
-    onSuperchargeLoad(jsonSuperchargeData);
 });
 
 socket.on('checklist-load', function(jsonChecklist) {
@@ -876,7 +638,7 @@ socket.on('sequence-done', function() {
 
 var firstSensorFetch = true;
 
-socket.on('sensors', function(jsonSens) {
+socket.on('states', function(jsonSens) {
     //console.log('sensors');
 
     if (!llServerConnectionActive)
@@ -888,6 +650,11 @@ socket.on('sensors', function(jsonSens) {
     for (let sensorInd in jsonSens)
     {
         let jsonSen = jsonSens[sensorInd];
+
+		if (jsonSen.name.match(/\w*:sensor/g) == null)
+		{
+			continue;
+		}
 
         //update pnid
         updatePNID(jsonSen.name, jsonSen.value);

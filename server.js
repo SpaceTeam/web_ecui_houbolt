@@ -33,11 +33,11 @@ var checklistMan = new checklistManMod();
 var sequenceRunning = false;
 
 const ServerMode = {
-    LARGE_TESTSTAND: 0,
+    FRANZ: 0,
     SMALL_TESTSTAND: 1,
     SMALL_OXFILL: 2
 }
-var serverMode = ServerMode.LARGE_TESTSTAND
+var serverMode = ServerMode.FRANZ
 if (process.argv[2] == "--smallTeststand")
 {
 	serverMode = ServerMode.SMALL_TESTSTAND
@@ -185,7 +185,7 @@ var onSequenceDone = function (ioClient) {
     setTimeout(function () {
             if (!sequenceRunning)
             {
-                llServerMod.sendMessage(llServer, 'sensors-start');
+                llServerMod.sendMessage(llServer, 'states-start');
             }
         }, 3500);
 }
@@ -201,7 +201,7 @@ var onAbort = function (ioClient, socket) {
         setTimeout(function () {
             if (!sequenceRunning)
             {
-                llServerMod.sendMessage(llServer, 'sensors-start');
+                llServerMod.sendMessage(llServer, 'states-start');
             }
         }, 3500);
     }
@@ -223,7 +223,7 @@ var onAbortAll = function(ioClient, abortMsg)
         setTimeout(function () {
             if (!sequenceRunning)
             {
-                llServerMod.sendMessage(llServer, 'sensors-start');
+                llServerMod.sendMessage(llServer, 'states-start');
             }
         }, 3500);
     }
@@ -287,14 +287,14 @@ ioClient.on('connection', function(socket){
             var intDel = setInterval(function () {
                 if (llServer !== undefined)
                 {
-                    llServerMod.sendMessage(llServer, 'sensors-start');
+                    llServerMod.sendMessage(llServer, 'states-start');
                     clearInterval(intDel);
                 }
             }, 1000);
         }
         else
         {
-            llServerMod.sendMessage(llServer, 'sensors-start');
+            llServerMod.sendMessage(llServer, 'states-start');
         }
         console.log('userID: ' + socket.id + ' userAddress: ' + socket.handshake.address + ' connected');
         // if (master == null)
@@ -316,8 +316,9 @@ ioClient.on('connection', function(socket){
             if((!masterLocked || (masterSocket != null && socket.handshake.address ===  masterSocket.handshake.address)) && !sequenceRunning) {
                 console.log('change master to ' + socket.id + ' ' + socket.handshake.address);
 
-				//disable servos here since old master isn't allowed to do so anymore
-				llServerMod.sendMessage(llServer, 'servos-disable');
+				//TODO: adapt to states
+				// //disable servos here since old master isn't allowed to do so anymore
+				// llServerMod.sendMessage(llServer, 'servos-disable');
 
                 master = socket.id;
                 eventEmitter.emit('onMasterChange', socket);
@@ -400,78 +401,10 @@ ioClient.on('connection', function(socket){
             }
         });
 
-        socket.on('servos-enable', function(){
-            console.log('servos-enable');
+		socket.on('states-set', function(jsonStates){
+            console.log('states-set');
             if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'servos-enable');
-            }
-
-        });
-
-        socket.on('servos-disable', function(){
-            console.log('servos-disable');
-            if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'servos-disable');
-            }
-
-        });
-
-        socket.on('servos-calibrate', function(jsonServos){
-            console.log('servos-calibrate');
-            if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'servos-calibrate', jsonServos);
-            }
-
-        });
-
-        socket.on('servos-set', function(jsonServos){
-            console.log('servos-set');
-            if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'servos-set', jsonServos);
-            }
-
-        });
-
-        socket.on('servos-set-raw', function(jsonServos){
-            console.log('servos-set-raw');
-            if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'servos-set-raw', jsonServos);
-            }
-        });
-
-        socket.on('digital-outs-set', function(jsonDigitalOutputs){
-            console.log('digital-outs-set');
-            console.log(jsonDigitalOutputs)
-            if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'digital-outs-set', jsonDigitalOutputs);
-            }
-
-        });
-
-        socket.on('supercharge-set', function(jsonSupercharge){
-            console.log('supercharge-set');
-            console.log(jsonSupercharge);
-            if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'supercharge-set', jsonSupercharge);
-                llServerMod.sendMessage(llServer, 'supercharge-get');
-            }
-
-        });
-
-        socket.on('supercharge-get', function(){
-            console.log('supercharge-get');
-            llServerMod.sendMessage(llServer, 'supercharge-get');
-        });
-
-        socket.on('servos-get', function(){
-            console.log('servos-get');
-            llServerMod.sendMessage(llServer, 'servos-get');
-        });
-
-        socket.on('tare', function(){
-            console.log('tare');
-            if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'tare');
+                llServerMod.sendMessage(llServer, 'states-set', jsonStates);
             }
 
         });
@@ -493,7 +426,7 @@ ioClient.on('connection', function(socket){
             if (clients.length === 0)
             {
                 llServerMod.sendMessage(llServer, 'abort');
-                llServerMod.sendMessage(llServer, 'sensors-stop');
+                llServerMod.sendMessage(llServer, 'states-stop');
             }
         });
     }
@@ -550,22 +483,12 @@ function processLLServerMessage(data) {
                     console.log("timer-done");
                     eventEmitter.emit('onSequenceDone', ioClient);
                     break;
-                case "sensors":
-                    ioClient.emit('sensors', jsonData.content);
+                case "states":
+                    ioClient.emit('states', jsonData.content);
                     break;
-                case "servos-load":
-                    console.log("servos-load");
-                    ioClient.emit('servos-load', jsonData.content);
-                    break;
-                case "supercharge-load":
-                    console.log("supercharge-load");
-					console.log(jsonData.content)
-                    ioClient.emit('supercharge-load', jsonData.content);
-                    break;
-                case "servos-sync":
-                    console.log("servos-sync");
-                    console.log(jsonData.content);
-                    ioClient.emit('servos-sync', jsonData.content);
+                case "states-load":
+                    console.log("states-load");
+                    ioClient.emit('states-load', jsonData.content);
                     break;
                 case "abort":
                     console.log("abort from llserver");
@@ -592,6 +515,10 @@ app.get('/', function(req, res){
 	else if (serverMode == ServerMode.SMALL_OXFILL)
 	{
 		res.sendFile(path + 'small_oxfill.html')
+	}
+	else if (serverMode == ServerMode.FRANZ)
+	{
+		res.sendFile(path + 'franz.html')
 	}
 	else
 	{
