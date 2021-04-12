@@ -6,7 +6,21 @@ var http = require('http').Server(app);
 var ioClient = require('socket.io')(http);
 var clients = [];
 var params = [];
-var port = process.env.PORT || 80;
+var port = 80;
+
+// Search for argument port= in node cli arguments
+process.argv.forEach(arg => {
+    if(arg.startsWith("port=")){
+        var reqPort = arg.slice(arg.indexOf("=") + 1);
+        reqPort = Number.parseInt(reqPort);
+        
+        // check validity of requested port
+        if(reqPort >= 0 && reqPort <= 65353) port = reqPort;
+        else console.log(arg + " doesn't include a valid port number, using default port instead: " + port);
+    }
+  });
+
+port = process.env.PORT || port;
 
 app.use(express.static(__dirname + '/client/'));
 
@@ -19,11 +33,34 @@ var checklistMan = new checklistManMod();
 
 var sequenceRunning = false;
 
+const ServerMode = {
+    LARGE_TESTSTAND: 0,
+    SMALL_TESTSTAND: 1,
+    SMALL_OXFILL: 2
+}
+var serverMode = ServerMode.LARGE_TESTSTAND
+if (process.argv[2] == "--smallTeststand")
+{
+	serverMode = ServerMode.SMALL_TESTSTAND
+	console.log("Using Small Teststand Profile");
+}
+else if (process.argv[2] == "--smallOxfill")
+{
+	serverMode = ServerMode.SMALL_OXFILL
+	console.log("Using Small Oxfill Profile");
+}
+else
+{
+	console.log("Defaulting to Large Teststand Profile...");
+}
+
 // Import net module.
 var net = require('net');
 var llServerMod = require('./server/LLServerSocket');
 
 console.log(llServerMod);
+
+
 // Create and return a net.Server object, the function will be invoked when client connect to this server.
 var llServer;
 var server = net.createServer(function(client){llServer = llServerMod.onLLServerConnect(client, processLLServerMessage);});
@@ -39,6 +76,7 @@ server.listen(5555, function(){ llServerMod.onCreateTCP(server)});
 // sm.saveAbortSequence(sm.loadAbortSequence());
 
 var events = require('events');
+const { NONAME } = require('dns');
 var eventEmitter = new events.EventEmitter();
 
 var onSequenceLoad = function (ioClient, socket)
@@ -557,7 +595,19 @@ function storeParam(msg){
 }
 
 app.get('/', function(req, res){
-    res.sendFile(path + 'index.html');
+	if (serverMode == ServerMode.SMALL_TESTSTAND)
+	{
+		res.sendFile(path + 'small_teststand.html')
+	}
+	else if (serverMode == ServerMode.SMALL_OXFILL)
+	{
+		res.sendFile(path + 'small_oxfill.html')
+	}
+	else
+	{
+		res.sendFile(path + '404.html')
+	}
+	
 });
 
 app.get('/pnid', function(req, res){

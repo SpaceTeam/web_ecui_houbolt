@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker run -v `pwd`:/TXV_ECUI_WEB txv_ecui_web
+docker run -v `pwd`:/web_ecui_houbolt web_ecui_houbolt

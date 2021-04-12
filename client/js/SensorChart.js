@@ -1,7 +1,7 @@
 class SensorChart
 {
 
-    constructor(id, name=null, data=null)
+    constructor(id, name=null, data=null, disable=true)
     {
         // Themes begin
         am4core.useTheme(am4themes_material);
@@ -24,9 +24,9 @@ class SensorChart
             title.marginBottom = 10;
         }
 
-        this.chart.events.on("ready", function(ev) {
+        this.chart.events.on("ready", function(ev, disable) {
             console.log(ev);
-            ev.target.disabled = true;
+            ev.target.disabled = disable;
         });
 
         // Create axes (just one)

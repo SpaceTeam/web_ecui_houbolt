@@ -33,7 +33,7 @@ RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash 
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV PATH      $NVM_DIR/v$NODE_VERSION/bin:$PATH
 
-WORKDIR /TXV_ECUI_WEB
+WORKDIR /web_ecui_houbolt
 
 EXPOSE  80
 EXPOSE  5555
