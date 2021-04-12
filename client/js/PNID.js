@@ -90,7 +90,7 @@ function updatePNID(name, value)
 			$(this).change();
 		});
 	}
-	else if (name.includes("igniter"))
+	else if (name.includes("igniter") && !name.includes("fb"))
 	{
 		igniterActive = value;
 	}
