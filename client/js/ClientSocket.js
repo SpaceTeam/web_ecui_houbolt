@@ -179,12 +179,17 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
     let ids = id.split(";");
     console.log(ids);
 
-    // Check that the cooling pump and heating pump cannot be enabled at the same time
-    // Therefore, we disable the other button.
-    if (id === "coolingPump") {
+    //If coolingNotHeating is enabled -> only coolingPump can be enabled
+    //If it is not enabled            -> only heatingPunp can be enabled
+    if (id === "coolingNotHeatingValve"){
         $('#heatingPump').prop('disabled', checkbox.checked);
-    } else if (id === "heatingPump") {
-        $('#coolingPump').prop('disabled', checkbox.checked);
+        $('#coolingPump').prop('disabled', !(checkbox.checked));
+    }
+    if (id === "heatingPump"){
+        $('#coolingNotHeatingValve').prop('disabled', checkbox.checked);
+    }
+    if (id === "coolingPump"){
+        $('#coolingNotHeatingValve').prop('disabled', checkbox.checked);
     }
 
     if (delaySecondDigitalOut > 0.0 && ($('.manualEnableCheck:checked').length > 0)) {
@@ -547,7 +552,8 @@ function onManualControlEnable(checkbox)
 
         $('#toggleSequenceButton').prop('disabled', true);
 
-        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);	
+		$('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);
+        $('#coolingPump').prop('disabled', true);
     }
     else
     {
@@ -567,9 +573,13 @@ function onManualControlEnable(checkbox)
             }
         });
 
-	$('.servo-slider').each(function (){
-		$(this).css('background', '#D7DCDF');
-	});
+		$('.servo-slider').each(function (){
+			$(this).css('background', '#D7DCDF');
+		});
+
+        // avoids that heatingPump or coolingNotHeatingValve aren't disabled after disabling manual control
+        $('#heatingPump').prop('disabled', true);
+        $('#coolingNotHeatingValve').prop('disabled', true);
     }
 }
 
