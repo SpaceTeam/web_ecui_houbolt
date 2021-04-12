@@ -77,18 +77,18 @@
     <p id="subtitle">Tanking System</p>
     <div class="master-client-controls">
         
-        <!-- <div class="master-only" id="masterLock" hidden>
+        <div class="master-only" id="masterLock" hidden>
             <input type="checkbox" id="masterLockBox" onclick="onMasterLockClicked(this);">
             Master Locked
         </div>
         <div class="client-only">
             <button class="btn" id="masterRequest" onclick="onMasterRequestPressed(this);">Request Master</button>
-        </div> -->
+        </div>
 		<p id="versionLabel">v<span id="version">1.0.0</span></p>
     </div>
 </div>
 
-<ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
+<ul class="nav nav-pills justify-content-center master-only" id="myTab" role="tablist">
 <!--    <li class="nav-item">-->
 <!--        <a class="nav-link active tab-button" id="sequence-tab-button" data-toggle="tab" href="#sequence-tab" role="tab"-->
 <!--         aria-controls="sequence-tab" aria-selected="true">Sequence</a>-->
@@ -104,7 +104,7 @@
 </ul>
 <hr>
 <div id="statusBar"></div>
-<div class="tab-content" id="myTabContent">
+<div class="tab-content master-only" id="myTabContent">
 
     <div class="tab-pane fade" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
         <div class="container-fluid sequence-fluid">
@@ -361,16 +361,16 @@
 <!--    <button class="btn btn-secondary" id="tareButton" style="margin-left: 2rem;" onclick="onTareLoadCells();">Tare Thrust Sensors</button><br>-->
 </div>
 
-<ul class="nav nav-pills justify-content-center" id="monitorTabs" role="tablist">
-<!--    <li class="nav-item">-->
-<!--        <a class="nav-link active tab-button" id="pnid-tab-button" data-toggle="tab" href="#pnid-tab" role="tab"-->
-<!--           aria-controls="pnid-tab" aria-selected="true">P&ID</a>-->
-<!--    </li>-->
+<!-- <ul class="nav nav-pills justify-content-center" id="monitorTabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active tab-button" id="pnid-tab-button" data-toggle="tab" href="#pnid-tab" role="tab"
+          aria-controls="pnid-tab" aria-selected="true">P&ID</a>
+    </li>
     <li class="nav-item">
         <a class="nav-link active tab-button" id="chart-tab-button" data-toggle="tab" href="#chart-tab" role="tab"
            aria-controls="chart-tab" aria-selected="true">Charts</a>
     </li>
-</ul>
+</ul>-->
 <div class="tab-content" id="monitorTabsContent">
     <div class="tab-pane fade" id="pnid-tab" role="tabpanel" aria-labelledby="pnid-tab-button" style="background-color: #2d2d2d;">
 
