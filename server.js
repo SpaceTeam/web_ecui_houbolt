@@ -5,6 +5,7 @@ var app = express();
 var http = require('http').Server(app);
 var ioClient = require('socket.io')(http);
 var clients = [];
+var params = [];
 var port = 80;
 
 // Search for argument port= in node cli arguments
@@ -248,12 +249,6 @@ var onMasterChange = function (socket) {
     }
 }
 
-var onMasterLock = function (socket, flag) {
-    masterLocked = flag == 1 ? true : false;
-    socket.broadcast.emit('master-lock', flag);
-    console.log('master lock ' + flag);
-}
-
 //Assign the event handler to an event:
 //TODO: check if events slowing down process and instead emit messages of sockets directly inside incoming message events
 eventEmitter.on('onChecklistStart', onChecklistStart);
@@ -272,7 +267,6 @@ eventEmitter.on('onAbortAll', onAbortAll);
 eventEmitter.on('onTimerStart', onTimerStart);
 
 eventEmitter.on('onMasterChange', onMasterChange);
-eventEmitter.on('onMasterLock', onMasterLock);
 
 //senDataInterval = setInterval(function(){onSendTestSensorData(ioClient)}, 100);
 var master = null;
@@ -309,9 +303,11 @@ ioClient.on('connection', function(socket){
             eventEmitter.emit('onMasterChange', socket);
         }
 
+        socket.emit('sync-params', params);
+
         socket.on('request-master', function() {
             var masterSocket = getClientSocketById(master);
-
+            console.log("Request master " + masterLocked + " ");
             // If the master is not locked or the same device requests a master switch (e.g. when using multiple tabs) and no sequence is running
             if((!masterLocked || (masterSocket != null && socket.handshake.address ===  masterSocket.handshake.address)) && !sequenceRunning) {
                 console.log('change master to ' + socket.id + ' ' + socket.handshake.address);
@@ -321,6 +317,7 @@ ioClient.on('connection', function(socket){
 
                 master = socket.id;
                 eventEmitter.emit('onMasterChange', socket);
+                socket.emit('sync-params', params);
                 // In case the old master disconnected
                 if(masterSocket != null) eventEmitter.emit('onMasterChange', masterSocket);
             }
@@ -328,8 +325,16 @@ ioClient.on('connection', function(socket){
 
         socket.on('master-lock', (flag) => {
             // Although the master lock is only visible for the master, prevent malicious user that tinkers around with the html/css
-            if(socket.id === master)
-                eventEmitter.emit('onMasterLock', socket, flag);
+            if(socket.id === master){
+                masterLocked = flag == 1 ? true : false;
+                console.log('Master lock: ' + masterLocked);
+            }
+        });
+
+        socket.on('set-param', (msg) => {
+            if(socket.id === master) {
+                storeParam(msg);
+            }
         });
 
         eventEmitter.emit('onSequenceLoad', ioClient, socket);
@@ -562,11 +567,6 @@ function processLLServerMessage(data) {
 					console.log(jsonData.content)
                     ioClient.emit('supercharge-load', jsonData.content);
                     break;
-                case "servos-sync":
-                    console.log("servos-sync");
-                    console.log(jsonData.content);
-                    ioClient.emit('servos-sync', jsonData.content);
-                    break;
                 case "abort":
                     console.log("abort from llserver");
                     eventEmitter.emit('onAbortAll', ioClient, jsonData.content);
@@ -582,6 +582,16 @@ function getClientSocketById (id) {
 		if(clients[i].id === id) return clients[i];
 	}
 	return null;
+}
+
+function storeParam(msg){
+    for(var i = 0; i < params.length; i++){
+        if(params[i].id == msg.id && params[i].property == msg.property) {
+            params[i].value = msg.value;
+            return;
+        }
+    }
+    params.push(msg);
 }
 
 app.get('/', function(req, res){

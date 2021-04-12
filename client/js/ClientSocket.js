@@ -22,7 +22,7 @@ var countdownIntervalDelegate;
 
 var llServerConnectionActive = false;
 
-var isMaster = false;
+var master = false;
 
 var disableSensorChartsOnLoad = true;
 
@@ -122,6 +122,8 @@ function onServoSliderInput(servoSlider)
 {
     let id = servoSlider.attr('id');
     let val = parseFloat(servoSlider.val());
+    var msg = {id: id, property: 'value', value: val};
+    setParameter(msg);
     sendServo(id, val);
 }
 
@@ -153,6 +155,8 @@ function onServosLoad(jsonServosData)
         
         $('#' + dataItem.name + 'MinLabel').text(dataItem.endpoints[0]);
         $('#' + dataItem.name + 'MaxLabel').text(dataItem.endpoints[1]);
+        $('#' + dataItem.name).val(dataItem.percent);
+        $('#' + dataItem.name).trigger('input');
     }
 }
 
@@ -232,7 +236,7 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 }
 
 // Set colored progress bar in servo slider for visual feedback
-function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
+function refreshServoFeedback(jsonSen){
 
 	if(jsonSen.name.includes("Valve")) {
 		var sliderId = null;
@@ -256,11 +260,6 @@ function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 				var color = "#9C9C9C";
 				if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
 				$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
-
-				if (shallSetSliderToFeedbackPosition)
-				{
-					$(sliderId).val(feedbackValue)
-				}
 			}
 			
 			$(sliderId+"Fb").text(feedbackValue);
@@ -406,9 +405,18 @@ function countdownTimerTick()
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------
 
+function setParameter(param) {
+    // Only the master is allowed to apply changes globally
+    if (master){
+        socket.emit('set-param', param);
+    }
+}
+
 function onMasterLockClicked(cbox) {
     if(cbox.checked) socket.emit('master-lock', 1);
     else socket.emit('master-lock', 0);
+    var param = {id: cbox.id, property: 'checked', value: cbox.checked};
+    setParameter(param);
 }
 
 function onMasterRequestPressed() {
@@ -656,6 +664,13 @@ function onSuperchargeGet()
 
 //-------------------------------------Controls on receiving Socket Messages---------------------------------
 
+socket.on('sync-params', (params) => {
+    for(var i = 0; i < params.length; i++){
+        $('#' + params[i].id).prop(params[i].property, params[i].value);
+        $('#' + params[i].id).trigger('input');
+    }
+});
+
 socket.on('master-change', (flag) => {
 	if(flag === 'master'){
 		master = true;
@@ -676,19 +691,6 @@ socket.on('master-change', (flag) => {
 			{
 				$('#manualEnableCheck1').click();
 			}
-	}
-});
-
-socket.on('master-lock', (flag) => {
-    if(flag == 1) $('#masterLockBox').prop('checked', true);
-    else $('#masterLockBox').prop('checked', false);
-});
-
-socket.on('servos-sync', function(jsonServosData) {
-	if (!mouseDown)
-	{
-		$('#' + jsonServosData.id).val(jsonServosData.value);
-		console.log('servos sync')
 	}
 });
 
@@ -887,8 +889,6 @@ socket.on('sequence-done', function() {
     $('#masterRequest').prop('disabled', false);
 });
 
-var firstSensorFetch = true;
-
 socket.on('sensors', function(jsonSens) {
     //console.log('sensors');
 
@@ -940,8 +940,7 @@ socket.on('sensors', function(jsonSens) {
         }
         sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value, isContinousTransmission);
 
-        refreshServoFeedback(jsonSen, firstSensorFetch);
+        refreshServoFeedback(jsonSen);
     }
-	firstSensorFetch = false;
 
 });
