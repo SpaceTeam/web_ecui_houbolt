@@ -234,11 +234,14 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 // Set colored progress bar in servo slider for visual feedback
 function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
-	if(jsonSen.name.includes("Valve")){
+	if(jsonSen.name.includes("Valve")) {
 		var sliderId = null;
-		if(jsonSen.name.includes("fuel")){ sliderId = "#fuelMainValve";}
-		else if(jsonSen.name.includes("Supercharge")){ sliderId = "#oxSuperchargeValve"; }
-		else if(jsonSen.name.includes("MainValve")){ sliderId = "#oxMainValve";}
+
+		if(jsonSen.name.includes("fuelMainValveFb")){ sliderId = "#fuelMainValve";}
+		else if(jsonSen.name.includes("oxSuperchargeValveFb")){ sliderId = "#oxSuperchargeValve";}
+		else if(jsonSen.name.includes("oxMainValveFb")){ sliderId = "#oxMainValve";}
+		else if(jsonSen.name.includes("oxfillMainValveFb")){ sliderId = "#oxfillMainValve";}
+		else if(jsonSen.name.includes("oxfillVentValveFb")){ sliderId = "#oxfillVentValve";}
 		
 		if(sliderId != null){
 			// Should probably do something different in production on an out of range feedback value
@@ -248,7 +251,7 @@ function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
 			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
 			feedbackValue = Math.trunc(jsonSen.value)
-			
+
 			if(sliderId != "#oxSuperchargeValve"){
 				var color = "#9C9C9C";
 				if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
