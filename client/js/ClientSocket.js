@@ -419,15 +419,15 @@ function emptySensorCharts()
 
 function countdownTimerTick()
 {
-    if (countdownTime < 0 && countdownTime >= -10)
-    {
-        responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
-    }
-    else if (countdownTime === 0)
-    {
-        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-        clearInterval(countdownIntervalDelegate);
-    }
+    // if (countdownTime < 0 && countdownTime >= -10)
+    // {
+    //     responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
+    // }
+    // else if (countdownTime === 0)
+    // {
+    //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+    //     clearInterval(countdownIntervalDelegate);
+    // }
     countdownTime += 1;
 }
 
@@ -894,18 +894,25 @@ socket.on('timer-start', function () {
     intervalDelegate = setInterval(timerTick, intervalMillis);
 });
 
+
 socket.on('sequence-sync', function(time) {
     //console.log('sequence-sync:');
     timeMillis = time * 1000;
 
-    // if (time < 0 && time >= -5)
-    // {
-    //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.4});
-    // }
-    // else if (time === 0)
-    // {
-    //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.4});
-    // }
+	if (Number.isInteger(time))
+	{
+		if (time < 0 && time >= -10)
+		{
+			responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.2});
+		}
+		else if (time === 0)
+		{
+			responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+			//responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Female", {rate: 1.2});
+			//responsiveVoice.speak("Zündung!", "Deutsch Female", {rate: 1.2});
+			
+		}
+	}
     // clearInterval(intervalDelegate);
     // if (timeMillis < endTime*1000) {
     //      intervalDelegate = setInterval(timerTick, intervalMillis);
