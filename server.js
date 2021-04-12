@@ -450,7 +450,6 @@ ioClient.on('connection', function(socket){
             if (master === socket.id) {
                 llServerMod.sendMessage(llServer, 'digital-outs-set', jsonDigitalOutputs);
             }
-
         });
 
         socket.on('supercharge-set', function(jsonSupercharge){
@@ -460,8 +459,21 @@ ioClient.on('connection', function(socket){
                 llServerMod.sendMessage(llServer, 'supercharge-set', jsonSupercharge);
                 llServerMod.sendMessage(llServer, 'supercharge-get');
             }
+		});
+		
+		socket.on('parameter-set', function(jsonParameter){
+			console.log('parameter-set');
+			console.log(jsonParameter);
+			if (master === socket.id) {
+				llServerMod.sendMessage(llServer, 'parameter-set', jsonParameter);
+				llServerMod.sendMessage(llServer, 'parameter-get', jsonParameter);
+			}
+		});
 
-        });
+		socket.on('parameter-get', function(jsonParameter){
+			console.log('parameter-get');
+			llServerMod.sendMessage(llserver, 'parameter-get', jsonParameter);
+		});
 
         socket.on('supercharge-get', function(){
             console.log('supercharge-get');
@@ -478,7 +490,6 @@ ioClient.on('connection', function(socket){
             if (master === socket.id) {
                 llServerMod.sendMessage(llServer, 'tare');
             }
-
         });
 
         socket.on('disconnect', function(msg){
@@ -566,6 +577,16 @@ function processLLServerMessage(data) {
                     console.log("supercharge-load");
 					console.log(jsonData.content)
                     ioClient.emit('supercharge-load', jsonData.content);
+                    break;
+                case "parameter-load":
+                    console.log("parameter-load");
+					console.log(jsonData.content)
+                    ioClient.emit('parameter-load', jsonData.content);
+                    break;
+                case "servos-sync":
+                    console.log("servos-sync");
+                    console.log(jsonData.content);
+                    ioClient.emit('servos-sync', jsonData.content);
                     break;
                 case "abort":
                     console.log("abort from llserver");
