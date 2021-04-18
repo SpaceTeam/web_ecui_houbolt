@@ -268,24 +268,25 @@ function refreshServoFeedback(jsonSen){
         // Ignore number prefix and Fb suffix
         var sliderId = "#" + jsonSen.name.substring(jsonSen.name.indexOf("_") + 1, jsonSen.name.length - 2);
 
-        // Should probably do something different in production on an out of range feedback value
-        var servoPercent = jsonSen.value;
-        if(jsonSen.value > $(sliderId).prop('max')) servoPercent = $(sliderId).prop('max');
-        if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
+        if( $(sliderId).length > 0) {
+            // Should probably do something different in production on an out of range feedback value
+            var servoPercent = jsonSen.value;
+            if(jsonSen.value > $(sliderId).prop('max')) servoPercent = $(sliderId).prop('max');
+            if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
 
-        // Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
-        feedbackValue = Math.trunc(jsonSen.value)
-
-        // TODO: Sync new buttons
-        if(!$(sliderId).hasClass("servo-slider_noFbBar")){
-            var color = "#9C9C9C";
-            if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
-            $(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
+            feedbackValue = Math.trunc(jsonSen.value)
+            
+            // Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
+            if(!$(sliderId).hasClass("servo-slider_noFbBar")){
+                var color = "#9C9C9C";
+                if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
+                $(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
+            }
+            
+            $(sliderId).siblings(".range-slider__feedback").each( function() {
+                $(this).text(feedbackValue);
+            });
         }
-        
-        $(sliderId).siblings(".range-slider__feedback").each( function() {
-            $(this).text(feedbackValue);
-        });
 	}
 }
 
