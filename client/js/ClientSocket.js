@@ -168,17 +168,24 @@ function onParameterLoad(jsonParameterData)
     if (id === "wlRed") {
 		if (val === 1) {
         	$('#wlRed').label.addClass('active');
-        	$('#wlYello').label.removeClass('active');
+        	$('#wlYellow').label.removeClass('active');
         	$('#wlGreen').label.removeClass('active');
 		}
 	} else if (id === "wlYellow") {
+        if (val === 1) {
         	$('#wlRed').label.removeClass('active');
-        	$('#wlYello').label.addClass('active');
+        	$('#wlYellow').label.addClass('active');
         	$('#wlGreen').label.removeClass('active');
+        }
     } else if (id === "wlGreen") {
+        if (val === 1) {
         	$('#wlRed').label.removeClass('active');
-        	$('#wlYello').label.removeClass('active');
+        	$('#wlYellow').label.removeClass('active');
         	$('#wlGreen').label.addClass('active');
+        }    
+    } else if (id === "supercharge") {
+        $('#' + 'setpoint').val(val.setpoint);
+	    $('#' + 'hysteresis').val(val.hysteresis/10);    
     }
 }
 
@@ -186,13 +193,20 @@ function onSuperchargeSet()
 {
     let setpoint = parseFloat($('#' + 'setpoint').val());
     let hysteresis = parseFloat($('#' + 'hysteresis').val())*10; //multiply by 10 to convert from 1 decimal place to int
-    sendSupercharge(setpoint, hysteresis);
+
+    let jsonSupercharge = {};
+    let id = "supercharge";
+    jsonSupercharge.setpoint = setpoint;
+    jsonSupercharge.hysteresis = hysteresis;
+    sendParameter(id, jsonSupercharge);
 }
 
-function onSuperchargeLoad(jsonSuperchargeData)
+
+function onSuperchargeGet()
 {
-	$('#' + 'setpoint').val(jsonSuperchargeData.setpoint);
-	$('#' + 'hysteresis').val(jsonSuperchargeData.hysteresis/10);
+    let jsonSupercharge = {};
+    jsonSupercharge.id = "supercharge";
+    socket.emit('parameter-get', [jsonSupercharge]);
 }
 
 //BE CAREFUL when using the delay feature: when enabling first digital gets set instantly and others
@@ -560,15 +574,6 @@ function sendParameter(id, value)
 	socket.emit('parameter-set', [jsonParameter]);
 }
 
-function sendSupercharge(setpoint, hysteresis)
-{
-    let jsonSupercharge = {};
-
-    jsonSupercharge.setpoint = setpoint;
-    jsonSupercharge.hysteresis = hysteresis;
-    socket.emit('supercharge-set', [jsonSupercharge]);
-}
-
 function onManualControlEnable(checkbox)
 {
     //console.log("manual control:", checkbox.checked);
@@ -679,11 +684,6 @@ function onChecklistTick(checkbox)
     if(master) socket.emit('checklist-tick', currId);
 }
 
-function onSuperchargeGet()
-{
-    socket.emit('supercharge-get');
-}
-
 //-------------------------------------Controls on receiving Socket Messages---------------------------------
 
 socket.on('master-change', (flag) => {
@@ -748,16 +748,10 @@ socket.on('servos-load', function(jsonServosData) {
 
 });
 
-socket.on('supercharge-load', function(jsonSuperchargeData) {
-    console.log('supercharge-load');
-    console.log(jsonSuperchargeData);
-    onSuperchargeLoad(jsonSuperchargeData);
-});
-
 socket.on('parameter-load', function(jsonParameterData) {
     console.log('parameter-load');
     console.log(jsonParameterData);
-    onSuperchargeLoad(jsonParameterData);
+    onParameterLoad(jsonParameterData);
 });
 
 socket.on('checklist-load', function(jsonChecklist) {
