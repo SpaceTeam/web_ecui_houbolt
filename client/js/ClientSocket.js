@@ -175,13 +175,13 @@ function onParameterLoad(jsonParameterData)
 	let val = jsonParameterData.value;
     if (id === "warninglight") {
 		if (val === WarningLightStatus.CRITICAL) {
-            $('#wlRed').prop('checked', true);
+            $('#wlRed').parent().button('toggle');
 		}
         else if (val === WarningLightStatus.RESTRICTED) {
-            $('#wlYellow').prop('checked', true);
+            $('#wlYellow').parent().button('toggle');
 		}
         else if (val === WarningLightStatus.SAFE) {
-            $('#wlGreen').prop('checked', true);
+            $('#wlGreen').parent().button('toggle');
 		}
 	}
     else if (id === "supercharge") {
