@@ -154,21 +154,12 @@ function onServosLoad(jsonServosData)
         
         $('#' + dataItem.name + 'MinLabel').text(dataItem.endpoints[0]);
         $('#' + dataItem.name + 'MaxLabel').text(dataItem.endpoints[1]);
-<<<<<<< HEAD
-        $('#' + dataItem.name).val(dataItem.percent);
-        $('#' + dataItem.name).trigger('input');
     }
 }
 
 function onParameterSet(id, value)
-=======
-    }
-}
-
-function onParameterSet(param)
->>>>>>> origin/FEATURE/dev/servoSliderFeedback
 {
-	let val = parseFloat(param.value);
+	let val = parseFloat(value);
 	sendParameter(id, val);
 }
 
