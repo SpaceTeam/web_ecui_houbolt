@@ -233,7 +233,7 @@
                 </div>
             </div>
 
-             <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="closeTankValve" disabled>Close Tank Valve</button>
+            <button class="btn btn-secondary manual-obj servo-enable-obj" id="closeTankValve" disabled>Close Oxfill Main Valve</button>
         </div>
 
     </div>
@@ -256,46 +256,46 @@
 
             <div class="row control-row">
                 <div class="col col-4 spinner">
-                    <label class="input-label" for="loadingTankValveCal" style="width: 100%;">
+                    <label class="input-label" for="oxfillMainValveCal" style="width: 100%;">
                         <div class="container-fluid calLabel-container">
                             <div class="row">
-                                <div id="loadingTankValveMinLabel" class="col col-3 minLabel">1200</div>
-                                <div id="loadingTankValveLabel" class="col centerLabel">Loading Tank Valve</div>
-                                <div id="loadingTankValveMaxLabel" class="col col-3 maxLabel">2000</div>
+                                <div id="oxfillMainValveMinLabel" class="col col-3 minLabel">1200</div>
+                                <div id="oxfillMainValveLabel" class="col centerLabel">Oxfill Main Valve</div>
+                                <div id="oxfillMainValveMaxLabel" class="col col-3 maxLabel">2000</div>
                             </div>
                         </div>
                     </label>
-                    <input id="loadingTankValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                    <input id="oxfillMainValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
-                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankValveMin"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="oxfillMainValveMin"
                             onclick="onCalibrateMin($(this));" disabled>Set Close
                     </button>
-                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankValveMax"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="oxfillMainValveMax"
                             onclick="onCalibrateMax($(this));" disabled>Set Open
                     </button>
                 </div>
             </div>
             <div class="row control-row">
                 <div class="col col-4 spinner">
-                    <label class="input-label" for="loadingTankVentValveCal">
+                    <label class="input-label" for="oxfillVentValveCal">
                         <div class="container-fluid calLabel-container">
                             <div class="row">
-                                <div id="loadingTankVentValveMinLabel" class="col col-3 minLabel">1200</div>
-                                <div id="loadingTankVentValveLabel" class="col centerLabel">Loading Tank Vent Valve</div>
-                                <div id="loadingTankVentValveMaxLabel" class="col col-3 maxLabel">2000</div>
+                                <div id="oxfillVentValveMinLabel" class="col col-3 minLabel">1200</div>
+                                <div id="oxfillVentValveLabel" class="col centerLabel">Oxfill Vent Valve</div>
+                                <div id="oxfillVentValveMaxLabel" class="col col-3 maxLabel">2000</div>
                             </div>
                         </div>
                     </label>
-                    <input id="loadingTankVentValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                    <input id="oxfillVentValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
-                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankVentValveMin"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="oxfillVentValveMin"
                             onclick="onCalibrateMin($(this));" disabled>Set Close
                     </button>
-                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankVentValveMax"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="oxfillVentValveMax"
                             onclick="onCalibrateMax($(this));" disabled>Set Open
                     </button>
                 </div>
