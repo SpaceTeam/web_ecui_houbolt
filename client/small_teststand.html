@@ -176,14 +176,14 @@ Notes: Hotfire
                 <div class="col col-6">
                     <label class="range-slider-label input-label">Warning Light</label><br>
                     <div class="btn-group btn-group-toggle wl-btn-group" data-toggle="buttons">
-						<label class="btn btn-danger wl-btn manual-obj" disabled onclick="onParameterSet(this.control)"> 
-                            <input type="radio" id="wlRed" class="btn-check manual-obj" autocomplete="off" value="0">Critical
+						<label class="btn btn-danger wl-btn manual-obj" disabled> 
+                            <input type="radio" id="wlRed" class="btn-check manual-obj" autocomplete="off" value="2" onclick="onParameterSet('warninglight',this.value)">Critical
                         </label>
-                        <label class="btn btn-warning wl-btn manual-obj" disabled onclick="onParameterSet(this.control);">
-                            <input type="radio" id="wlYellow" class="btn-check manual-obj" autocomplete="off" value="0">Restricted
+                        <label class="btn btn-warning wl-btn manual-obj" disabled>
+                            <input type="radio" id="wlYellow" class="btn-check manual-obj" autocomplete="off" value="1" onclick="onParameterSet('warninglight',this.value)">Restricted
                         </label>
-                        <label class="btn btn-success wl-btn manual-obj" disabled onclick="onParameterSet(this.control);">
-                            <input type="radio" id="wlGreen" class="btn-check manual-obj" autocomplete="off" value="0">Safe
+                        <label class="btn btn-success wl-btn manual-obj" disabled>
+                            <input type="radio" id="wlGreen" class="btn-check manual-obj" autocomplete="off" value="0" onclick="onParameterSet('warninglight',this.value)">Safe
                         </label>
                     </div>
                 </div>
@@ -602,7 +602,7 @@ Notes: Hotfire
                 <img id="injectorExhaust" hidden class="abs" src="img/machdiamonds.png" width="100" height="300" style="top: 90%; left: -15%; transform: rotate(0deg);"/>
             </div>
 
-            <div id="pnid-02_oxMainValveFb" class="abs pnid-motor-valve" style="width:100px; height:100px; top: 50px; left: 457px;">
+            <div id="pnid-oxMainValve" class="abs pnid-motor-valve" style="width:100px; height:100px; top: 50px; left: 457px;">
                 <div class="abs" style="width:100%; height:100%; transform: scale(0.75) rotate(-90deg);">
                     <div class="abs triangle" style="top: 0%;"></div>
                     <div class="abs triangle mirror" style="left: 50%; top: 0%"></div>
@@ -611,7 +611,7 @@ Notes: Hotfire
                 </div>
                 <input type="text" class="abs pnid-input anchor-center" style="left: 70%; top: 50%;" onchange="onPNIDInputChange(this);"/>
             </div>
-            <div id="pnid-01_fuelMainValveFb" class="abs pnid-motor-valve" style="width:100px; height:100px; top: 50px; left: 43px; z-index: 5;">
+            <div id="pnid-fuelMainValve" class="abs pnid-motor-valve" style="width:100px; height:100px; top: 50px; left: 43px; z-index: 5;">
                 <div class="abs" style="width:100%; height:100%; transform: scale(0.75) rotate(90deg);">
                     <div class="abs triangle" style="top: 0%;"></div>
                     <div class="abs triangle mirror" style="left: 50%; top: 0%"></div>

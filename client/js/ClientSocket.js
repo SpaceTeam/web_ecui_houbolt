@@ -160,36 +160,34 @@ function onServosLoad(jsonServosData)
     }
 }
 
-function onParameterSet(param)
+function onParameterSet(id, value)
 {
-	let id = param.id;
 	let val = parseFloat(param.value);
 	sendParameter(id, val);
+}
+
+const WarningLightStatus = {
+    SAFE: 0,
+    RESTRICTED: 1,
+    CRITICAL: 2
 }
 
 function onParameterLoad(jsonParameterData)
 {
 	let id = jsonParameterData.id;
 	let val = jsonParameterData.value;
-    if (id === "wlRed") {
-		if (val === 1) {
-        	$('#wlRed').label.addClass('active');
-        	$('#wlYellow').label.removeClass('active');
-        	$('#wlGreen').label.removeClass('active');
+    if (id === "warninglight") {
+		if (val === WarningLightStatus.CRITICAL) {
+            $('#wlRed').prop('checked', true);
 		}
-	} else if (id === "wlYellow") {
-        if (val === 1) {
-        	$('#wlRed').label.removeClass('active');
-        	$('#wlYellow').label.addClass('active');
-        	$('#wlGreen').label.removeClass('active');
-        }
-    } else if (id === "wlGreen") {
-        if (val === 1) {
-        	$('#wlRed').label.removeClass('active');
-        	$('#wlYellow').label.removeClass('active');
-        	$('#wlGreen').label.addClass('active');
-        }    
-    } else if (id === "supercharge") {
+        else if (val === WarningLightStatus.RESTRICTED) {
+            $('#wlYellow').prop('checked', true);
+		}
+        else if (val === WarningLightStatus.SAFE) {
+            $('#wlGreen').prop('checked', true);
+		}
+	}
+    else if (id === "supercharge") {
         $('#' + 'setpoint').val(val.setpoint);
 	    $('#' + 'hysteresis').val(val.hysteresis/10);    
     }
@@ -213,6 +211,13 @@ function onSuperchargeGet()
     let jsonSupercharge = {};
     jsonSupercharge.id = "supercharge";
     socket.emit('parameter-get', [jsonSupercharge]);
+}
+
+function getWarningLightStatus()
+{
+    let jsonWarningLight = {};
+    jsonWarningLight.id = "warninglight";
+    socket.emit('parameter-get', [jsonWarningLight]);
 }
 
 //BE CAREFUL when using the delay feature: when enabling first digital gets set instantly and others
@@ -739,7 +744,7 @@ socket.on('master-change', (flag) => {
 	}
 });
 
-socket.on('connect', function() {socket.emit('checklist-start'); onSuperchargeGet();});
+socket.on('connect', function() {socket.emit('checklist-start'); onSuperchargeGet(); getWarningLightStatus();});
 
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
 socket.on('connect_error', function(error) {

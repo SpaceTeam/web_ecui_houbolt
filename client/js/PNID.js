@@ -104,6 +104,14 @@ function updatePNID(name, value)
 			this.value = value.toFixed(0);
 			$(this).change();
 		});
+		$("#pnid-" + name.substring(3, name.length - 2)).find(".pnid-input").each(function () {
+			this.value = value.toFixed(0);
+			$(this).change();
+		});
+		$("#pnid-" + name.substring(3, name.length)).find(".pnid-input").each(function () {
+			this.value = value.toFixed(0);
+			$(this).change();
+		});
 	}
 }
 
