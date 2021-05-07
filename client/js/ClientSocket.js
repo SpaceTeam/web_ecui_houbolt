@@ -146,19 +146,6 @@ function onCalibrateMax(button) {
     sendServoMax(id, max);
 }
 
-function onServosLoad(jsonServosData)
-{
-    for (let dataInd in jsonServosData)
-    {
-        let dataItem = jsonServosData[dataInd];
-        
-        $('#' + dataItem.name + 'MinLabel').text(dataItem.endpoints[0]);
-        $('#' + dataItem.name + 'MaxLabel').text(dataItem.endpoints[1]);
-        $('#' + dataItem.name).val(dataItem.percent);
-        $('#' + dataItem.name).trigger('input');
-    }
-}
-
 function onParameterSet(param)
 {
 	let id = param.id;
@@ -753,13 +740,6 @@ socket.on('abort', function(abortMsg) {
     abortSequence(abortMsg);
 
     $('#masterRequest').prop('disabled', false);
-});
-
-socket.on('servos-load', function(jsonServosData) {
-    console.log('servos-load');
-    console.log(jsonServosData);
-    onServosLoad(jsonServosData);
-
 });
 
 socket.on('supercharge-load', function(jsonSuperchargeData) {
