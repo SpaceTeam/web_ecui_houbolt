@@ -154,8 +154,6 @@ function onServosLoad(jsonServosData)
         
         $('#' + dataItem.name + 'MinLabel').text(dataItem.endpoints[0]);
         $('#' + dataItem.name + 'MaxLabel').text(dataItem.endpoints[1]);
-        $('#' + dataItem.name).val(dataItem.percent);
-        $('#' + dataItem.name).trigger('input');
     }
 }
 
