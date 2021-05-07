@@ -472,7 +472,7 @@ ioClient.on('connection', function(socket){
 
 		socket.on('parameter-get', function(jsonParameter){
 			console.log('parameter-get');
-			llServerMod.sendMessage(llserver, 'parameter-get', jsonParameter);
+			llServerMod.sendMessage(llServer, 'parameter-get', jsonParameter);
 		});
 
         socket.on('supercharge-get', function(){
