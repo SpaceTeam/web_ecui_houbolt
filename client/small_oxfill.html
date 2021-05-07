@@ -77,18 +77,18 @@
     <p id="subtitle">Tanking System</p>
     <div class="master-client-controls">
         
-        <!-- <div class="master-only" id="masterLock" hidden>
+        <div class="master-only" id="masterLock" hidden>
             <input type="checkbox" id="masterLockBox" onclick="onMasterLockClicked(this);">
             Master Locked
         </div>
         <div class="client-only">
             <button class="btn" id="masterRequest" onclick="onMasterRequestPressed(this);">Request Master</button>
-        </div> -->
+        </div>
 		<p id="versionLabel">v<span id="version">1.0.0</span></p>
     </div>
 </div>
 
-<ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
+<ul class="nav nav-pills justify-content-center master-only" id="myTab" role="tablist">
 <!--    <li class="nav-item">-->
 <!--        <a class="nav-link active tab-button" id="sequence-tab-button" data-toggle="tab" href="#sequence-tab" role="tab"-->
 <!--         aria-controls="sequence-tab" aria-selected="true">Sequence</a>-->
@@ -104,7 +104,7 @@
 </ul>
 <hr>
 <div id="statusBar"></div>
-<div class="tab-content" id="myTabContent">
+<div class="tab-content master-only" id="myTabContent">
 
     <div class="tab-pane fade" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
         <div class="container-fluid sequence-fluid">
@@ -176,7 +176,7 @@
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
-		    		<span class="range-slider__feedback servo-feedback" id="oxfillMainValveFb" disabled>0</span>
+		    		<span class="range-slider__feedback servo-feedback" disabled>0</span>
 
                 </div>
                 <div class="range-slider col">
@@ -185,7 +185,7 @@
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
-		    		<span class="range-slider__feedback servo-feedback" id="oxfillVentValveFb" disabled>0</span>
+		    		<span class="range-slider__feedback servo-feedback" disabled>0</span>
                 </div>
             </div>
             <div class="row control-row">
@@ -195,7 +195,7 @@
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
-
+		    		<span class="range-slider__feedback servo-feedback" disabled>0</span>
                 </div>
                 <div class="range-slider col">
                     <label class="range-slider-label input-label">Pressurant Tank Vent Valve</label><br>
@@ -203,6 +203,7 @@
                            oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1"
                            disabled>
                     <span class="range-slider__value" disabled>0</span>
+		    		<span class="range-slider__feedback servo-feedback" disabled>0</span>
                 </div>
             </div>
             <div class="row control-row container-fluid">
@@ -232,7 +233,7 @@
                 </div>
             </div>
 
-             <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="closeTankValve" disabled>Close Tank Valve</button>
+            <button class="btn btn-secondary manual-obj servo-enable-obj" id="closeTankValve" disabled>Close Oxfill Main Valve</button>
         </div>
 
     </div>
@@ -255,46 +256,46 @@
 
             <div class="row control-row">
                 <div class="col col-4 spinner">
-                    <label class="input-label" for="loadingTankValveCal" style="width: 100%;">
+                    <label class="input-label" for="oxfillMainValveCal" style="width: 100%;">
                         <div class="container-fluid calLabel-container">
                             <div class="row">
-                                <div id="loadingTankValveMinLabel" class="col col-3 minLabel">1200</div>
-                                <div id="loadingTankValveLabel" class="col centerLabel">Loading Tank Valve</div>
-                                <div id="loadingTankValveMaxLabel" class="col col-3 maxLabel">2000</div>
+                                <div id="oxfillMainValveMinLabel" class="col col-3 minLabel">1200</div>
+                                <div id="oxfillMainValveLabel" class="col centerLabel">Oxfill Main Valve</div>
+                                <div id="oxfillMainValveMaxLabel" class="col col-3 maxLabel">2000</div>
                             </div>
                         </div>
                     </label>
-                    <input id="loadingTankValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                    <input id="oxfillMainValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
-                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankValveMin"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="oxfillMainValveMin"
                             onclick="onCalibrateMin($(this));" disabled>Set Close
                     </button>
-                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankValveMax"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="oxfillMainValveMax"
                             onclick="onCalibrateMax($(this));" disabled>Set Open
                     </button>
                 </div>
             </div>
             <div class="row control-row">
                 <div class="col col-4 spinner">
-                    <label class="input-label" for="loadingTankVentValveCal">
+                    <label class="input-label" for="oxfillVentValveCal">
                         <div class="container-fluid calLabel-container">
                             <div class="row">
-                                <div id="loadingTankVentValveMinLabel" class="col col-3 minLabel">1200</div>
-                                <div id="loadingTankVentValveLabel" class="col centerLabel">Loading Tank Vent Valve</div>
-                                <div id="loadingTankVentValveMaxLabel" class="col col-3 maxLabel">2000</div>
+                                <div id="oxfillVentValveMinLabel" class="col col-3 minLabel">1200</div>
+                                <div id="oxfillVentValveLabel" class="col centerLabel">Oxfill Vent Valve</div>
+                                <div id="oxfillVentValveMaxLabel" class="col col-3 maxLabel">2000</div>
                             </div>
                         </div>
                     </label>
-                    <input id="loadingTankVentValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
+                    <input id="oxfillVentValveCal" class="manual-obj servo-enable-obj" type="number" value="1500" data-decimals="0" min="800" max="2200"
                            step="1" onchange="onServoSpinnerChange($(this));" disabled/>
                 </div>
                 <div class="col col-5">
-                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankVentValveMin"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="oxfillVentValveMin"
                             onclick="onCalibrateMin($(this));" disabled>Set Close
                     </button>
-                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="loadingTankVentValveMax"
+                    <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="oxfillVentValveMax"
                             onclick="onCalibrateMax($(this));" disabled>Set Open
                     </button>
                 </div>
@@ -361,16 +362,16 @@
 <!--    <button class="btn btn-secondary" id="tareButton" style="margin-left: 2rem;" onclick="onTareLoadCells();">Tare Thrust Sensors</button><br>-->
 </div>
 
-<ul class="nav nav-pills justify-content-center" id="monitorTabs" role="tablist">
-<!--    <li class="nav-item">-->
-<!--        <a class="nav-link active tab-button" id="pnid-tab-button" data-toggle="tab" href="#pnid-tab" role="tab"-->
-<!--           aria-controls="pnid-tab" aria-selected="true">P&ID</a>-->
-<!--    </li>-->
+<!-- <ul class="nav nav-pills justify-content-center" id="monitorTabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active tab-button" id="pnid-tab-button" data-toggle="tab" href="#pnid-tab" role="tab"
+          aria-controls="pnid-tab" aria-selected="true">P&ID</a>
+    </li>
     <li class="nav-item">
         <a class="nav-link active tab-button" id="chart-tab-button" data-toggle="tab" href="#chart-tab" role="tab"
            aria-controls="chart-tab" aria-selected="true">Charts</a>
     </li>
-</ul>
+</ul>-->
 <div class="tab-content" id="monitorTabsContent">
     <div class="tab-pane fade" id="pnid-tab" role="tabpanel" aria-labelledby="pnid-tab-button" style="background-color: #2d2d2d;">
 

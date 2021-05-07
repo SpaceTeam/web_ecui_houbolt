@@ -1,4 +1,3 @@
-
 //-------------------------------------Global Variables | Yikes!!!---------------------------------
 var socket = io();
 
@@ -22,7 +21,7 @@ var countdownIntervalDelegate;
 
 var llServerConnectionActive = false;
 
-var isMaster = false;
+var master = false;
 
 var disableSensorChartsOnLoad = true;
 
@@ -122,6 +121,8 @@ function onServoSliderInput(servoSlider)
 {
     let id = servoSlider.attr('id');
     let val = parseFloat(servoSlider.val());
+    var msg = {id: id, property: 'value', value: val};
+    setParameter(msg);
     sendServo(id, val);
 }
 
@@ -156,17 +157,64 @@ function onServosLoad(jsonServosData)
     }
 }
 
+function onParameterSet(id, value)
+{
+	let val = parseFloat(value);
+	sendParameter(id, val);
+}
+
+const WarningLightStatus = {
+    SAFE: 0,
+    RESTRICTED: 1,
+    CRITICAL: 2
+}
+
+function onParameterLoad(jsonParameterData)
+{
+	let id = jsonParameterData.id;
+	let val = jsonParameterData.value;
+    if (id === "warninglight") {
+		if (val === WarningLightStatus.CRITICAL) {
+            $('#wlRed').parent().button('toggle');
+		}
+        else if (val === WarningLightStatus.RESTRICTED) {
+            $('#wlYellow').parent().button('toggle');
+		}
+        else if (val === WarningLightStatus.SAFE) {
+            $('#wlGreen').parent().button('toggle');
+		}
+	}
+    else if (id === "supercharge") {
+        $('#' + 'setpoint').val(val.setpoint);
+	    $('#' + 'hysteresis').val(val.hysteresis/10);    
+    }
+}
+
 function onSuperchargeSet()
 {
     let setpoint = parseFloat($('#' + 'setpoint').val());
     let hysteresis = parseFloat($('#' + 'hysteresis').val())*10; //multiply by 10 to convert from 1 decimal place to int
-    sendSupercharge(setpoint, hysteresis);
+
+    let jsonSupercharge = {};
+    let id = "supercharge";
+    jsonSupercharge.setpoint = setpoint;
+    jsonSupercharge.hysteresis = hysteresis;
+    sendParameter(id, jsonSupercharge);
 }
 
-function onSuperchargeLoad(jsonSuperchargeData)
+
+function onSuperchargeGet()
 {
-	$('#' + 'setpoint').val(jsonSuperchargeData.setpoint);
-	$('#' + 'hysteresis').val(jsonSuperchargeData.hysteresis/10);
+    let jsonSupercharge = {};
+    jsonSupercharge.id = "supercharge";
+    socket.emit('parameter-get', [jsonSupercharge]);
+}
+
+function getWarningLightStatus()
+{
+    let jsonWarningLight = {};
+    jsonWarningLight.id = "warninglight";
+    socket.emit('parameter-get', [jsonWarningLight]);
 }
 
 //BE CAREFUL when using the delay feature: when enabling first digital gets set instantly and others
@@ -179,12 +227,17 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
     let ids = id.split(";");
     console.log(ids);
 
-    // Check that the cooling pump and heating pump cannot be enabled at the same time
-    // Therefore, we disable the other button.
-    if (id === "coolingPump") {
+    //If coolingNotHeating is enabled -> only coolingPump can be enabled
+    //If it is not enabled            -> only heatingPunp can be enabled
+    if (id === "coolingNotHeatingValve"){
         $('#heatingPump').prop('disabled', checkbox.checked);
-    } else if (id === "heatingPump") {
-        $('#coolingPump').prop('disabled', checkbox.checked);
+        $('#coolingPump').prop('disabled', !(checkbox.checked));
+    }
+    if (id === "heatingPump"){
+        $('#coolingNotHeatingValve').prop('disabled', checkbox.checked);
+    }
+    if (id === "coolingPump"){
+        $('#coolingNotHeatingValve').prop('disabled', checkbox.checked);
     }
 
     if (delaySecondDigitalOut > 0.0 && ($('.manualEnableCheck:checked').length > 0)) {
@@ -227,42 +280,30 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 }
 
 // Set colored progress bar in servo slider for visual feedback
-function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
+function refreshServoFeedback(jsonSen){
+	if(jsonSen.name.search("[0-9]+_[a-zA-Z]+ValveFb") != -1) {
+        // Ignore number prefix and Fb suffix
+        var sliderId = "#" + jsonSen.name.substring(jsonSen.name.indexOf("_") + 1, jsonSen.name.length - 2);
 
-    // Don't
-	if(jsonSen.name.includes("Valve") || jsonSen.name.includes("Tank")){
-		var sliderId = null;
+        if( $(sliderId).length > 0) {
+            // Should probably do something different in production on an out of range feedback value
+            var servoPercent = jsonSen.value;
+            if(jsonSen.value > $(sliderId).prop('max')) servoPercent = $(sliderId).prop('max');
+            if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
 
-		if(jsonSen.name.includes("fuelMainValveFb")){ sliderId = "#fuelMainValve";}
-		else if(jsonSen.name.includes("oxSuperchargeValveFb")){ sliderId = "#oxSuperchargeValve";}
-		else if(jsonSen.name.includes("oxMainValveFb")){ sliderId = "#oxMainValve";}
-		else if(jsonSen.name.includes("loadingTankFeedback")){ sliderId = "#oxfillMainValve";}
-		else if(jsonSen.name.includes("loadingTankVentFeedback")){ sliderId = "#oxfillVentValve";}
-		//else if(jsonSen.name.includes("oxfillMainValveFb")){ sliderId = "#oxfillMainValve";}
-		//else if(jsonSen.name.includes("oxfillVentValveFb")){ sliderId = "#oxfillVentValve";}
-		
-		if(sliderId != null){
-			// Should probably do something different in production on an out of range feedback value
-			var servoPercent = jsonSen.value;
-			if(jsonSen.value > $(sliderId).prop('max')) servoPercent = $(sliderId).prop('max');
-			if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
-
-			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
-			feedbackValue = Math.trunc(jsonSen.value)
-
-			if(sliderId != "#oxSuperchargeValve"){
-				var color = "#9C9C9C";
-				if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
-				$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
-
-				if (shallSetSliderToFeedbackPosition)
-				{
-					$(sliderId).val(feedbackValue)
-				}
-			}
-			
-			$(sliderId+"Fb").text(feedbackValue);
-		}
+            feedbackValue = Math.trunc(jsonSen.value)
+            
+            // Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
+            if(!$(sliderId).hasClass("servo-slider_noFbBar")){
+                var color = "#9C9C9C";
+                if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
+                $(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
+            }
+            
+            $(sliderId).siblings(".range-slider__feedback").each( function() {
+                $(this).text(feedbackValue);
+            });
+        }
 	}
 }
 
@@ -390,23 +431,32 @@ function emptySensorCharts()
 
 function countdownTimerTick()
 {
-    if (countdownTime < 0 && countdownTime >= -10)
-    {
-        responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
-    }
-    else if (countdownTime === 0)
-    {
-        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-        clearInterval(countdownIntervalDelegate);
-    }
+    // if (countdownTime < 0 && countdownTime >= -10)
+    // {
+    //     responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
+    // }
+    // else if (countdownTime === 0)
+    // {
+    //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+    //     clearInterval(countdownIntervalDelegate);
+    // }
     countdownTime += 1;
 }
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------
 
+function setParameter(param) {
+    // Only the master is allowed to apply changes globally
+    if (master){
+        socket.emit('set-param', param);
+    }
+}
+
 function onMasterLockClicked(cbox) {
     if(cbox.checked) socket.emit('master-lock', 1);
     else socket.emit('master-lock', 0);
+    var param = {id: cbox.id, property: 'checked', value: cbox.checked};
+    setParameter(param);
 }
 
 function onMasterRequestPressed() {
@@ -531,13 +581,13 @@ function sendServoMax(servoId, newServoMax)
     socket.emit('servos-calibrate', [jsonServo]);
 }
 
-function sendSupercharge(setpoint, hysteresis)
+function sendParameter(id, value)
 {
-    let jsonSupercharge = {};
+	let jsonParameter = {};
 
-    jsonSupercharge.setpoint = setpoint;
-    jsonSupercharge.hysteresis = hysteresis;
-    socket.emit('supercharge-set', [jsonSupercharge]);
+	jsonParameter.id = id;
+	jsonParameter.value = value;
+	socket.emit('parameter-set', [jsonParameter]);
 }
 
 function onManualControlEnable(checkbox)
@@ -553,7 +603,12 @@ function onManualControlEnable(checkbox)
 
         $('#toggleSequenceButton').prop('disabled', true);
 
-        $('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);	
+		$('.manual-obj:not(.servo-enable-obj)').prop('disabled', false);
+        $('#coolingPump').prop('disabled', true);
+
+        $('.wl-btn').removeAttr("disabled");	
+
+		$('.wl-btn').css('pointer-events', 'auto');
     }
     else
     {
@@ -565,6 +620,10 @@ function onManualControlEnable(checkbox)
 
         $('.manual-obj:not(.servo-enable-obj)').prop('disabled', true);
 
+        $('.wl-btn').attr("disabled", true);
+
+		$('.wl-btn').css('pointer-events', 'none');	
+
         $('.digitalOut, .servoEnableCheck').each(function () {
             if ($(this).prop("checked"))
             {
@@ -573,9 +632,13 @@ function onManualControlEnable(checkbox)
             }
         });
 
-	$('.servo-slider').each(function (){
-		$(this).css('background', '#D7DCDF');
-	});
+		$('.servo-slider').each(function (){
+			$(this).css('background', '#D7DCDF');
+		});
+
+        // avoids that heatingPump or coolingNotHeatingValve aren't disabled after disabling manual control
+        $('#heatingPump').prop('disabled', true);
+        $('#coolingNotHeatingValve').prop('disabled', true);
     }
 }
 
@@ -642,12 +705,14 @@ function onChecklistTick(checkbox)
     if(master) socket.emit('checklist-tick', currId);
 }
 
-function onSuperchargeGet()
-{
-    socket.emit('supercharge-get');
-}
-
 //-------------------------------------Controls on receiving Socket Messages---------------------------------
+
+socket.on('sync-params', (params) => {
+    for(var i = 0; i < params.length; i++){
+        $('#' + params[i].id).prop(params[i].property, params[i].value);
+        $('#' + params[i].id).trigger('input');
+    }
+});
 
 socket.on('master-change', (flag) => {
 	if(flag === 'master'){
@@ -672,20 +737,7 @@ socket.on('master-change', (flag) => {
 	}
 });
 
-socket.on('master-lock', (flag) => {
-    if(flag == 1) $('#masterLockBox').prop('checked', true);
-    else $('#masterLockBox').prop('checked', false);
-});
-
-socket.on('servos-sync', function(jsonServosData) {
-	if (!mouseDown)
-	{
-		$('#' + jsonServosData.id).val(jsonServosData.value);
-		console.log('servos sync')
-	}
-});
-
-socket.on('connect', function() {socket.emit('checklist-start'); onSuperchargeGet();});
+socket.on('connect', function() {socket.emit('checklist-start'); onSuperchargeGet(); getWarningLightStatus();});
 
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
 socket.on('connect_error', function(error) {
@@ -713,10 +765,10 @@ socket.on('servos-load', function(jsonServosData) {
 
 });
 
-socket.on('supercharge-load', function(jsonSuperchargeData) {
-    console.log('supercharge-load');
-    console.log(jsonSuperchargeData);
-    onSuperchargeLoad(jsonSuperchargeData);
+socket.on('parameter-load', function(jsonParameterData) {
+    console.log('parameter-load');
+    console.log(jsonParameterData);
+    onParameterLoad(jsonParameterData);
 });
 
 socket.on('checklist-load', function(jsonChecklist) {
@@ -834,18 +886,25 @@ socket.on('timer-start', function () {
     intervalDelegate = setInterval(timerTick, intervalMillis);
 });
 
+
 socket.on('sequence-sync', function(time) {
     //console.log('sequence-sync:');
     timeMillis = time * 1000;
 
-    // if (time < 0 && time >= -5)
-    // {
-    //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.4});
-    // }
-    // else if (time === 0)
-    // {
-    //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.4});
-    // }
+	if (Number.isInteger(time))
+	{
+		if (time < 0 && time >= -10)
+		{
+			responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.2});
+		}
+		else if (time === 0)
+		{
+			responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+			//responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Female", {rate: 1.2});
+			//responsiveVoice.speak("Zündung!", "Deutsch Female", {rate: 1.2});
+			
+		}
+	}
     // clearInterval(intervalDelegate);
     // if (timeMillis < endTime*1000) {
     //      intervalDelegate = setInterval(timerTick, intervalMillis);
@@ -879,8 +938,6 @@ socket.on('sequence-done', function() {
 
     $('#masterRequest').prop('disabled', false);
 });
-
-var firstSensorFetch = true;
 
 socket.on('sensors', function(jsonSens) {
     //console.log('sensors');
@@ -933,8 +990,7 @@ socket.on('sensors', function(jsonSens) {
         }
         sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value, isContinousTransmission);
 
-        refreshServoFeedback(jsonSen, firstSensorFetch);
+        refreshServoFeedback(jsonSen);
     }
-	firstSensorFetch = false;
 
 });

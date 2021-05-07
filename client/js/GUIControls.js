@@ -59,7 +59,7 @@ $('#closeTankValve').click(function() {
     $('#closeTankValve').prop('disabled', true);
     $('.manualEnableCheck').prop('disabled', true);
     $('.servoEnableCheck').prop('disabled', true);
-    $('#loadingTankValve').each(function () {
+    $('#oxfillMainValve').each(function () {
         let slider = $(this);
         let closingIntervalTime = 10;
         let closingTime = 500;

@@ -90,7 +90,7 @@ function updatePNID(name, value)
 			$(this).change();
 		});
 	}
-	else if (name.includes("igniter"))
+	else if (name.includes("igniter") && !name.includes("fb"))
 	{
 		igniterActive = value;
 	}
@@ -101,6 +101,14 @@ function updatePNID(name, value)
 			$(this).change();
 		});
 		$("#pnid-" + name.substring(0, name.length - 2)).find(".pnid-input").each(function () {
+			this.value = value.toFixed(0);
+			$(this).change();
+		});
+		$("#pnid-" + name.substring(3, name.length - 2)).find(".pnid-input").each(function () {
+			this.value = value.toFixed(0);
+			$(this).change();
+		});
+		$("#pnid-" + name.substring(3, name.length)).find(".pnid-input").each(function () {
 			this.value = value.toFixed(0);
 			$(this).change();
 		});
