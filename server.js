@@ -583,11 +583,6 @@ function processLLServerMessage(data) {
 					console.log(jsonData.content)
                     ioClient.emit('parameter-load', jsonData.content);
                     break;
-                case "servos-sync":
-                    console.log("servos-sync");
-                    console.log(jsonData.content);
-                    ioClient.emit('servos-sync', jsonData.content);
-                    break;
                 case "abort":
                     console.log("abort from llserver");
                     eventEmitter.emit('onAbortAll', ioClient, jsonData.content);
