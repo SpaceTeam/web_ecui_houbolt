@@ -339,9 +339,6 @@ ioClient.on('connection', function(socket){
 
         eventEmitter.emit('onSequenceLoad', ioClient, socket);
 
-        //send new socket up to date servo end positions
-        llServerMod.sendMessage(llServer, 'servos-load');
-
         socket.on('abort', function(msg){
             console.log('abort');
             //TODO: maybe change so everyone can abort
@@ -569,10 +566,6 @@ function processLLServerMessage(data) {
                 case "sensors":
                     ioClient.emit('sensors', jsonData.content);
                     break;
-                case "servos-load":
-                    console.log("servos-load");
-                    ioClient.emit('servos-load', jsonData.content);
-                    break;
                 case "supercharge-load":
                     console.log("supercharge-load");
 					console.log(jsonData.content)
@@ -582,11 +575,6 @@ function processLLServerMessage(data) {
                     console.log("parameter-load");
 					console.log(jsonData.content)
                     ioClient.emit('parameter-load', jsonData.content);
-                    break;
-                case "servos-sync":
-                    console.log("servos-sync");
-                    console.log(jsonData.content);
-                    ioClient.emit('servos-sync', jsonData.content);
                     break;
                 case "abort":
                     console.log("abort from llserver");

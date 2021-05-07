@@ -1,4 +1,3 @@
-
 //-------------------------------------Global Variables | Yikes!!!---------------------------------
 var socket = io();
 
@@ -284,33 +283,29 @@ function onDigitalCheck(checkbox, delaySecondDigitalOut=0.0)
 
 // Set colored progress bar in servo slider for visual feedback
 function refreshServoFeedback(jsonSen){
+	if(jsonSen.name.search("[0-9]+_[a-zA-Z]+ValveFb") != -1) {
+        // Ignore number prefix and Fb suffix
+        var sliderId = "#" + jsonSen.name.substring(jsonSen.name.indexOf("_") + 1, jsonSen.name.length - 2);
 
-	if(jsonSen.name.includes("Valve")) {
-		var sliderId = null;
+        if( $(sliderId).length > 0) {
+            // Should probably do something different in production on an out of range feedback value
+            var servoPercent = jsonSen.value;
+            if(jsonSen.value > $(sliderId).prop('max')) servoPercent = $(sliderId).prop('max');
+            if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
 
-		if(jsonSen.name.includes("fuelMainValveFb")){ sliderId = "#fuelMainValve";}
-		else if(jsonSen.name.includes("oxSuperchargeValveFb")){ sliderId = "#oxSuperchargeValve";}
-		else if(jsonSen.name.includes("oxMainValveFb")){ sliderId = "#oxMainValve";}
-		else if(jsonSen.name.includes("oxfillMainValveFb")){ sliderId = "#oxfillMainValve";}
-		else if(jsonSen.name.includes("oxfillVentValveFb")){ sliderId = "#oxfillVentValve";}
-		
-		if(sliderId != null){
-			// Should probably do something different in production on an out of range feedback value
-			var servoPercent = jsonSen.value;
-			if(jsonSen.value > $(sliderId).prop('max')) servoPercent = $(sliderId).prop('max');
-			if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
-
-			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
-			feedbackValue = Math.trunc(jsonSen.value)
-
-			if(sliderId != "#oxSuperchargeValve"){
-				var color = "#9C9C9C";
-				if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
-				$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
-			}
-			
-			$(sliderId+"Fb").text(feedbackValue);
-		}
+            feedbackValue = Math.trunc(jsonSen.value)
+            
+            // Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
+            if(!$(sliderId).hasClass("servo-slider_noFbBar")){
+                var color = "#9C9C9C";
+                if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
+                $(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
+            }
+            
+            $(sliderId).siblings(".range-slider__feedback").each( function() {
+                $(this).text(feedbackValue);
+            });
+        }
 	}
 }
 
