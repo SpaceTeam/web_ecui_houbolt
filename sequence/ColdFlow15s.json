@@ -1,0 +1,106 @@
+{
+	"globals":
+	{
+		"endTime": 20,
+		"interpolation":
+		{
+			"fuelMainValve": "linear",
+			"oxMainValve": "linear",
+			"syncLed": "none"
+		},
+		"interval": 0.01,
+		"ranges":
+		[
+			"chamberPressure"
+		],
+		"startTime": -12
+	},
+	"data":
+	[
+		{
+			"timestamp": "START",
+			"name": "start",
+			"desc": "set all to zero",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"fuelMainValve": 0,
+					"oxMainValve": 0,
+					"syncLed": 0,
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [-5, 20]
+					}
+				}
+			]
+		},
+		{
+			"timestamp": -3.0,
+			"name": "ignition",
+			"desc": "lets light this candle",
+			"actions":
+			[
+				{
+					"timestamp": 3,
+                    "fuelMainValve": 0,
+					"oxMainValve": 0,
+					"syncLed": 100
+				},
+				{
+					"timestamp": 4,
+					"fuelMainValve": 100,
+					"oxMainValve": 100,
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [4, 20]
+					}
+				},
+				{
+					"timestamp": 4,
+					"syncLed": 0
+				}
+			]
+		},
+		{
+			"timestamp": 15,
+			"name": "shutdown",
+			"desc": "shutting down",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+                    "fuelMainValve": 100,
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [-5, 20]
+					}
+				},
+				{
+					"timestamp": 0.2,
+					"fuelMainValve": 0,
+                    "oxMainValve": 100
+				},
+				{
+					"timestamp": 0.4,
+					"oxMainValve": 0
+				}
+			]
+		},
+		{
+			"timestamp": "END",
+			"name": "end",
+			"desc": "the end",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"fuelMainValve": 0,
+					"syncLed": 0,
+					"oxMainValve": 0
+				}
+			]
+		}
+	]
+}
+
