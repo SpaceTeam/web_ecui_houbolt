@@ -13,7 +13,7 @@ document.onkeydown = function (event) {
         //     seqButton.click();
         // }
 
-        console.log(event.code, event.shiftKey, event.altKey);
+        //console.log(event.code, event.shiftKey, event.altKey);
 
 		if (event.shiftKey && event.altKey && (event.code === 'KeyD')) {
 			let isHidden = $("#debugSequenceCheck").parent().prop("hidden");

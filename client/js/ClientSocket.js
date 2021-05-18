@@ -279,6 +279,42 @@ function countdownTimerTick()
     countdownTime += 1;
 }
 
+function loadCommands(jsonCommands)
+{
+    var commandContainer = $('#command-container');
+    commandContainer.empty();
+    var commandTemplate = $('#tempCommand').children().first().clone();
+
+    jsonCommands.forEach(command => {
+        var commandHtml = commandTemplate.clone();
+        commandHtml.children().first().attr("id",command["commandName"]);
+        commandHtml.find('.command-label').eq(0).text(command["commandName"]);
+        var prevGroup = commandHtml.find('.parameter-group').eq(0);
+        var parameterGroup = commandHtml.find('.parameter-group').eq(0).clone();
+        
+        for (let i=0; i<command["parameterNames"].length; i++)
+        {
+            if (i % 2 == 0 && i != 0)
+            {
+                let breakTag = $('<div class="w-100"></div>');
+                let spacerTag = $('<div class="col-2"></div>');
+                prevGroup.after(breakTag);
+                prevGroup = breakTag;
+                prevGroup.after(spacerTag);
+                prevGroup = spacerTag;
+            }
+            parameterGroup.find('.parameter-name').text(command["parameterNames"][i]);
+            prevGroup.after(parameterGroup);
+            prevGroup = parameterGroup;
+            parameterGroup = prevGroup.clone();
+        }
+        commandHtml.find('.parameter-group').eq(0).remove();
+        commandHtml.find('.parameter').inputSpinner();
+
+        commandContainer.append(commandHtml);
+    }); 
+}
+
 //-------------------------------------Controls on sending Socket Messages---------------------------------
 
 function onMasterLockClicked(cbox) {
@@ -424,6 +460,24 @@ function onChecklistTick(checkbox)
     if(master) socket.emit('checklist-tick', currId);
 }
 
+function onCommandExecute(command)
+{
+    var params = [];
+
+    $(command).parent().find(".parameter[type=number]").each(function() {
+        console.log($(this).get(0).outerHTML);
+        params.push(Number($(this).val()));
+    });
+
+    
+    var commandsMsg = {};
+    commandsMsg["commandName"] = $(command).parent().attr('id');
+    commandsMsg["params"] = params;
+    commandsMsg["testOnly"] = false;
+    console.log(commandsMsg);
+    if(master) socket.emit('commands-set', [commandsMsg]);
+}
+
 //-------------------------------------Controls on receiving Socket Messages---------------------------------
 
 socket.on('master-change', (flag) => {
@@ -454,7 +508,7 @@ socket.on('master-lock', (flag) => {
     else $('#masterLockBox').prop('checked', false);
 });
 
-socket.on('connect', function() {socket.emit('checklist-start'); onSuperchargeGet();});
+socket.on('connect', function() {socket.emit('checklist-start'); socket.emit('commands-load');});
 
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
 socket.on('connect_error', function(error) {
@@ -554,6 +608,23 @@ socket.on('sequence-load', function(jsonSeqsInfo) {
 
     //load dropdowns
     loadSequenceSelect();
+
+});
+
+socket.on('commands-load', function(jsonCommands) {
+
+    console.log('commands-load');
+    loadCommands(jsonCommands);
+
+});
+
+//TODO: maybe change to commands-result to also receive if everything went fine
+socket.on('commands-error', function(jsonCommandErrors) {
+
+    console.log('commands-error');
+    console.log(JSON.stringify(jsonCommandErrors, null, 4));
+    alert(JSON.stringify(jsonCommandErrors, null, 4));
+    
 
 });
 

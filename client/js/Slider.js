@@ -34,4 +34,4 @@ maxInput.on("change", function (event) {
     minMaxTester.trigger('input');
 });
 
-$("input[type='number']").inputSpinner();
+// $("input[type='number']:not(.spinner-disable):not(.post-initialized-spinner)").inputSpinner();

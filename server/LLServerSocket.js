@@ -37,7 +37,7 @@ module.exports = {
             stateDataBuffer = Buffer.concat([stateDataBuffer, data]);
 
             //while header already fetched
-            while (stateDataBuffer.length >= HEADER_SIZE)
+            if (stateDataBuffer.length >= HEADER_SIZE)
             {
                 switch (currReceiveState)
                 {

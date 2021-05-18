@@ -32,6 +32,8 @@ var checklistMan = new checklistManMod();
 
 var sequenceRunning = false;
 
+var commandsJson = [];
+
 const ServerMode = {
     FRANZ: 0,
     SMALL_TESTSTAND: 1,
@@ -101,6 +103,16 @@ var onSequenceLoad = function (ioClient, socket)
     socket.emit('sequence-load', [sequences, abortSequences, jsonSeq, jsonAbortSeq]);
 }
 
+var onCommandsLoad = function(ioClient, socket)
+{
+    console.log("commands-load");
+    console.log(commandsJson);
+    if (commandsJson === {})
+    {
+        llServerMod.sendMessage(llServer, 'commands-load');
+    }
+    socket.emit('commands-load', commandsJson);
+}
 
 var onChecklistStart = function (ioClient, socket) {
     console.log('checklist start');
@@ -266,6 +278,8 @@ eventEmitter.on('onPostSeqComment', onPostSeqComment);
 eventEmitter.on('onSequenceSync', onSequenceSync);
 eventEmitter.on('onSequenceDone', onSequenceDone);
 
+eventEmitter.on('onCommandsLoad', onCommandsLoad);
+
 eventEmitter.on('onAbort', onAbort);
 eventEmitter.on('onAbortAll', onAbortAll);
 
@@ -287,6 +301,7 @@ ioClient.on('connection', function(socket){
             var intDel = setInterval(function () {
                 if (llServer !== undefined)
                 {
+                    llServerMod.sendMessage(llServer, 'commands-load');
                     llServerMod.sendMessage(llServer, 'states-start');
                     clearInterval(intDel);
                 }
@@ -294,6 +309,7 @@ ioClient.on('connection', function(socket){
         }
         else
         {
+            llServerMod.sendMessage(llServer, 'commands-load');
             llServerMod.sendMessage(llServer, 'states-start');
         }
         console.log('userID: ' + socket.id + ' userAddress: ' + socket.handshake.address + ' connected');
@@ -334,9 +350,7 @@ ioClient.on('connection', function(socket){
         });
 
         eventEmitter.emit('onSequenceLoad', ioClient, socket);
-
-        //send new socket up to date servo end positions
-        llServerMod.sendMessage(llServer, 'servos-load');
+        // eventEmitter.emit('onCommandsLoad', ioClient, socket);
 
         socket.on('abort', function(msg){
             console.log('abort');
@@ -406,6 +420,20 @@ ioClient.on('connection', function(socket){
             if (master === socket.id) {
                 llServerMod.sendMessage(llServer, 'states-set', jsonStates);
             }
+
+        });
+
+        socket.on('commands-set', function(jsonCommands){
+            console.log('commands-set');
+            if (master === socket.id) {
+                llServerMod.sendMessage(llServer, 'commands-set', jsonCommands);
+            }
+
+        });
+
+        socket.on('commands-load', function(jsonCommands){
+            console.log('commands-load');
+            eventEmitter.emit('onCommandsLoad', ioClient, socket);
 
         });
 
@@ -489,6 +517,15 @@ function processLLServerMessage(data) {
                 case "states-load":
                     console.log("states-load");
                     ioClient.emit('states-load', jsonData.content);
+                    break;
+                case "commands-load":
+                    console.log("commands-load");
+                    commandsJson = jsonData.content;
+                    ioClient.emit('commands-load', jsonData.content);
+                    break;
+                case "commands-error":
+                    console.log("commands-error");
+                    ioClient.emit('commands-error', jsonData.content);
                     break;
                 case "abort":
                     console.log("abort from llserver");
