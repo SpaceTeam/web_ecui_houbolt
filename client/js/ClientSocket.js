@@ -709,8 +709,9 @@ socket.on('sequence-done', function() {
 
 var firstSensorFetch = true;
 
-socket.on('states', function(jsonSens) {
-    //console.log('sensors');
+socket.on('states', function(jsonStates) {
+    console.log('states');
+    console.log(jsonStates);
 
     if (!llServerConnectionActive)
     {
@@ -718,9 +719,9 @@ socket.on('states', function(jsonSens) {
         checkConnection();
     }
 
-    for (let sensorInd in jsonSens)
+    for (let sensorInd in jsonStates)
     {
-        let jsonSen = jsonSens[sensorInd];
+        let jsonSen = jsonStates[sensorInd];
 
 		if (jsonSen.name.match(/\w*:sensor/g) == null)
 		{
