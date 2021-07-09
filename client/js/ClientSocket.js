@@ -709,64 +709,65 @@ socket.on('sequence-done', function() {
 
 var firstSensorFetch = true;
 
-socket.on('states', function(jsonSens) {
-    //console.log('sensors');
+socket.on('states', function(jsonStates) {
+    // console.log('states');
+    console.log(JSON.stringify(jsonStates, null, 2));
 
-    if (!llServerConnectionActive)
-    {
-        llServerConnectionActive = true;
-        checkConnection();
-    }
+    // if (!llServerConnectionActive)
+    // {
+    //     llServerConnectionActive = true;
+    //     checkConnection();
+    // }
 
-    for (let sensorInd in jsonSens)
-    {
-        let jsonSen = jsonSens[sensorInd];
+    // for (let sensorInd in jsonStates)
+    // {
+    //     let jsonState = jsonStates[sensorInd];
 
-		if (jsonSen.name.match(/\w*:sensor/g) == null)
-		{
-			continue;
-		}
+	// 	if (jsonState.name.match(/\w*:sensor/g) == null)
+	// 	{
+	// 		continue;
+	// 	}
 
-        //update pnid
-        updatePNID(jsonSen.name, jsonSen.value);
+    //     //update pnid
+    //     updatePNID(jsonState.name, jsonState.value);
 
-        //generate plot and or update
-        let sensor;
-        if (jsonSen.name in jsonSensors)
-        {
-            sensor = jsonSensors[jsonSen.name];
-        }
-        else
-        {
-            sensor = {};
-            let newChartDiv = $('#tempChart').clone();
-            newChartDiv.attr("id", jsonSen.name + "Chart");
-            newChartDiv.removeAttr("hidden");
-            $('#sensorChartDiv').append(newChartDiv);
+    //     //generate plot and or update
+    //     let sensor;
+    //     if (jsonState.name in jsonSensors)
+    //     {
+    //         sensor = jsonSensors[jsonState.name];
+    //     }
+    //     else
+    //     {
+    //         sensor = {};
+    //         let newChartDiv = $('#tempChart').clone();
+    //         newChartDiv.attr("id", jsonState.name + "Chart");
+    //         newChartDiv.removeAttr("hidden");
+    //         $('#sensorChartDiv').append(newChartDiv);
 
-            if ("chartTitle" in jsonSen)
-            {
-                sensor.chartTitle = jsonSen.chartTitle;
-            }
-            else
-            {
-                sensor.chartTitle = jsonSen.name;
-            }
+    //         if ("chartTitle" in jsonState)
+    //         {
+    //             sensor.chartTitle = jsonState.chartTitle;
+    //         }
+    //         else
+    //         {
+    //             sensor.chartTitle = jsonState.name;
+    //         }
 
-            sensor.div = newChartDiv;
-            sensor.chart = new SensorChart(jsonSen.name + "Chart", sensor.chartTitle, disableSensorChartsOnLoad);
-            sensor.series = sensor.chart.addSeries(jsonSen.name, jsonSen.name);
-            sensor.name = jsonSen.name;
+    //         sensor.div = newChartDiv;
+    //         sensor.chart = new SensorChart(jsonState.name + "Chart", sensor.chartTitle, disableSensorChartsOnLoad);
+    //         sensor.series = sensor.chart.addSeries(jsonState.name, jsonState.name);
+    //         sensor.name = jsonState.name;
 
-            //sensor.chart.disable();
+    //         //sensor.chart.disable();
 
-            jsonSensors[jsonSen.name] = sensor;
+    //         jsonSensors[jsonState.name] = sensor;
 
-        }
-        sensor.chart.addSingleData(sensor.series, jsonSen.time, jsonSen.value, isContinousTransmission);
+    //     }
+    //     sensor.chart.addSingleData(sensor.series, jsonState.time, jsonState.value, isContinousTransmission);
 
-        refreshServoFeedback(jsonSen, firstSensorFetch);
-    }
-	firstSensorFetch = false;
+    //     refreshServoFeedback(jsonState, firstSensorFetch);
+    // }
+	// firstSensorFetch = false;
 
 });
