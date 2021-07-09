@@ -712,7 +712,6 @@ var firstSensorFetch = true;
 socket.on('states', function(jsonStates) {
     // console.log('states');
     console.log(JSON.stringify(jsonStates, null, 2));
-
     // if (!llServerConnectionActive)
     // {
     //     llServerConnectionActive = true;
