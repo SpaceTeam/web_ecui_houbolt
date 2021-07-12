@@ -7,6 +7,10 @@ var ioClient = require('socket.io')(http);
 var clients = [];
 var port = 80;
 
+const bp = require('body-parser');
+app.use(bp.json())
+app.use(bp.urlencoded({ extended: true }))
+
 // Search for argument port= in node cli arguments
 process.argv.forEach(arg => {
     if(arg.startsWith("port=")){
@@ -566,8 +570,15 @@ app.get('/', function(req, res){
 	
 });
 
-app.get('/pnid', function(req, res){
-    res.sendFile(PnIDManMod._curPnID);
+app.get('/pnidList', function(req, res){
+    console.log(pnidManMod.getAllPnIDs());
+    res.json(pnidManMod.getAllPnIDs());
+});
+
+app.post('/pnid', function(req, res){
+    console.log(req.body.file);
+    pnidManMod.setPnID(req.body.file);
+    res.sendFile(__dirname + "/" + pnidManMod.getPnID());
 });
 
 http.listen(port, function(){

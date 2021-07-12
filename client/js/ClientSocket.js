@@ -52,10 +52,6 @@ var chartTabObserver = new MutationObserver(function(mutations) {
     });
 });
 
-chartTabObserver.observe(document.getElementById('chart-tab'), {
-  attributes: true //configure it to listen to attribute changes
-});
-
 var lastModalTriggeredElement = undefined;
 
 //-------------------------------------GUI Events---------------------------------

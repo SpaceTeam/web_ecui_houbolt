@@ -11,68 +11,51 @@
     <script src="lib/animated.js"></script>
 
     <!--    <link href="css/styles.css" rel="stylesheet">-->
-    <link href="css/slider.css" rel="stylesheet">
-    </link>
     <link href="css/styles.css" rel="stylesheet">
     </link>
 
-    <link href="css/pnid.css" rel="stylesheet">
-    </link>
+    <link rel="stylesheet" href="pnid_houbolt/client/css/pnid.css">
+    <link rel="stylesheet" href="pnid_houbolt/client/css/popup.css">
+    <link rel="stylesheet" href="pnid_houbolt/client/css/inputs.css">
+    <link rel="stylesheet" href="pnid_houbolt/client/css/slider.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 </head>
 
 <body>
     <div id="disableAll"></div>
     <div id="templates" hidden>
-        <div class="card">
-            <div class="card-header" id="headingTemp">
-                <h2 class="mb-0">
-                    <div class="form-check">
-                        <input class="form-check-input ckbx" type="checkbox" onclick="onChecklistTick(this);" value=""
-                            id="checklistCheckTemp">
-                        <button class="form-check-label btn btn-link collapsed" for="checklistCheckTemp" type="button"
-                            data-toggle="collapse" data-target="#collapseTemp" aria-expanded="false"
-                            aria-controls="collapseTemp">
-
-                        </button>
-                    </div>
-                    <!--            <div class="form-control-lg custom-control custom-checkbox checklist-header-container">-->
-                    <!--                <input class="custom-control-input " type="checkbox" onclick="onChecklistTick(this);" id="checklistCheckTemp">-->
-                    <!--                <button class="custom-control-label btn btn-link collapsed ckbx-label" for="checklistCheckTemp" type="button" data-toggle="collapse" data-target="#collapseTemp" aria-expanded="false" aria-controls="collapseTemp">-->
-                    <!--                </button>-->
-                    <!--            </div>-->
-                </h2>
-            </div>
-            <div id="collapseTemp" class="collapse" aria-labelledby="headingTemp">
-                <div class="card-body">
+        <div id="closeButtonTemp" class="row control-row justify-content-end">
+            <!-- <div class="col"></div> -->
+            <button type="button" class="btn btn-light btn-drag">
+                <i class="bi bi-arrows-move"></i>
+            </button>
+            <div class="col"></div>
+            <button type="button" class="btn btn-outline-danger btn-close">
+                <i class="bi bi-x"></i>
+            </button> 
+            
+        </div>
+          <div id="sliderTemp" class="row control-row">
+            <div class="range-slider col">
+                <label class="range-slider-label input-label">Oxidizer Main Valve</label><br>
+                <input class="range-slider__range servo-slider manual-obj servo-enable-obj"
+                    oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1">
+                <span class="range-slider__value">0</span> 
+                <span class="range-slider__feedback servo-feedback">0</span>
+                <div class="range-slider-caption">
+                    <div class="range-slider-caption_left"> Closed </div>
+                    <div class="range-slider-caption_right"> Open </div>
                 </div>
             </div>
-
-        </div>
-        <div id="tempChart" class="sensorChart" hidden></div>
-        <div id="tempRow" class="row control-row"></div>
-        <div id="tempServo" class="range-slider col">
-            <label class="range-slider-label input-label">Temp Servo</label><br>
-            <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="tempServoSlider" idNum="0"
-                oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1" disabled>
-            <span class="range-slider__value" disabled>0</span>
-
-        </div>
-        <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
-            <input type="checkbox" class="custom-control-input ckbx manual-obj servo-enable-obj digitalOut"
-                id="tempDigitalOut" onclick="onDigitalCheck(this);" disabled>
-            <label class="custom-control-label ckbx-label" for="tempDigitalOut">Temp Digital Out</label>
-        </div>
-        <div id="tempMotor" class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-secondary btn-radio active">
-                <input type="radio" name="options" id="option1" checked> Active
-            </label>
-            <label class="btn btn-secondary btn-radio">
-                <input type="radio" name="options" id="option2"> Radio
-            </label>
-            <label class="btn btn-secondary btn-radio">
-                <input type="radio" name="options" id="option3"> Radio
-            </label>
-        </div>
+            </div>
+            <div id="digitalOutTemp" class="row control-row">
+                <div class="form-control custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input ckbx manual-obj servo-enable-obj digitalOut" id="tempDigitalOut"
+                        onclick="onDigitalCheck(this);">
+                    <label class="custom-control-label ckbx-label" for="tempDigitalOut">Temp Digital Out</label>
+                </div>
+            </div>
         <div id="tempCommand">
             <li class="list-group-item">
                 <div class="row command">
@@ -189,124 +172,12 @@ Notes: Hotfire
             </div>
         </div>
         <div class="tab-pane fade" id="control-tab" role="tabpanel" aria-labelledby="control-tab-button">
-            <div id="servo-container" class="container-fluid">
-                <div class="servo-enable-container row control-row">
-                    <div class="form-control-lg custom-control custom-checkbox col">
-                        <input type="checkbox" class="custom-control-input ckbx manualEnableCheck"
-                            id="manualEnableCheck" onclick="onManualControlEnable(this);">
-                        <label class="custom-control-label ckbx-label" for="manualEnableCheck">Enable Manual
-                            Control</label>
-                    </div>
-                    <div class="form-control-lg custom-control custom-checkbox col">
-                        <input type="checkbox" class="custom-control-input ckbx servoEnableCheck" id="servoEnableCheck"
-                            onclick="onServoEnable(this);" disabled>
-                        <label class="custom-control-label ckbx-label" for="servoEnableCheck">Enable Servos</label>
-                    </div>
-                    <div class="col"></div>
+            <div class="container-fluid">
+                <div class="row">
+                    <select class="btn btn-secondary ecui-select" id="pnidSelect" onchange="onPnidSelectChange(value);">
+                    </select>
                 </div>
-                <div class="row control-row">
-                    <div class="range-slider col col-6">
-                        <label class="range-slider-label input-label">Fuel Main Valve</label><br>
-                        <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="fuelMainValve"
-                            idNum="0" oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100"
-                            step="1" disabled>
-                        <span class="range-slider__value" disabled>0</span>
-                        <span class="range-slider__feedback servo-feedback" id="fuelMainValveFb" disabled>0</span>
-                        <div class="range-slider-caption">
-                            <div class="range-slider-caption_left"> Closed</div>
-                            <div class="range-slider-caption_right"> Open </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row control-row">
-                    <div class="range-slider col col-6">
-                        <label class="range-slider-label input-label">Oxidizer Main Valve</label><br>
-                        <input class="range-slider__range servo-slider manual-obj servo-enable-obj" id="oxMainValve"
-                            idNum="1" oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100"
-                            step="1" disabled>
-                        <span class="range-slider__value" disabled>0</span>
-                        <span class="range-slider__feedback servo-feedback" id="oxMainValveFb" disabled>0</span>
-                        <div class="range-slider-caption">
-                            <div class="range-slider-caption_left"> Closed </div>
-                            <div class="range-slider-caption_right"> Open </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row control-row">
-                    <div class="range-slider col col-6">
-                        <label class="range-slider-label input-label">Oxidizer Supercharge Valve</label><br>
-                        <input class="range-slider__range servo-slider manual-obj servo-enable-obj"
-                            id="oxSuperchargeValve" idNum="1" oninput="onServoSliderInput($(this));" type="range"
-                            value="0" min="0" max="100" step="1" disabled>
-                        <span class="range-slider__value" disabled>0</span>
-                        <span class="range-slider__feedback servo-feedback" id="oxSuperchargeValveFb" disabled>0</span>
-                        <br>
-                        <div class="range-slider-caption">
-                            <div class="range-slider-caption_left"> Pressure Controlled </div>
-                            <div class="range-slider-caption_right"> Closed </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row control-row">
-                    <div class="col col-2 spinner">
-                        <label class="input-label" for="setpoint" style="width: 100%;">
-                            <div id="setpointLabel" class="col centerLabel">Set Point</div>
-                        </label>
-                        <input id="setpoint" class="manual-obj" type="number" value="40" data-decimals="0" min="-128"
-                            max="127" step="1" disabled />
-                    </div>
-                    <div class="col col-2 spinner">
-                        <label class="input-label" for="hysteresis" style="width: 100%;">
-                            <div class="container-fluid">
-                                <div class="row">
-                                    <div id="hysteresisLabel" class="col centerLabel">Hysteresis</div>
-                                </div>
-                            </div>
-                        </label>
-                        <input id="hysteresis" class="manual-obj" type="number" value="1" data-decimals="1" min="0"
-                            max="3" step="0.1" disabled />
-                    </div>
-                    <div class="col col-4">
-                        <button class="btn btn-secondary cntl-btn manual-obj" id="sendSupercharge"
-                            onclick="onSuperchargeSet();" disabled>Send
-                        </button>
-
-                        <button class="btn btn-secondary cntl-btn manual-obj" id="getSupercharge"
-                            onclick="onSuperchargeGet();" disabled>Refresh
-                        </button>
-                    </div>
-                </div>
-
-                <div class="row control-row" style="margin-left: 0rem;">
-                    <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
-                        <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="igniter"
-                            onclick="onCheckboxModal(this);" disabled>
-                        <label class="custom-control-label ckbx-label" for="igniter">Igniter 1</label>
-                    </div>
-                    <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
-                        <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut" id="igniter1"
-                            onclick="onCheckboxModal(this);" disabled>
-                        <label class="custom-control-label ckbx-label" for="igniter1">Igniter 2</label>
-                    </div>
-                    <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
-                        <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut"
-                            id="fuelDepressSolenoid;fuelPressSolenoid" onclick="onDigitalCheck(this,0.5);" disabled>
-                        <label class="custom-control-label ckbx-label"
-                            for="fuelDepressSolenoid;fuelPressSolenoid">Pressurize Fuel</label>
-                    </div>
-                    <div class="form-control-lg custom-control custom-checkbox digitalOut-div">
-                        <input type="checkbox" class="custom-control-input ckbx manual-obj digitalOut"
-                            id="oxDepressSolenoid;oxPressSolenoid" onclick="onDigitalCheck(this,0.5);" disabled>
-                        <label class="custom-control-label ckbx-label"
-                            for="oxDepressSolenoid;oxPressSolenoid">Pressurize Oxidizer</label>
-                    </div>
-                </div>
-
-                <button class="btn btn-secondary cal-btn manual-obj servo-enable-obj" id="saftlButton"
-                    disabled>Saftl</button>
+                <div id="pnid"></div>
             </div>
 
         </div>
@@ -442,34 +313,6 @@ Notes: Hotfire
         </div>
     </div>
 
-    <div class="row master-only" style="margin-top: -2rem; width: 100%">
-        <button class="btn btn-secondary" id="resetButton" style="margin-left: 2rem" onclick="onResetSensors();">Reset
-            Sensor Charts</button><br>
-        <button class="btn btn-secondary" id="tareButton" style="margin-left: 2rem;" onclick="onTareLoadCells();">Tare
-            Thrust Sensors</button><br>
-    </div>
-
-    <ul class="nav nav-pills justify-content-center" id="monitorTabs" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active tab-button" id="pnid-tab-button" data-toggle="tab" href="#pnid-tab" role="tab"
-                aria-controls="pnid-tab" aria-selected="true">P&ID</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link tab-button" id="chart-tab-button" data-toggle="tab" href="#chart-tab" role="tab"
-                aria-controls="chart-tab" aria-selected="false">Charts</a>
-        </li>
-    </ul>
-    <div class="tab-content" id="monitorTabsContent">
-        <div class="tab-pane fade show active" id="pnid-tab" role="tabpanel" aria-labelledby="pnid-tab-button"
-            style="background-color: #2d2d2d;">
-        </div>
-        <div class="tab-pane fade" id="chart-tab" role="tabpanel" aria-labelledby="chart-tab-button">
-            <div id="sensorChartDiv">
-
-            </div>
-        </div>
-    </div>
-
 
 
     <script src="/socket.io/socket.io.js"></script>
@@ -485,9 +328,7 @@ Notes: Hotfire
     </script>
 
     <script src="lib/bootstrap-input-spinner.js"></script>
-    <script src="/js/GUIControls.js"></script>
-    <script src="js/Slider.js"></script>
-    <script src="js/PNID.js"></script>
+    <script src="/js/GUIControls.js"></script>å
     <script src="js/SequenceChart.js"></script>
     <script src="js/SensorChart.js"></script>
     <script src="./js/ClientSocket.js"></script>
@@ -497,6 +338,14 @@ Notes: Hotfire
     <script src="lib/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+
+    <!-- Pnid -->
+    <script src="pnid_houbolt/client/js/changeValues.js"></script>
+    <script src="pnid_houbolt/client/js/popupManager.js"></script>
+    <script src="pnid_houbolt/client/js/Slider.js"></script>
+    <script src="pnid_houbolt/client/js/inputs.js"></script>
+
+    <script src="js/PnidLoader.js"></script>
 </body>
 
 </html>
