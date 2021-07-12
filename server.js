@@ -25,9 +25,11 @@ app.use(express.static(__dirname + '/client/'));
 
 var MCSocket = require('./server/ClientSocket');
 var sequenceManMod = require('./server/SequenceManager');
-var checklistManMod = require('./server/ChecklistManager')
+var pnidManMod = require('./server/PnIDManager');
+var checklistManMod = require('./server/ChecklistManager');
 
 var sequenceMan = new sequenceManMod();
+var pnidMan = new pnidManMod();
 var checklistMan = new checklistManMod();
 
 var sequenceRunning = false;
@@ -565,7 +567,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/pnid', function(req, res){
-    res.sendFile(path + 'pnid.html');
+    res.sendFile(PnIDManMod._curPnID);
 });
 
 http.listen(port, function(){
