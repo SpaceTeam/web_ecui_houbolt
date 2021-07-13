@@ -308,6 +308,7 @@ ioClient.on('connection', function(socket){
                 if (llServer !== undefined)
                 {
                     llServerMod.sendMessage(llServer, 'commands-load');
+                    llServerMod.sendMessage(llServer, 'states-load');
                     llServerMod.sendMessage(llServer, 'states-start');
                     clearInterval(intDel);
                 }
@@ -316,6 +317,7 @@ ioClient.on('connection', function(socket){
         else
         {
             llServerMod.sendMessage(llServer, 'commands-load');
+            llServerMod.sendMessage(llServer, 'states-load');
             llServerMod.sendMessage(llServer, 'states-start');
         }
         console.log('userID: ' + socket.id + ' userAddress: ' + socket.handshake.address + ' connected');

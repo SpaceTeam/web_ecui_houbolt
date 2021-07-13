@@ -100,19 +100,19 @@
     <ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
         <li class="nav-item master-only">
             <a class="nav-link tab-button" id="sequence-tab-button" data-toggle="tab" href="#sequence-tab"
-                role="tab" aria-controls="sequence-tab" aria-selected="false">Sequence</a>
+                role="tab" aria-controls="sequence-tab" aria-selected="false" hidden>Sequence</a>
         </li>
         <li class="nav-item master-only">
-            <a class="nav-link tab-button" id="control-tab-button" data-toggle="tab" href="#control-tab" role="tab"
-                aria-controls="control-tab" aria-selected="false">Control</a>
+            <a class="nav-link tab-button active" id="control-tab-button" data-toggle="tab" href="#control-tab" role="tab"
+                aria-controls="control-tab" aria-selected="true">P&ID</a>
         </li>
         <li class="nav-item master-only">
             <a class="nav-link tab-button" id="calibration-tab-button" data-toggle="tab" href="#calibration-tab"
-                role="tab" aria-controls="calibration-tab" aria-selected="false">Calibrate</a>
+                role="tab" aria-controls="calibration-tab" aria-selected="false" hidden>Calibrate</a>
         </li>
         <li class="nav-item master-only">
-            <a class="nav-link tab-button active" id="commands-tab-button" data-toggle="tab" href="#commands-tab" role="tab"
-                aria-controls="commands-tab" aria-selected="true">Commands</a>
+            <a class="nav-link tab-button" id="commands-tab-button" data-toggle="tab" href="#commands-tab" role="tab"
+                aria-controls="commands-tab" aria-selected="false">Commands</a>
         </li>
     </ul>
     <hr>
@@ -171,7 +171,7 @@ Notes: Hotfire
                 </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="control-tab" role="tabpanel" aria-labelledby="control-tab-button">
+        <div class="tab-pane fade show active" id="control-tab" role="tabpanel" aria-labelledby="control-tab-button">
             <div class="container-fluid">
                 <div class="row">
                     <select class="btn btn-secondary ecui-select" id="pnidSelect" onchange="onPnidSelectChange(value);">
@@ -279,7 +279,7 @@ Notes: Hotfire
             </div>
 
         </div>
-        <div class="tab-pane fade show active" id="commands-tab" role="tabpanel" aria-labelledby="commands-tab-button">
+        <div class="tab-pane fade" id="commands-tab" role="tabpanel" aria-labelledby="commands-tab-button">
             <ul id="command-container" class="list-group">
                 
             </ul>
@@ -328,7 +328,7 @@ Notes: Hotfire
     </script>
 
     <script src="lib/bootstrap-input-spinner.js"></script>
-    <script src="/js/GUIControls.js"></script>å
+    <script src="/js/GUIControls.js"></script>
     <script src="js/SequenceChart.js"></script>
     <script src="js/SensorChart.js"></script>
     <script src="./js/ClientSocket.js"></script>

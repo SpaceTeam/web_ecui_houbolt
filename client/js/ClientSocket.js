@@ -1,3 +1,4 @@
+const { setPnID } = require("../../server/PnIDManager");
 
 //-------------------------------------Global Variables | Yikes!!!---------------------------------
 var socket = io();
@@ -525,61 +526,6 @@ socket.on('abort', function(abortMsg) {
     $('#masterRequest').prop('disabled', false);
 });
 
-socket.on('checklist-load', function(jsonChecklist) {
-    console.log('checklist-load:');
-    console.log(jsonChecklist);
-
-	// deactivate checklist and enable toggle sequence button directly
-	$('#toggleSequenceButton').prop('disabled', false);
-    // if (!checklistLoaded) {
-    //     checklistLoaded = true;
-    //     for (itemInd in jsonChecklist)
-    //     {
-    //         let currItem = jsonChecklist[itemInd];
-    //         let currId = currItem.id;
-    //         console.log(itemInd);
-    //         let newCard = $('#templates').children().first().clone();
-    //         newCard.find('#headingTemp').attr('id', 'checklistItemHeading' + currId)
-    //             .find('button').attr('data-target', '#checklistItemCollapse' + currId)
-    //             .attr('aria-controls', 'checklistItemCollapse' + currId)
-    //             .attr('for', 'checklistCheck' + currId);
-    //         newCard.find('#checklistCheckTemp').attr('id', 'checklistCheck' + currId);
-    //         newCard.find('#collapseTemp').attr('id', 'checklistItemCollapse' + currId)
-    //             .attr('aria-labelledby', 'checklistItemHeading' + currId);
-
-    //         newCard.find('button').text(currItem.name);
-
-    //         let notes = $('<ul>');
-    //         for (noteInd in currItem.notes)
-    //         {
-    //             notes.append($('<li>').text(currItem.notes[noteInd]));
-    //         }
-    //         newCard.find('.card-body').append(notes);
-
-    //         $('#checklist').append(newCard);
-    //     }
-    // }
-});
-
-socket.on('checklist-update', function(id) {
-    console.log('checklist-update');
-    //onChecklistTick(id, true);
-    console.log(id);
-    $('#checklistCheck' + id).click();
-});
-
-socket.on('checklist-done', function() {
-    console.log('checklist-done');
-
-    //TODO: check with user credentials and only display them when master
-    //$('#checklistCol').hide('slide', { direction: 'right' }, 300);
-    $('#startChecklistButton').attr('hidden', '');
-    if (!$('.manualEnableCheck').prop('checked'))
-    {
-        $('#toggleSequenceButton').prop('disabled', false);
-    }
-});
-
 socket.on('sequence-load', function(jsonSeqsInfo) {
 
     sequences = jsonSeqsInfo[0];
@@ -708,61 +654,10 @@ var firstSensorFetch = true;
 socket.on('states', function(jsonStates) {
     // console.log('states');
     console.log(JSON.stringify(jsonStates, null, 2));
-    // if (!llServerConnectionActive)
-    // {
-    //     llServerConnectionActive = true;
-    //     checkConnection();
-    // }
+    
 
-    // for (let sensorInd in jsonStates)
-    // {
-    //     let jsonState = jsonStates[sensorInd];
+});
 
-	// 	if (jsonState.name.match(/\w*:sensor/g) == null)
-	// 	{
-	// 		continue;
-	// 	}
-
-    //     //update pnid
-    //     updatePNID(jsonState.name, jsonState.value);
-
-    //     //generate plot and or update
-    //     let sensor;
-    //     if (jsonState.name in jsonSensors)
-    //     {
-    //         sensor = jsonSensors[jsonState.name];
-    //     }
-    //     else
-    //     {
-    //         sensor = {};
-    //         let newChartDiv = $('#tempChart').clone();
-    //         newChartDiv.attr("id", jsonState.name + "Chart");
-    //         newChartDiv.removeAttr("hidden");
-    //         $('#sensorChartDiv').append(newChartDiv);
-
-    //         if ("chartTitle" in jsonState)
-    //         {
-    //             sensor.chartTitle = jsonState.chartTitle;
-    //         }
-    //         else
-    //         {
-    //             sensor.chartTitle = jsonState.name;
-    //         }
-
-    //         sensor.div = newChartDiv;
-    //         sensor.chart = new SensorChart(jsonState.name + "Chart", sensor.chartTitle, disableSensorChartsOnLoad);
-    //         sensor.series = sensor.chart.addSeries(jsonState.name, jsonState.name);
-    //         sensor.name = jsonState.name;
-
-    //         //sensor.chart.disable();
-
-    //         jsonSensors[jsonState.name] = sensor;
-
-    //     }
-    //     sensor.chart.addSingleData(sensor.series, jsonState.time, jsonState.value, isContinousTransmission);
-
-    //     refreshServoFeedback(jsonState, firstSensorFetch);
-    // }
-	// firstSensorFetch = false;
-
+socket.on('states-load', function(jsonStates) {
+    setStateNamesPNID(jsonStates);
 });
