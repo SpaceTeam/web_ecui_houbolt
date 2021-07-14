@@ -1,5 +1,3 @@
-const { setPnID } = require("../../server/PnIDManager");
-
 //-------------------------------------Global Variables | Yikes!!!---------------------------------
 var socket = io();
 
@@ -20,8 +18,6 @@ var intervalDelegate;
 
 var countdownTime;
 var countdownIntervalDelegate;
-
-var llServerConnectionActive = false;
 
 var isMaster = false;
 
@@ -142,18 +138,16 @@ function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
 //-------------------------------------Utility functions for ECUI,Socket,Timing---------------------------------
 
-function checkConnection()
+function onLLServerConnect()
 {
-    if (llServerConnectionActive)
-    {
-        $('#statusBar').css("background-color","transparent");
-        $('#statusBar').text(null);
-    }
-    else
-    {
-        $('#statusBar').css("background-color","#FFCD00");
-        $('#statusBar').text("No Connection to LLServer");
-    }
+    $('#statusBar').css("background-color","transparent");
+    $('#statusBar').text(null);
+}
+
+function onLLServerDisconnect()
+{
+    $('#statusBar').css("background-color","#FFCD00");
+    $('#statusBar').text("No Connection to LLServer");
 }
 
 setInterval(function(){
@@ -513,9 +507,19 @@ socket.on('connect_error', function(error) {
     $('#disableAll').css("display", "block");
     $('#errorBar').css("display","block");
     $('#errorBar').css("background-color","#FF0000");
-    $('#errorBar').text("Error during connection attempt: " + error);
+    $('#errorBar').text("Connection lost to webserver!");
     // Disable scrolling (as the page is not supposed to work, allow as low interaction as possible + cope with variable pnid height)
     document.body.style.overflow = 'hidden';
+});
+
+socket.on('llserver-connect', function()
+{
+    onLLServerConnect();
+});
+
+socket.on('llserver-disconnect', function()
+{
+    onLLServerDisconnect();
 });
 
 socket.on('abort', function(abortMsg) {
@@ -653,11 +657,12 @@ var firstSensorFetch = true;
 
 socket.on('states', function(jsonStates) {
     // console.log('states');
-    console.log(JSON.stringify(jsonStates, null, 2));
+    //console.log(JSON.stringify(jsonStates, null, 2));
     
 
 });
 
 socket.on('states-load', function(jsonStates) {
+    console.log(jsonStates);
     setStateNamesPNID(jsonStates);
 });

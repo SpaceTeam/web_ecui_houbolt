@@ -16,7 +16,7 @@ let prevReceiveState = RECEIVE_STATES.INIT;
 
 module.exports = {
 
-    onLLServerConnect: function(client, msgRecvCallback) {
+    onLLServerConnect: function(client, msgRecvCallback, onDisconnectCallback) {
 
         console.log('Client connect. Client local address : ' + client.localAddress + ':' + client.localPort + '. client remote address : ' + client.remoteAddress + ':' + client.remotePort);
 
@@ -86,20 +86,9 @@ module.exports = {
 
         // When client disconnects.
         client.on('end', function () {
-            console.log('Client disconnect.');
-
-            // Get current connections count.
-            // server.getConnections(function (err, count) {
-            //     if(!err)
-            //     {
-            //         // Print current connection count in server console.
-            //         console.log("There are %d connections now. ", count);
-            //     }else
-            //     {
-            //         console.error(JSON.stringify(err));
-            //     }
-            //
-            // });
+            console.log('llserver disconnected.');
+            onDisconnectCallback();
+            
         });
 
         // When client timeout.
@@ -109,7 +98,7 @@ module.exports = {
 
         client.on('error', function(err) {
              // process error here
-             console.log(err);
+             console.log("llserver error: " + err);
          });
 
         return client;

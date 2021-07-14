@@ -70,7 +70,7 @@ console.log(llServerMod);
 
 // Create and return a net.Server object, the function will be invoked when client connect to this server.
 var llServer;
-var server = net.createServer(function(client){llServer = llServerMod.onLLServerConnect(client, processLLServerMessage);});
+var server = net.createServer(function(client){llServer = llServerMod.onLLServerConnect(client, processLLServerMessage, onLLServerDisconnect); onLLServerConnect();});
 
 // Make the server a TCP server listening on port 5555.
 server.listen(5555, function(){ llServerMod.onCreateTCP(server)});
@@ -543,6 +543,16 @@ function processLLServerMessage(data) {
             }
         }
     }
+}
+
+function onLLServerConnect()
+{
+    ioClient.emit("llserver-connect");
+}
+
+function onLLServerDisconnect()
+{
+    ioClient.emit("llserver-disconnect");
 }
 
 function getClientSocketById (id) {
