@@ -102,7 +102,7 @@
             <a class="nav-link tab-button" id="sequence-tab-button" data-toggle="tab" href="#sequence-tab"
                 role="tab" aria-controls="sequence-tab" aria-selected="false" hidden>Sequence</a>
         </li>
-        <li class="nav-item master-only">
+        <li class="nav-item">
             <a class="nav-link tab-button active" id="control-tab-button" data-toggle="tab" href="#control-tab" role="tab"
                 aria-controls="control-tab" aria-selected="true">P&ID</a>
         </li>
@@ -119,8 +119,8 @@
     <div id="errorBar"></div>
     <div id="statusBar" style="background-color: #FFCD00;">No Connection to LLServer</div>
 
-    <div class="tab-content master-only " id="myTabContent">
-        <div class="tab-pane fade" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade master-only" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
             <div class="container-fluid sequence-fluid">
                 <div class="row header justify-content-start">
                     <div class="col col-3">
@@ -181,7 +181,7 @@ Notes: Hotfire
             </div>
 
         </div>
-        <div class="tab-pane fade" id="calibration-tab" role="tabpanel" aria-labelledby="calibration-tab-button">
+        <div class="tab-pane fade master-only" id="calibration-tab" role="tabpanel" aria-labelledby="calibration-tab-button">
             <div id="calibration-container" class="container-fluid">
                 <div class="servo-enable-container row control-row">
                     <div class="form-control-lg custom-control custom-checkbox col">
@@ -279,7 +279,7 @@ Notes: Hotfire
             </div>
 
         </div>
-        <div class="tab-pane fade" id="commands-tab" role="tabpanel" aria-labelledby="commands-tab-button">
+        <div class="tab-pane fade master-only" id="commands-tab" role="tabpanel" aria-labelledby="commands-tab-button">
             <ul id="command-container" class="list-group">
                 
             </ul>

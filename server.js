@@ -37,6 +37,7 @@ var pnidMan = new pnidManMod();
 var checklistMan = new checklistManMod();
 
 var sequenceRunning = false;
+var llServerConnected = false;
 
 var commandsJson = [];
 
@@ -310,6 +311,10 @@ ioClient.on('connection', function(socket){
                     llServerMod.sendMessage(llServer, 'commands-load');
                     llServerMod.sendMessage(llServer, 'states-load');
                     llServerMod.sendMessage(llServer, 'states-start');
+                    if (llServerConnected)
+                    {
+                        socket.emit("llserver-connect");
+                    }
                     clearInterval(intDel);
                 }
             }, 1000);
@@ -319,6 +324,10 @@ ioClient.on('connection', function(socket){
             llServerMod.sendMessage(llServer, 'commands-load');
             llServerMod.sendMessage(llServer, 'states-load');
             llServerMod.sendMessage(llServer, 'states-start');
+            if (llServerConnected)
+            {
+                socket.emit("llserver-connect");
+            }
         }
         console.log('userID: ' + socket.id + ' userAddress: ' + socket.handshake.address + ' connected');
         // if (master == null)
@@ -548,11 +557,13 @@ function processLLServerMessage(data) {
 function onLLServerConnect()
 {
     ioClient.emit("llserver-connect");
+    llServerConnected = true;
 }
 
 function onLLServerDisconnect()
 {
     ioClient.emit("llserver-disconnect");
+    llServerConnected = false;
 }
 
 function getClientSocketById (id) {
