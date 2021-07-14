@@ -150,11 +150,6 @@ function onLLServerDisconnect()
     $('#statusBar').text("No Connection to LLServer");
 }
 
-setInterval(function(){
-    checkConnection();
-    llServerConnectionActive = false;
-    },4000);
-
 function timerTick()
 {
     //console.log(timeMillis);
