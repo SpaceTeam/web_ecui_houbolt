@@ -282,8 +282,14 @@ function loadCommands(jsonCommands)
         {
             if (i % 2 == 0 && i != 0)
             {
+                let buttonSpacerTag = commandHtml.find('button').first().clone();
+                //use visibility hidden to keep button width as spacer
+                buttonSpacerTag.attr('disabled', 'true');
+                buttonSpacerTag.css("visibility","hidden");
                 let breakTag = $('<div class="w-100"></div>');
-                let spacerTag = $('<div class="col-2"></div>');
+                let spacerTag = $('<div class="col"></div>');
+                prevGroup.after(buttonSpacerTag);
+                prevGroup = buttonSpacerTag;
                 prevGroup.after(breakTag);
                 prevGroup = breakTag;
                 prevGroup.after(spacerTag);
