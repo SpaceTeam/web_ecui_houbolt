@@ -665,5 +665,25 @@ socket.on('states', function(jsonStates) {
 
 socket.on('states-load', function(jsonStates) {
     console.log(jsonStates);
-    setStateNamesPNID(jsonStates);
+
+
+
+
+
+    //TODO: MP remove replacement, just a hotfix!
+    jsonStatesFix = [];
+    for (jsonStateInd in jsonStates)
+    {
+        
+        if (jsonStates[jsonStateInd]["name"].includes("state") || jsonStates[jsonStateInd]["name"].includes("sensor"))
+        {
+            fixState = {};
+            fixState.name = jsonStates[jsonStateInd].name.replace(/:\w*/, "");
+            fixState.label = jsonStates[jsonStateInd].label
+            jsonStatesFix.push(fixState);
+        }
+        
+    }
+    console.log("fixed json names", jsonStatesFix);
+    setStateNamesPNID(jsonStatesFix);
 });
