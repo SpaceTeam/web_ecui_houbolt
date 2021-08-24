@@ -14,6 +14,7 @@
     <link href="css/styles.css" rel="stylesheet">
     </link>
 
+    <link rel="stylesheet" href="pnid_houbolt/client/css/logBox.css">
     <link rel="stylesheet" href="pnid_houbolt/client/css/pnid.css">
     <link rel="stylesheet" href="pnid_houbolt/client/css/popup.css">
     <link rel="stylesheet" href="pnid_houbolt/client/css/inputs.css">
@@ -25,20 +26,24 @@
 <body>
     <div id="disableAll"></div>
     <div id="templates" hidden>
-        <div id="closeButtonTemp" class="row control-row justify-content-end">
-            <!-- <div class="col"></div> -->
+        <div id="headerTemp" class="row control-row justify-content-end">
             <button type="button" class="btn btn-light btn-drag">
                 <i class="bi bi-arrows-move"></i>
             </button>
-            <div class="col"></div>
+            <div class="col popup-heading">Temp Name</div>
             <button type="button" class="btn btn-outline-danger btn-close">
                 <i class="bi bi-x"></i>
             </button> 
-            
         </div>
-          <div id="sliderTemp" class="row control-row">
+        <div id="textDisplayTemp" class="row control-row">
+            <label class="popup-value-out"></label>
+        </div>
+        <div id="graphDisplayTemp" class="row control-row">
+            <label>graph placeholder</label>
+        </div>
+        <div id="sliderTemp" class="row control-row">
             <div class="range-slider col">
-                <label class="range-slider-label input-label">Oxidizer Main Valve</label><br>
+                <label class="range-slider-label input-label">Temp Label</label><br>
                 <input class="range-slider__range servo-slider manual-obj servo-enable-obj"
                     oninput="onServoSliderInput($(this));" type="range" value="0" min="0" max="100" step="1">
                 <span class="range-slider__value">0</span> 
@@ -48,14 +53,46 @@
                     <div class="range-slider-caption_right"> Open </div>
                 </div>
             </div>
+        </div>
+        <div id="digitalOutTemp" class="row control-row">
+            <div class="form-control custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input ckbx manual-obj servo-enable-obj digitalOut" id="tempDigitalOut"
+                    onclick="onDigitalCheck(this);">
+                <label class="custom-control-label ckbx-label" for="tempDigitalOut">Temp Digital Out</label>
             </div>
-            <div id="digitalOutTemp" class="row control-row">
-                <div class="form-control custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input ckbx manual-obj servo-enable-obj digitalOut" id="tempDigitalOut"
-                        onclick="onDigitalCheck(this);">
-                    <label class="custom-control-label ckbx-label" for="tempDigitalOut">Temp Digital Out</label>
+        </div>
+        <div id="logBox" class="logContainer">
+            <div class="logTextArea" onwheel="disableAutoScroll()" style="display: none;">
+                <div id="logEntryTemp" class="logEntry" style="display: none;"></div>
+                <button type="button" class="btn btn-outline-primary scrollButton" onclick="activateAutoScroll()" style="display: none;">
+                    <i class="bi bi-chevron-double-down"></i>
+                </button>
+            </div>
+            <div class="logMenu">
+                <button type="button" class="btn btn-primary" onclick="toggleLogBox()" disabled>
+                    <i class="bi bi-arrow-up"></i>
+                </button>
+                <div class="logOverview">
+                    <div id="logInfo" class="logCategory">
+                        <span class="logCategoryNumber iconInfo">0</span>
+                        <i class="bi bi-info-circle iconInfo"></i>
+                    </div>
+                    <div id="logWarning" class="logCategory">
+                        <span class="logCategoryNumber iconWarning">0</span>
+                        <i class="bi bi-exclamation-triangle iconWarning"></i>
+                    </div>
+                    <div id="logError" class="logCategory">
+                        <span class="logCategoryNumber iconError">0</span>
+                        <i class="bi bi-x-square iconError"></i>
+                    </div>
+                    <div id="logHardwareError" class="logCategory">
+                        <span class="logCategoryNumber iconError">0</span>
+                        <i class="bi bi-bug iconError"></i>
+                    </div>
                 </div>
             </div>
+        </div>
+        
         <div id="tempCommand">
             <li class="list-group-item">
                 <div class="row command">
@@ -329,6 +366,14 @@ Notes: Hotfire
     </script>
 
     <script src="lib/bootstrap-input-spinner.js"></script>
+
+    <!-- Pnid -->
+    <script src="pnid_houbolt/client/js/logManager.js"></script>
+    <script src="pnid_houbolt/client/js/changeValues.js"></script>
+    <script src="pnid_houbolt/client/js/popupManager.js"></script>
+    <script src="pnid_houbolt/client/js/Slider.js"></script>
+    <script src="pnid_houbolt/client/js/inputs.js"></script>
+
     <script src="/js/GUIControls.js"></script>
     <script src="js/SequenceChart.js"></script>
     <script src="js/SensorChart.js"></script>
@@ -340,11 +385,7 @@ Notes: Hotfire
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
 
-    <!-- Pnid -->
-    <script src="pnid_houbolt/client/js/changeValues.js"></script>
-    <script src="pnid_houbolt/client/js/popupManager.js"></script>
-    <script src="pnid_houbolt/client/js/Slider.js"></script>
-    <script src="pnid_houbolt/client/js/inputs.js"></script>
+   
 
     <script src="js/PnidLoader.js"></script>
 </body>

@@ -51,6 +51,15 @@ var chartTabObserver = new MutationObserver(function(mutations) {
 
 var lastModalTriggeredElement = undefined;
 
+//-------------------------------------PNID Events---------------------------------
+
+function onPNIDInput(stateName, value, timestamp)
+{
+    console.log(stateName, value, timestamp);
+    //TODO: maybe append gui elsewhere (in pnid) but probably the best to change it here
+    socket.emit("states-set", [{"name": "gui:"+stateName, "value": value, "timestamp": timestamp}]);
+}
+
 //-------------------------------------GUI Events---------------------------------
 
 $('#outputAssuranceModal').on('show.bs.modal', function (event) {
@@ -150,6 +159,7 @@ function onLLServerDisconnect()
     $('#statusBar').text("No Connection to LLServer");
 }
 
+//TODO: NOT COMPATIBLE WITH NEW PNID
 function timerTick()
 {
     //console.log(timeMillis);
@@ -658,9 +668,9 @@ var firstSensorFetch = true;
 
 socket.on('states', function(jsonStates) {
     // console.log('states');
-    //console.log(JSON.stringify(jsonStates, null, 2));
+    console.log(JSON.stringify(jsonStates, null, 2));
     
-
+    updatePNID(jsonStates);
 });
 
 socket.on('states-load', function(jsonStates) {
