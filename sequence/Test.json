@@ -1,0 +1,82 @@
+{
+	"globals":
+	{
+		"endTime": 5,
+		"interpolation":
+		{
+			"fuel_pressurize_solenoid:SetState": "none",
+			"fuel_depressurize_solenoid:SetState": "none"
+		},
+		"interval": 0.01,
+		"ranges":
+		[
+			"chamberPressure"
+		],
+		"startTime": -3
+	},
+	"data":
+	[
+		{
+			"timestamp": "START",
+			"name": "start",
+			"desc": "set all to zero",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"ox_pressurize_solenoid:SetState": [0],
+					"ox_pressurize_solenoid:SetState": [0],
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [-5, 20]
+					}
+				}
+			]
+		},
+		{
+			"timestamp": 0.0,
+			"name": "press",
+			"desc": "pressurize tanks",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"ox_pressurize_solenoid:SetState": [100]
+				},
+				{
+					"timestamp": 2,
+					"ox_pressurize_solenoid:SetState": [100]
+				}
+			]
+		},
+		{
+			"timestamp": 3.0,
+			"name": "depress",
+			"desc": "depressurize tanks",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"ox_pressurize_solenoid:SetState": [0]
+				},
+				{
+					"timestamp": 1,
+					"ox_pressurize_solenoid:SetState": [0]
+				}
+			]
+		},
+		{
+			"timestamp": "END",
+			"name": "end",
+			"desc": "the end",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"ox_pressurize_solenoid:SetState": [0],
+					"ox_pressurize_solenoid:SetState": [0]
+				}
+			]
+		}
+	]
+}
