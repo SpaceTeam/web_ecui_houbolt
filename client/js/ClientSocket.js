@@ -55,9 +55,10 @@ var lastModalTriggeredElement = undefined;
 
 function onPNIDInput(stateName, value, timestamp)
 {
-    console.log(stateName, value, timestamp);
+    var stateNameFixed = stateName.replace("-sensor","");
+    console.log(stateNameFixed, value, timestamp);
     //TODO: maybe append gui elsewhere (in pnid) but probably the best to change it here
-    socket.emit("states-set", [{"name": "gui:"+stateName, "value": value, "timestamp": timestamp}]);
+    socket.emit("states-set", [{"name": "gui:"+stateNameFixed, "value": value, "timestamp": timestamp}]);
 }
 
 //-------------------------------------GUI Events---------------------------------
