@@ -1,3 +1,4 @@
 [submodule "client/pnid_houbolt"]
 	path = client/pnid_houbolt
 	url = git@github.com-pnid:SpaceTeam/pnid_houbolt.git
+	branch = dev
