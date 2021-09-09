@@ -14,8 +14,11 @@
     <link href="css/styles.css" rel="stylesheet">
     </link>
 
+    <link id="theme" rel="stylesheet" type="text/css" href="pnid_houbolt/client/css/themes/lightTheme.css">
+    <link rel="stylesheet" type="text/css" href="pnid_houbolt/client/css/pnid.css">
+    <link rel="stylesheet" type="text/css" href="pnid_houbolt/client/css/bootstrapOverride.css">
+
     <link rel="stylesheet" href="pnid_houbolt/client/css/logBox.css">
-    <link rel="stylesheet" href="pnid_houbolt/client/css/pnid.css">
     <link rel="stylesheet" href="pnid_houbolt/client/css/popup.css">
     <link rel="stylesheet" href="pnid_houbolt/client/css/inputs.css">
     <link rel="stylesheet" href="pnid_houbolt/client/css/slider.css">
@@ -91,6 +94,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div id="themeSwitcherTemp" class="themeSwitcher">
+            <button type="button" class="btn btn-outline-secondary" onclick="switchTheme()">
+                <i class="bi bi-moon"></i>
+            </button>
         </div>
         
         <div id="tempCommand">
@@ -369,6 +377,7 @@ Notes: Hotfire
 
     <!-- Pnid -->
     <script src="pnid_houbolt/client/js/logManager.js"></script>
+    <script src="pnid_houbolt/client/js/darkMode.js"></script>
     <script src="pnid_houbolt/client/js/changeValues.js"></script>
     <script src="pnid_houbolt/client/js/popupManager.js"></script>
     <script src="pnid_houbolt/client/js/Slider.js"></script>
