@@ -381,6 +381,12 @@ hr {
     width: 100%;
 }
 
+.pnid-container
+{
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
 /* .spinner-disable::-webkit-outer-spin-button,
 .spinner-disable::-webkit-inner-spin-button
 {
