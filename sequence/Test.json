@@ -10,7 +10,7 @@
 			"fuel_depressurize_solenoid:SetState": "none",
 			"ox_tank_vent_valve_backup:SetTargetPosition": "none",
 			"supercharge_valve:SetTargetPosition": "none",
-			"oxfill_vent_valve:SetTargetPosition": "none",
+			"oxfill_valve:SetTargetPosition": "none",
 			"fuel_main_valve:SetTargetPosition": "none",
 			"ox_main_valve:SetTargetPosition": "none"
 		},
@@ -37,7 +37,7 @@
 					"fuel_depressurize_solenoid:SetState": [0],
 					"ox_tank_vent_valve_backup:SetTargetPosition": [0],
 					"supercharge_valve:SetTargetPosition": [0],
-					"oxfill_vent_valve:SetTargetPosition": [0],
+					"oxfill_valve:SetTargetPosition": [0],
 					"fuel_main_valve:SetTargetPosition": [35000],
 					"ox_main_valve:SetTargetPosition": [35000],
 					"sensorsNominalRange":
@@ -87,7 +87,7 @@
 				},
 				{
 					"timestamp": 1.0,
-					"oxfill_vent_valve:SetTargetPosition": [65000]
+					"oxfill_valve:SetTargetPosition": [65000]
 				}
 			]
 		},
@@ -123,7 +123,7 @@
 				},
 				{
 					"timestamp": 2,
-					"oxfill_vent_valve:SetTargetPosition": [0]
+					"oxfill_valve:SetTargetPosition": [0]
 				}
 			]
 		},
@@ -181,7 +181,7 @@
 					"fuel_depressurize_solenoid:SetState": [0],
 					"ox_tank_vent_valve_backup:SetTargetPosition": [0],
 					"supercharge_valve:SetTargetPosition": [0],
-					"oxfill_vent_valve:SetTargetPosition": [0],
+					"oxfill_valve:SetTargetPosition": [0],
 					"fuel_main_valve:SetTargetPosition": [35000],
 					"ox_main_valve:SetTargetPosition": [35000]
 				}
