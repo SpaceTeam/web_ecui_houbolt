@@ -357,10 +357,10 @@ function onToggleSequenceButton(btn)
         $('#sendPostSeqCommentButton').prop('disabled', false);
 
         //scroll to pnid
-        document.getElementById('monitorTabsContent').scrollIntoView({
-            behavior: "smooth",
-            block:    "start",
-        });
+        // document.getElementById('monitorTabsContent').scrollIntoView({
+        //     behavior: "smooth",
+        //     block:    "start",
+        // });
     }
     else if ($(btn).text() === 'Abort Sequence')
     {

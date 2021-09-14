@@ -172,8 +172,8 @@ div#servo-container > button {
 }
 
 #sequenceChart {
-    width: 80%;
-    height: 400px;
+    width: 100%;
+    height: 600px;
 }
 
 .sensorChart {
