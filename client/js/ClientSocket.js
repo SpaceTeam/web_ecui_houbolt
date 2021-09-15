@@ -154,13 +154,13 @@ function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
 function onLLServerConnect()
 {
-    $('#statusBar').css("background-color","transparent");
+    $('#statusBar').attr('hidden', '');
     $('#statusBar').text(null);
 }
 
 function onLLServerDisconnect()
 {
-    $('#statusBar').css("background-color","#FFCD00");
+    $('#statusBar').removeAttr('hidden');
     $('#statusBar').text("No Connection to LLServer");
 }
 
