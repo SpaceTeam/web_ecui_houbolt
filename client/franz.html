@@ -14,7 +14,7 @@
     <link href="css/styles.css" rel="stylesheet">
     </link>
 
-    <link id="theme" rel="stylesheet" type="text/css" href="pnid_houbolt/client/css/themes/lightTheme.css">
+    <link id="theme" rel="stylesheet" type="text/css" href="">
     <link rel="stylesheet" type="text/css" href="pnid_houbolt/client/css/pnid.css">
     <link rel="stylesheet" type="text/css" href="pnid_houbolt/client/css/bootstrapOverride.css">
 
@@ -154,12 +154,12 @@
                 aria-controls="control-tab" aria-selected="true">P&ID</a>
         </li>
         <li class="nav-item master-only">
-            <a class="nav-link tab-button" id="calibration-tab-button" data-toggle="tab" href="#calibration-tab"
-                role="tab" aria-controls="calibration-tab" aria-selected="false" hidden>Calibrate</a>
-        </li>
-        <li class="nav-item master-only">
             <a class="nav-link tab-button" id="commands-tab-button" data-toggle="tab" href="#commands-tab" role="tab"
                 aria-controls="commands-tab" aria-selected="false">Commands</a>
+        </li>
+        <li class="nav-item master-only">
+            <a class="nav-link tab-button" id="calibration-tab-button" data-toggle="tab" href="#calibration-tab"
+                role="tab" aria-controls="calibration-tab" aria-selected="false" hidden>Calibrate</a>
         </li>
     </ul>
     <hr>
@@ -201,7 +201,7 @@
                     <div class="col col-4" id="checklistCol">
                         <div id="commentDiv">
                             <label for="commentTextbox">Comments:</label><br>
-                            <textarea id="commentTextbox" rows="6">
+                            <textarea id="commentTextbox" class="textbox" rows="6">
 Ox Pressure Tank: 150 bar
 Fuel Pressure Tank: 195 bar
 Ox Pressure Inlet: 40 bar
@@ -378,12 +378,13 @@ Notes: Hotfire
 
     <!-- Pnid -->
     <script src="pnid_houbolt/client/js/common.js"></script>
+    <script src="theming/js/themeSwitcher.js"></script>
     <script src="pnid_houbolt/client/js/logManager.js"></script>
-    <script src="pnid_houbolt/client/js/darkMode.js"></script>
     <script src="pnid_houbolt/client/js/changeValues.js"></script>
     <script src="pnid_houbolt/client/js/popupManager.js"></script>
     <script src="pnid_houbolt/client/js/slider.js"></script>
     <script src="pnid_houbolt/client/js/inputs.js"></script>
+    <script src="pnid_houbolt/client/js/pnid.js"></script>
 
     <script src="/js/GUIControls.js"></script>
     <script src="js/SequenceChart.js"></script>
@@ -399,6 +400,7 @@ Notes: Hotfire
    
 
     <script src="js/PnidLoader.js"></script>
+    <script src="js/WebECUI.js"></script>
 </body>
 
 </html>
