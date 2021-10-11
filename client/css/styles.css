@@ -118,13 +118,13 @@ form input {
 }
 
 .card {
-    padding-bottom: 20px;
     border: none;
 }
 
 .card-header {
     transition: 250ms;
     border: 1px solid #F0F0F0;
+    border-radius: inherit;
     background-color: #522e63;
 }
 
