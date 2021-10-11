@@ -4,4 +4,4 @@
 	branch = dev
 [submodule "client/theming"]
 	path = client/theming
-	url = git@github.com:SpaceTeam/SpaceTeamTheme.git
+	url = git@github.com-theme:SpaceTeam/SpaceTeamTheme.git
