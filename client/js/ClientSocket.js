@@ -286,10 +286,31 @@ function loadCommands(jsonCommands)
     commandContainer.empty();
     var commandTemplate = $('#tempCommand').children().first().clone();
 
+    let commandCategories = [];
+
     jsonCommands.forEach(command => {
+        let commandCategory = command["commandName"].split(":")[0];
+        let commandName = command["commandName"].split(":")[1];
+        let commandCategoryHtml = $("#tempCommandCategory").first().clone();
+        let categoryData = commandCategoryHtml.find("div.card-body").first()
+        if (commandCategories.includes(commandCategory))
+        {
+            categoryData = $(`#${commandCategory}`).find("div.card-body").first();
+        }
+        else
+        {
+            let categoryHeader = commandCategoryHtml.find("div.card-header").first();
+            commandCategories.push(commandCategory);
+            commandCategoryHtml.attr("id", commandCategory);
+            categoryHeader.attr("id", "heading_" + commandCategory);
+            let headerButton = categoryHeader.find("button");
+            headerButton.attr("data-target", `#collapse_${commandCategory}`).attr("aria-controls", `collapse_${commandCategory}`).html(commandCategory);
+            commandCategoryHtml.find("div.collapse").attr("aria-labelledby", "heading_" + commandCategory).attr("id", "collapse_" + commandCategory);
+            commandContainer.append(commandCategoryHtml);
+        }
         var commandHtml = commandTemplate.clone();
         commandHtml.children().first().attr("id",command["commandName"]);
-        commandHtml.find('.command-label').eq(0).text(command["commandName"]);
+        commandHtml.find('.command-label').eq(0).text(commandName);
         var prevGroup = commandHtml.find('.parameter-group').eq(0);
         var parameterGroup = commandHtml.find('.parameter-group').eq(0).clone();
         
@@ -318,8 +339,10 @@ function loadCommands(jsonCommands)
         commandHtml.find('.parameter-group').eq(0).remove();
         commandHtml.find('.parameter').inputSpinner();
 
-        commandContainer.append(commandHtml);
+        console.log("appending", commandHtml, "to", categoryData)
+        categoryData.append(commandHtml);
     }); 
+    console.log("categories:", commandCategories);
 }
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------
