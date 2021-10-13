@@ -280,21 +280,26 @@ function countdownTimerTick()
     countdownTime += 1;
 }
 
+function insertTestCommands()
+{
+    loadCommands(JSON.parse('{"commandList":[{"commandName":"ox_purge_solenoid:GetDutyCycle","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:GetMeasurement","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:RequestCalibrate","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:SetMeasurement","parameterNames":["paramA","paramB"]},{"commandName":"ox_pressurize_solenoid:SetSomething","parameterNames":["param2","param4"]},{"commandName":"ox_pressurize_solenoid:GetSomething","parameterNames":["param2","param4"]}]}')["commandList"]);
+}
+
 function updateCommandSearch(input)
 {
-    console.log(input.value);
+    //console.log(input.value);
     if (input.value == "")
     {
         $("#command-list").show();
         $("#command-search-results").empty().hide();
-
     }
     else
     {
         $("#command-list").hide();
 
         $("#command-search-results").empty();
-        let results = $(`[id*=${input.value} i]`).filter(".command").clone();
+        let selector = $.escapeSelector(input.value);
+        let results = $(`[id*=${selector} i]`).filter(".command").clone();
         if (results.length > 0)
         {
             results.each(function (index) {
