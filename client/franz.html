@@ -340,8 +340,14 @@ Notes: Hotfire
 
         </div>
         <div class="tab-pane fade master-only" id="commands-tab" role="tabpanel" aria-labelledby="commands-tab-button">
-            <div id="command-container" class="accordion">
-                
+            <div id="command-container">
+                <div class="form-outline">
+                    <input type="search" id="commandSearch" class="form-control" placeholder="Search for Command" aria-label="Search" onkeyup="updateCommandSearch(this)"/>
+                </div>
+                <div id="command-search-results" class="accordion">
+                </div>
+                <div id="command-list" class="accordion">
+                </div>
             </div>
 
         </div>

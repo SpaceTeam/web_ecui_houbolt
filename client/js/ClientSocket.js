@@ -280,10 +280,56 @@ function countdownTimerTick()
     countdownTime += 1;
 }
 
+function updateCommandSearch(input)
+{
+    console.log(input.value);
+    if (input.value == "")
+    {
+        $("#command-list").show();
+        $("#command-search-results").empty().hide();
+
+    }
+    else
+    {
+        $("#command-list").hide();
+
+        $("#command-search-results").empty();
+        //console.log("descendant", $(`#command-list [id*=${input.value}]`));
+        //console.log("global", $(`[id*=${input.value}]`));
+        let results = $(`[id*=${input.value} i]`).filter(".command").clone();
+        console.log(results);
+        if (results.length > 0)
+        {
+            results.each(function (index) {
+                console.log("here");
+                let entryData = results.eq(index);
+                let regExp = new RegExp(`(${input.value})`, 'gi');
+                let highlightedTitle = entryData.attr("id").replace(regExp, '<b>$1</b>')
+                //entryData.find("label").first().html(entryData.attr("id").replace(input.value, `<b>${input.value}</b>`));
+                entryData.find("label").first().html(highlightedTitle);
+                let listEntry = `<li class="list-group-item">${entryData[0].outerHTML}</li>`;
+                $("#command-search-results").append(listEntry);
+                //$(listEntry).append(entryData);
+            });
+        }
+        else
+        {
+            $("#command-search-results").append(`<li class="list-group-item"><label class="input-label">No commands containing '${input.value}' found.</label></li>`);
+            $("#command-list").show();
+        }
+
+        //console.log(results);
+        //$("#command-search-results").append(results);
+
+        $("#command-search-results").show();
+    }
+}
+
 function loadCommands(jsonCommands)
 {
-    var commandContainer = $('#command-container');
-    commandContainer.empty();
+    $("#commandSearch").empty();
+    var commandContainer = $('#command-list');
+    //commandContainer.empty();
     var commandTemplate = $('#tempCommand').children().first().clone();
 
     let commandCategories = [];
@@ -339,10 +385,10 @@ function loadCommands(jsonCommands)
         commandHtml.find('.parameter-group').eq(0).remove();
         commandHtml.find('.parameter').inputSpinner();
 
-        console.log("appending", commandHtml, "to", categoryData)
+        //console.log("appending", commandHtml, "to", categoryData)
         categoryData.append(commandHtml);
     }); 
-    console.log("categories:", commandCategories);
+    //console.log("categories:", commandCategories);
 }
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------
