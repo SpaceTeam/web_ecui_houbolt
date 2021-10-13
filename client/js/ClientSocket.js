@@ -294,22 +294,16 @@ function updateCommandSearch(input)
         $("#command-list").hide();
 
         $("#command-search-results").empty();
-        //console.log("descendant", $(`#command-list [id*=${input.value}]`));
-        //console.log("global", $(`[id*=${input.value}]`));
         let results = $(`[id*=${input.value} i]`).filter(".command").clone();
-        console.log(results);
         if (results.length > 0)
         {
             results.each(function (index) {
-                console.log("here");
                 let entryData = results.eq(index);
                 let regExp = new RegExp(`(${input.value})`, 'gi');
                 let highlightedTitle = entryData.attr("id").replace(regExp, '<b>$1</b>')
-                //entryData.find("label").first().html(entryData.attr("id").replace(input.value, `<b>${input.value}</b>`));
                 entryData.find("label").first().html(highlightedTitle);
                 let listEntry = `<li class="list-group-item">${entryData[0].outerHTML}</li>`;
                 $("#command-search-results").append(listEntry);
-                //$(listEntry).append(entryData);
             });
         }
         else
@@ -317,9 +311,6 @@ function updateCommandSearch(input)
             $("#command-search-results").append(`<li class="list-group-item"><label class="input-label">No commands containing '${input.value}' found.</label></li>`);
             $("#command-list").show();
         }
-
-        //console.log(results);
-        //$("#command-search-results").append(results);
 
         $("#command-search-results").show();
     }
