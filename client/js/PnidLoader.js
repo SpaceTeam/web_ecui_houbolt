@@ -24,5 +24,6 @@ function onPnidSelectChange(value)
         $( "#pnid" ).empty();
         $( "#pnid" ).append(data);
         tankSetup();
+        initPNIDHitboxes(); //move that to pnid.js from the other branch (theming?)
       });
 }
