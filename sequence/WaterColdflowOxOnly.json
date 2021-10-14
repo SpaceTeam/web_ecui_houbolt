@@ -1,0 +1,139 @@
+{
+	"globals":
+	{
+		"endTime": 14,
+		"interpolation":
+		{
+			"ox_pressurize_solenoid:SetState": "none",
+			"ox_depressurize_solenoid:SetState": "none",
+			"supercharge_valve:SetTargetPosition": "none",
+			"ox_main_valve:SetTargetPosition": "none",
+            "ox_purge_solenoid:SetState": "none"
+		},
+		"interval": 0.01,
+		"ranges":
+		[
+			"chamberPressure"
+		],
+		"startTime": -5
+	},
+	"data":
+	[
+		{
+			"timestamp": "START",
+			"name": "start",
+			"desc": "set all to zero",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"ox_pressurize_solenoid:SetState": [0],
+					"ox_depressurize_solenoid:SetState": [0],
+                    "ox_main_valve:SetTargetPosition": [0],
+                    "supercharge_valve:SetTargetPosition": [65000],
+					"ox_purge_solenoid:SetState": [0],
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [-5, 20]
+					}
+				}
+			]
+		},
+		{
+			"timestamp": -4.0,
+			"name": "press",
+			"desc": "pressurize tanks",
+			"actions":
+			[
+                {
+                    "timestamp": 0.0,
+                    "supercharge_valve:SetTargetPosition": [0]
+                },
+                {
+					"timestamp": 1,
+					"ox_depressurize_solenoid:SetState": [65000]
+				},
+                {
+					"timestamp": 1.5,
+					"ox_pressurize_solenoid:SetState": [65000]
+				}
+				
+			]
+		},
+		{
+			"timestamp": 0.0,
+			"name": "open air",
+			"desc": "max power",
+			"actions":
+			[
+                {
+					"timestamp": 0,
+					"ox_main_valve:SetTargetPosition": [65000]
+				}
+			]
+		},
+		{
+			"timestamp": 5.0,
+			"name": "close air",
+			"desc": "max power",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"ox_main_valve:SetTargetPosition": [0]
+				}
+			]
+		},
+        {
+			"timestamp": 7,
+			"name": "purge",
+			"desc": "max power",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"ox_purge_solenoid:SetState": [65000]
+				},
+                {
+					"timestamp": 2,
+					"ox_purge_solenoid:SetState": [0]
+				}
+			]
+		},
+		{
+			"timestamp": 10,
+			"name": "depress",
+			"desc": "depressurize tanks",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"ox_pressurize_solenoid:SetState": [0]
+				},
+                {
+					"timestamp": 0.5,
+					"ox_depressurize_solenoid:SetState": [0]
+				},
+                {
+                    "timestamp": 2,
+                    "supercharge_valve:SetTargetPosition": [65000]
+                }
+			]
+		},
+		{
+			"timestamp": "END",
+			"name": "end",
+			"desc": "the end",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"ox_pressurize_solenoid:SetState": [0],
+					"ox_depressurize_solenoid:SetState": [0],
+					"ox_main_valve:SetTargetPosition": [0],
+                    "supercharge_valve:SetTargetPosition": [65000]
+				}
+			]
+		}
+	]
+}

@@ -738,14 +738,14 @@ var firstSensorFetch = true;
 
 socket.on('states', function(jsonStates) {
     // console.log('states');
-    //console.log(JSON.stringify(jsonStates, null, 2));
-    for (index in jsonStates)
-    {
-    	if (jsonStates[index]["name"] == "lcb_engine_unused_ch0:sensor")
-    	{
-    		console.log(JSON.stringify(jsonStates[index], null, 2))		
-    	}
-    }
+    console.log(JSON.stringify(jsonStates, null, 2));
+    // for (index in jsonStates)
+    // {
+    // 	if (jsonStates[index]["name"] == "lcb_engine_unused_ch0:sensor")
+    // 	{
+    // 		console.log(JSON.stringify(jsonStates[index], null, 2))		
+    // 	}
+    // }
     
     updatePNID(jsonStates);
 });
