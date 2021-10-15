@@ -23,7 +23,6 @@ function onPnidSelectChange(value)
         let svg = $(data);
         $( "#pnid" ).empty();
         $( "#pnid" ).append(data);
-        tankSetup();
-        initPNIDHitboxes(); //move that to pnid.js from the other branch (theming?)
+        initPNID(false, "theming/", [{theme: "lightTheme", icon: "brightness-high", type: "light"},{theme: "darkTheme", icon: "moon", type: "dark"}]);
       });
 }

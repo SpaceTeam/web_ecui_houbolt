@@ -51,6 +51,7 @@ var chartTabObserver = new MutationObserver(function(mutations) {
 
 var lastModalTriggeredElement = undefined;
 
+
 //-------------------------------------PNID Events---------------------------------
 
 function onPNIDInput(stateName, value, timestamp)
