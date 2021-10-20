@@ -116,11 +116,26 @@ form input {
     height: 25rem;
 }
 
+#commandSearch {
+    margin-bottom: 0.5rem;
+    background-color: var(--background-secondary) !important; /*this will probably have to be moved to bootstrap override. or maybe not if it's not widely applicable enough?*/
+}
+
 .accordion {
-    border: none;
+    border-style: none;
     background-color: transparent;
     box-shadow: none;
-    margin-left: 2rem;
+}
+
+.accordion > .card {
+    background-color: var(--accent-primary);
+    border-bottom: 1px;
+}
+
+.accordion > .card:not(:last-of-type) {
+    border-bottom: 1px !important;
+    border-style: none none solid none !important;
+    border-color: var(--accent-secondary) !important;
 }
 
 .card {
@@ -132,6 +147,10 @@ form input {
     border: 1px solid var(--background-secondary);
     border-radius: inherit;
     background-color: var(--accent-primary);
+}
+
+.card-header:first-child {
+    border-style: none;
 }
 
 .card-header:hover {
