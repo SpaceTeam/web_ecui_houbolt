@@ -322,14 +322,14 @@ function updateCommandSearch(input)
     }
 }
 
+var commandCategories = []; //I dislike that this is global, but I don't see an easy fix for this otherwise. I'd need to read all already created categories and re-parse the category names from them which sucks more than this global variable imo
+
 function loadCommands(jsonCommands)
 {
     $("#commandSearch").empty();
-    var commandContainer = $('#command-list');
+    let commandContainer = $('#command-list');
     //commandContainer.empty();
-    var commandTemplate = $('#tempCommand').children().first().clone();
-
-    let commandCategories = [];
+    let commandTemplate = $('#tempCommand').children().first().clone();
 
     jsonCommands.forEach(command => {
         let commandCategory = command["commandName"].split(":")[0];
@@ -351,7 +351,7 @@ function loadCommands(jsonCommands)
             commandCategoryHtml.find("div.collapse").attr("aria-labelledby", "heading_" + commandCategory).attr("id", "collapse_" + commandCategory);
             commandContainer.append(commandCategoryHtml);
         }
-        var commandHtml = commandTemplate.clone();
+        let commandHtml = commandTemplate.clone();
         commandHtml.children().first().attr("id",command["commandName"]);
         commandHtml.find('.command-label').eq(0).text(commandName);
         var prevGroup = commandHtml.find('.parameter-group').eq(0);
