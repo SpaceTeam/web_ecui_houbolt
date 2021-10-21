@@ -128,14 +128,14 @@ form input {
 }
 
 .accordion > .card {
-    background-color: var(--accent-primary);
+    background-color: var(--background-secondary);
     border-bottom: 1px;
 }
 
 .accordion > .card:not(:last-of-type) {
     border-bottom: 1px !important;
     border-style: none none solid none !important;
-    border-color: var(--accent-secondary) !important;
+    border-color: var(--background-primary) !important;
 }
 
 .card {
@@ -146,7 +146,7 @@ form input {
     transition: 250ms;
     border: 1px solid var(--background-secondary);
     border-radius: inherit;
-    background-color: var(--accent-primary);
+    background-color: inherit;
 }
 
 .card-header:first-child {
@@ -178,12 +178,23 @@ form input {
 }
 
 .btn-link {
-    color: white;
+    color: var(--content-primary);
     text-decoration: none;
 }
 
+.card-header .btn-link {
+    color: var(--content-primary);
+}
+
+.card-header:hover .btn-link {
+    color: var(--accented-text);
+}
+
 .btn-link:hover {
-    color: white;
+    text-decoration: none;
+}
+
+.btn-link:focus {
     text-decoration: none;
 }
 
