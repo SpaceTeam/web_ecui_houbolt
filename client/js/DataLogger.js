@@ -42,6 +42,7 @@ function replayLog()
 {
     if (replayIndex >= log["log"].length) {
         printLog("info", "Finished replaying the logged data.");
+        replayIndex = 0;
         return;
     }
     //fetch log entry
