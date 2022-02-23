@@ -4,7 +4,11 @@ var log = {
 //todo there has to be a cleaner way to do this. needs to be able to load from a string though and I think having a json dict containing an array is the only easy way to do so.
 var logTimer = 0;
 var logStartDateTime = 0;
+var replayStartDateTime = 0;
+var lastLogStepTime = 0;
 var replayIndex = 0;
+
+var executionTimes = [];
 
 function startLogging(duration)
 {
@@ -38,26 +42,67 @@ function logStates(stateList)
     }
 }
 
-function replayLog()
+function replayLog(fixedDelay = undefined)
 {
-    if (replayIndex >= log["log"].length) {
+    if (replayIndex == 0)
+    {
+        executionTimes = [];
+        replayStartDateTime = new Date();
+    }
+    if (replayIndex >= log["log"].length)
+    {
         printLog("info", "Finished replaying the logged data.");
         replayIndex = 0;
+        console.log("execution times:", executionTimes);
+        let minExecTime = 10000;
+        let maxExecTime = 0;
+        let averageSum = 0;
+        for (let time of executionTimes) {
+            if (time < minExecTime) {
+                minExecTime = time;
+            }
+            if (time > maxExecTime) {
+                maxExecTime = time;
+            }
+            averageSum += time;
+        }
+        console.log(`min exec time: ${minExecTime}ms, max exec time: ${maxExecTime}ms\naverage exec time (n = ${executionTimes.length}): ${averageSum / executionTimes.length}ms\ntotal time to replay log: ${new Date() - replayStartDateTime}ms`);
         return;
     }
     //fetch log entry
     let logEntry = log["log"][replayIndex];
+    //store actual time before executing this log step for later use
+    lastLogStepTime = new Date();
     //display log entry
-    updatePNID(logEntry["states"])
+    updatePNID(logEntry["states"]); //this is potentially very long compared to the rest of the logging logic
+    let executionTime = new Date() - lastLogStepTime;
+    executionTimes.push(executionTime);
     
-    //fetch previous log entry time (or current time if it's first log entry)
-    let previousTime = logEntry["time"];
-    if (replayIndex > 0) {
-        previousTime = log["log"][replayIndex - 1]["time"];
+    //if there is no fixed time step specified, calculate from log timestamps
+    let nextStepDelay = 0;
+    if (fixedDelay == undefined)
+    {
+        //fetch previous log entry time (or current time if it's first log entry)
+        //this is the "should" time which may have been delayed by too long execution time
+        let previousTime = logEntry["time"];
+        if (replayIndex > 0)
+        {
+            previousTime = log["log"][replayIndex - 1]["time"];
+        }
+        replayIndex++;
+        //start timer for next step in the log
+        nextStepDelay = logEntry["time"] - previousTime - executionTime;
+        if (nextStepDelay < 0)
+        {
+            nextStepDelay = 0;
+        }
     }
-    replayIndex++;
-    //start timer for next step in the log
-    setTimeout(replayLog, logEntry["time"] - previousTime);
+    else
+    {
+        nextStepDelay = fixedDelay;
+    }
+    
+    setTimeout(replayLog, nextStepDelay);
 }
 
 function abortLogReplay()
