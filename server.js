@@ -1,5 +1,6 @@
 const express = require('express');
 const path = __dirname + '/client/';
+const configPath = path + 'pnid_houbolt/client/config/';
 
 var app = express();
 var http = require('http').Server(app);
@@ -598,6 +599,24 @@ app.get('/pnidList', function(req, res){
     res.json(pnidManMod.getAllPnIDs());
 });
 
+app.get('/config/custom', (req, res) => {
+    console.log("requested config");
+    //let rawdata = fs.readFileSync(configPath + 'config.json');
+	res.sendFile(configPath + 'config.json')
+});
+
+app.get('/config/default', (req, res) => {
+    console.log("requested default config");
+    //let rawdata = fs.readFileSync(configPath + 'defaultConfig.json');
+	res.sendFile(configPath + 'defaultConfig.json')
+});
+
+app.get('/config/thresholds', (req, res) => {
+    console.log("requested thresholds definitions");
+    //let rawdata = fs.readFileSync(configPath + 'thresholds.json');
+	res.sendFile(configPath + 'thresholds.json')
+});
+
 app.post('/pnid', function(req, res){
     console.log(req.body.file);
     pnidManMod.setPnID(req.body.file);
@@ -607,3 +626,6 @@ app.post('/pnid', function(req, res){
 http.listen(port, function(){
     console.log('listening on *:' + port);
 });
+
+console.log("config path", configPath);
+console.log("dirname", __dirname + "/client/pnid_houbolt/client/config/");
