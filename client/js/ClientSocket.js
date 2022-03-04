@@ -51,6 +51,7 @@ var chartTabObserver = new MutationObserver(function(mutations) {
 
 var lastModalTriggeredElement = undefined;
 
+
 //-------------------------------------PNID Events---------------------------------
 
 function onPNIDInput(stateName, value, timestamp)
@@ -280,16 +281,79 @@ function countdownTimerTick()
     countdownTime += 1;
 }
 
+function insertTestCommands()
+{
+    loadCommands(JSON.parse('{"commandList":[{"commandName":"ox_purge_solenoid:GetDutyCycle","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:GetMeasurement","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:RequestCalibrate","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:SetMeasurement","parameterNames":["paramA","paramB"]},{"commandName":"ox_pressurize_solenoid:SetSomething","parameterNames":["param2","param4"]},{"commandName":"ox_pressurize_solenoid:GetSomething","parameterNames":["param2","param4"]}]}')["commandList"]);
+}
+
+function updateCommandSearch(input)
+{
+    //console.log(input.value);
+    if (input.value == "")
+    {
+        $("#command-list").show();
+        $("#command-search-results").empty().hide();
+    }
+    else
+    {
+        $("#command-list").hide();
+
+        $("#command-search-results").empty();
+        let selector = $.escapeSelector(input.value);
+        let results = $(`[id*=${selector} i]`).filter(".command").clone();
+        if (results.length > 0)
+        {
+            results.each(function (index) {
+                let entryData = results.eq(index);
+                let regExp = new RegExp(`(${input.value})`, 'gi');
+                let highlightedTitle = entryData.attr("id").replace(regExp, '<b>$1</b>')
+                entryData.find("label").first().html(highlightedTitle);
+                let listEntry = `<li class="list-group-item">${entryData[0].outerHTML}</li>`;
+                $("#command-search-results").append(listEntry);
+            });
+        }
+        else
+        {
+            $("#command-search-results").append(`<li class="list-group-item"><label class="input-label">No commands containing '${input.value}' found.</label></li>`);
+            $("#command-list").show();
+        }
+
+        $("#command-search-results").show();
+    }
+}
+
+var commandCategories = []; //I dislike that this is global, but I don't see an easy fix for this otherwise. I'd need to read all already created categories and re-parse the category names from them which sucks more than this global variable imo
+
 function loadCommands(jsonCommands)
 {
-    var commandContainer = $('#command-container');
-    commandContainer.empty();
-    var commandTemplate = $('#tempCommand').children().first().clone();
+    $("#commandSearch").empty();
+    let commandContainer = $('#command-list');
+    //commandContainer.empty();
+    let commandTemplate = $('#tempCommand').children().first().clone();
 
     jsonCommands.forEach(command => {
-        var commandHtml = commandTemplate.clone();
+        let commandCategory = command["commandName"].split(":")[0];
+        let commandName = command["commandName"].split(":")[1];
+        let commandCategoryHtml = $("#tempCommandCategory").first().clone();
+        let categoryData = commandCategoryHtml.find("div.card-body").first()
+        if (commandCategories.includes(commandCategory))
+        {
+            categoryData = $(`#${commandCategory}`).find("div.card-body").first();
+        }
+        else
+        {
+            let categoryHeader = commandCategoryHtml.find("div.card-header").first();
+            commandCategories.push(commandCategory);
+            commandCategoryHtml.attr("id", commandCategory);
+            categoryHeader.attr("id", "heading_" + commandCategory);
+            let headerButton = categoryHeader.find("button");
+            headerButton.attr("data-target", `#collapse_${commandCategory}`).attr("aria-controls", `collapse_${commandCategory}`).html(commandCategory);
+            commandCategoryHtml.find("div.collapse").attr("aria-labelledby", "heading_" + commandCategory).attr("id", "collapse_" + commandCategory);
+            commandContainer.append(commandCategoryHtml);
+        }
+        let commandHtml = commandTemplate.clone();
         commandHtml.children().first().attr("id",command["commandName"]);
-        commandHtml.find('.command-label').eq(0).text(command["commandName"]);
+        commandHtml.find('.command-label').eq(0).text(commandName);
         var prevGroup = commandHtml.find('.parameter-group').eq(0);
         var parameterGroup = commandHtml.find('.parameter-group').eq(0).clone();
         
@@ -318,8 +382,10 @@ function loadCommands(jsonCommands)
         commandHtml.find('.parameter-group').eq(0).remove();
         commandHtml.find('.parameter').inputSpinner();
 
-        commandContainer.append(commandHtml);
+        //console.log("appending", commandHtml, "to", categoryData)
+        categoryData.append(commandHtml);
     }); 
+    //console.log("categories:", commandCategories);
 }
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------
@@ -673,7 +739,7 @@ var firstSensorFetch = true;
 
 socket.on('states', function(jsonStates) {
     // console.log('states');
-    console.log(JSON.stringify(jsonStates, null, 2));
+    //console.log(JSON.stringify(jsonStates, null, 2));
     // for (index in jsonStates)
     // {
     // 	if (jsonStates[index]["name"] == "lcb_engine_unused_ch0:sensor")
