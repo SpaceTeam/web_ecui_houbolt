@@ -61,7 +61,11 @@ form input {
     margin-left: auto;
     margin-top: auto;
     margin-right: 1rem;
-	height: 10rem;
+	height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-evenly;
 }
 
 #masterRequest {
@@ -74,8 +78,6 @@ form input {
 }
 
 #masterLock {
-	margin-top: 1rem;
-	margin-bottom: 10px;
 	text-align: right;
 }
 
@@ -351,9 +353,9 @@ hr {
 }
 
 #versionLabel {
-    margin-top: 8px;
     font-size: 1rem;
 	float: right;
+    margin-bottom: 0px;
 }
 
 .header {

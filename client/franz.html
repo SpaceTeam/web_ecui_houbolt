@@ -145,7 +145,10 @@
         <p id="title">ECUI</p>
         <p id="subtitle">Test Stand</p>
         <div class="master-client-controls">
-
+            <div class="master-only" style="text-align: right;">
+                <input type="checkbox" id="autoAbortCbox" onclick="onAutoAbortChange(this);">
+                Auto Abort
+            </div>
             <div class="master-only" id="masterLock" hidden>
                 <input type="checkbox" id="masterLockBox" onclick="onMasterLockClicked(this);">
                 Master Locked

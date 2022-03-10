@@ -455,6 +455,11 @@ function sendServo(servoId, servoValue)
     socket.emit('states-set', [jsonServo]);
 }
 
+function onAutoAbortChange(checkbox)
+{
+    socket.emit('auto-abort-change', checkbox.checked);
+}
+
 function onManualControlEnable(checkbox)
 {
     //console.log("manual control:", checkbox.checked);
@@ -581,7 +586,7 @@ socket.on('master-lock', (flag) => {
     else $('#masterLockBox').prop('checked', false);
 });
 
-socket.on('connect', function() {socket.emit('checklist-start'); socket.emit('commands-load');});
+socket.on('connect', function() {socket.emit('checklist-start'); socket.emit('commands-load'); socket.emit('states-load'); socket.emit('states-start');});
 
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
 socket.on('connect_error', function(error) {
@@ -610,6 +615,12 @@ socket.on('abort', function(abortMsg) {
     abortSequence(abortMsg);
 
     $('#masterRequest').prop('disabled', false);
+});
+
+socket.on('auto-abort-change', function(isAutoAbortActive) {
+    console.log('auto-abort-change', isAutoAbortActive);
+
+    $('#autoAbortCbox').prop('checked', isAutoAbortActive);
 });
 
 socket.on('sequence-load', function(jsonSeqsInfo) {
@@ -739,7 +750,7 @@ var firstSensorFetch = true;
 
 socket.on('states', function(jsonStates) {
     // console.log('states');
-    //console.log(JSON.stringify(jsonStates, null, 2));
+    console.log(JSON.stringify(jsonStates, null, 2));
     // for (index in jsonStates)
     // {
     // 	if (jsonStates[index]["name"] == "lcb_engine_unused_ch0:sensor")
@@ -752,6 +763,7 @@ socket.on('states', function(jsonStates) {
 });
 
 socket.on('states-load', function(jsonStates) {
+    console.log('states-load');
     console.log(jsonStates);
     
     setStateNamesPNID(jsonStates);
