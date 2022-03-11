@@ -445,6 +445,12 @@ ioClient.on('connection', function(socket){
             }
         });
 
+        socket.on('states-get', function(jsonStates){
+            console.log('states-get');
+            llServerMod.sendMessage(llServer, 'states-get', jsonStates);
+            
+        });
+
 		socket.on('states-set', function(jsonStates){
             console.log('states-set');
             if (master === socket.id) {
