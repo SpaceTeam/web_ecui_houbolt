@@ -457,6 +457,7 @@ function sendServo(servoId, servoValue)
 
 function onAutoAbortChange(checkbox)
 {
+    console.log("auto abort clicked");
     socket.emit('auto-abort-change', checkbox.checked);
 }
 

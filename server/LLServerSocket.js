@@ -27,61 +27,48 @@ module.exports = {
 
         // When receive client data.
         client.on('data', function (data) {
-            //console.log('client message');
-            // console.log("|||||||||||||||||||||||||");
-            // console.log(data);
-            // console.log(readyForMessage);
-            // console.log(data.toString('ascii'));
-            // console.log("|||||||||||||||||||||||||");
 
             stateDataBuffer = Buffer.concat([stateDataBuffer, data]);
-
-            //while header already fetched
-            if (stateDataBuffer.length >= HEADER_SIZE)
-            {
-                switch (currReceiveState)
+            
+            do {
+                //while header already fetched
+                if (stateDataBuffer.length >= HEADER_SIZE)
                 {
-                    case RECEIVE_STATES.HEADER:
-                        if (stateDataBuffer.length >= HEADER_SIZE) {
-                            // console.log("|||||||||||||||||||||||||");
+                    switch (currReceiveState)
+                    {
+                        case RECEIVE_STATES.HEADER:
+                            if (stateDataBuffer.length >= HEADER_SIZE) {
 
-                            let header = stateDataBuffer.slice(0, 2);
-                            length = header.readUInt16BE(0);
-                            stateDataBuffer = stateDataBuffer.slice(2);
+                                let header = stateDataBuffer.slice(0, 2);
+                                length = header.readUInt16BE(0);
+                                stateDataBuffer = stateDataBuffer.slice(2);
 
-                            // console.log("message length:", length);
-                            // console.log(stateDataBuffer);
-                            // console.log(stateDataBuffer.toString('ascii'));
+                                prevReceiveState = currReceiveState;
+                                currReceiveState = RECEIVE_STATES.MESSAGE;
+                            }
 
-                            prevReceiveState = currReceiveState;
-                            currReceiveState = RECEIVE_STATES.MESSAGE;
-                        }
+                        case RECEIVE_STATES.MESSAGE:
 
-                    case RECEIVE_STATES.MESSAGE:
+                            if (stateDataBuffer.length >= length) {
 
-                        if (stateDataBuffer.length >= length) {
-                            // console.log("got whole message");
-                            // console.log(stateDataBuffer);
-                            // console.log(stateDataBuffer.toString('ascii'));
+                                let payloadBuffer = stateDataBuffer.slice(0, length);
+                                stateDataBuffer = stateDataBuffer.slice(length);
+                                msgRecvCallback(payloadBuffer.toString('ascii'));
 
-                            let payloadBuffer = stateDataBuffer.slice(0, length);
-                            stateDataBuffer = stateDataBuffer.slice(length);
-                            msgRecvCallback(payloadBuffer.toString('ascii'));
+                                prevReceiveState = currReceiveState;
+                                currReceiveState = RECEIVE_STATES.HEADER;
 
-                            prevReceiveState = currReceiveState;
-                            currReceiveState = RECEIVE_STATES.HEADER;
+                            } else {
+                                // console.log("message not complete, waiting for data...");
+                            }
 
-                            // console.log("|||||||||||||||||||||||||");
-                        } else {
-                            // console.log("message not complete, waiting for data...");
-                        }
-
-                        break;
-                    default:
-                        console.error("state not supported");
-                        break;
+                            break;
+                        default:
+                            console.error("state not supported");
+                            break;
+                    }
                 }
-            }
+            } while(stateDataBuffer.length > 0 && currReceiveState == RECEIVE_STATES.HEADER);
         });
 
         // When client disconnects.
@@ -147,8 +134,8 @@ module.exports = {
                 console.log("send msg:", strMsg);
                 console.log("------------------");
 
-                client.write(Buffer.from([MSB, LSB]));
-                client.write(Buffer.from(strMsg, 'ascii'));
+                var msgBuffer = Buffer.concat([Buffer.from([MSB, LSB]),Buffer.from(strMsg, 'ascii')])
+                client.write(msgBuffer);
             }
         }
         else
