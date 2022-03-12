@@ -40,7 +40,7 @@ var checklistMan = new checklistManMod();
 var sequenceRunning = false;
 var llServerConnected = false;
 
-var commandsJson = [];
+var commandsJson = null;
 
 const ServerMode = {
     FRANZ: 0,
@@ -115,11 +115,15 @@ var onCommandsLoad = function(ioClient, socket)
 {
     console.log("commands-load");
     console.log(commandsJson);
-    if (commandsJson === {})
+    if (commandsJson === null)
     {
         llServerMod.sendMessage(llServer, 'commands-load');
     }
-    socket.emit('commands-load', commandsJson);
+    else
+    {
+        socket.emit('commands-load', commandsJson);
+    }
+    
 }
 
 var onChecklistStart = function (ioClient, socket) {

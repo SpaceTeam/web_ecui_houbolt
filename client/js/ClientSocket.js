@@ -654,6 +654,7 @@ socket.on('sequence-load', function(jsonSeqsInfo) {
 socket.on('commands-load', function(jsonCommands) {
 
     console.log('commands-load');
+    console.log(jsonCommands);
     loadCommands(jsonCommands);
 
 });
@@ -751,7 +752,7 @@ var firstSensorFetch = true;
 
 socket.on('states', function(jsonStates) {
     // console.log('states');
-    console.log(JSON.stringify(jsonStates, null, 2));
+    //console.log(JSON.stringify(jsonStates, null, 2));
     // for (index in jsonStates)
     // {
     // 	if (jsonStates[index]["name"] == "lcb_engine_unused_ch0:sensor")
