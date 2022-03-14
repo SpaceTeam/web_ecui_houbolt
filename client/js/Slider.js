@@ -1,22 +1,55 @@
-var rangeSlider = function(){
-  var slider = $('.range-slider'),
-      range = $('.range-slider__range'),
-      value = $('.range-slider__value');
+var sliderMoveState = false;
 
-  slider.each(function(){
+var rangeSlider = function(sliderRow)
+{
+    var slider = sliderRow.find('.range-slider'),
+        range = sliderRow.find('.range-slider__range'),
+        value = sliderRow.find('.range-slider__value');
 
-    value.each(function(){
-      var value = $(this).parent().find('.range-slider__range').attr('value');
-      $(this).html(value);
+    slider.each(function()
+    {
+        value.each(function()
+        {
+            var value = $(this).parent().find('.range-slider__range').attr('value');
+            $(this).html(value);
+        });
+
+        range.on('input', function()
+        {
+            $(this).parent().find('.range-slider__value').html(this.value);
+        });
+
+        range.on('mousedown', function()
+        {
+            sliderMoveState = true;
+        });
+
+        range.on('mouseup', function()
+        {
+            sliderMoveState = false;
+        });
     });
-
-    range.on('input', function(){
-      $(this).parent().find('.range-slider__value').html(this.value);
-    });
-  });
 };
 
-rangeSlider();
+function setSliderFeedback(slider, feedbackValue)
+{
+    let percent = feedbackValue / slider.attr("max") * 100;
+    slider.css("background", `-webkit-gradient(linear, left top, right top, color-stop(${percent}%, var(--accent-disabled)), color-stop(${percent}%, var(--background-tertiary)))`);
+}
+
+function setSliderValue(slider, value)
+{
+    slider[0].value = value; //I dislike having this hardcoded
+    let valueOut = slider.siblings("span.range-slider__value");
+    valueOut.text(Math.round(value));
+}
+
+function sliderIsMoving()
+{
+    //console.log("slider is moving?", slider.filter(':active').length == 0 ? false : true);
+    //return slider.filter(':active').length == 0 ? false : true;
+    return sliderMoveState;
+}
 
 var minInput = $("#fuelServoMin");
 var maxInput = $("#fuelServoMax");

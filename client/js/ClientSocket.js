@@ -56,7 +56,7 @@ var lastModalTriggeredElement = undefined;
 
 function onPNIDInput(stateName, value, timestamp)
 {
-    var stateNameFixed = stateName.replace(":sensor","");
+    var stateNameFixed = stateName //.replace(":sensor","");
     if (!stateNameFixed.includes("gui"))
     {
         stateNameFixed = "gui:" + stateNameFixed;
