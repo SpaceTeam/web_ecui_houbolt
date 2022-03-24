@@ -598,6 +598,7 @@ function onLLServerConnect()
 function onLLServerDisconnect()
 {
     ioClient.emit("llserver-disconnect");
+    commandsJson = null;
     llServerConnected = false;
 }
 
