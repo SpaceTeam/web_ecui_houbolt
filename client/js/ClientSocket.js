@@ -757,7 +757,7 @@ socket.on('states', function(jsonStates) {
     //PRINT non sensor values only
     for (index in jsonStates)
     {
-    	if (!jsonStates[index]["name"].includes(":sensor"))
+    	if (!jsonStates[index]["name"].includes(":sensor") || jsonStates[index]["name"].includes("gui:"))
     	{
     		console.log(JSON.stringify(jsonStates[index], null, 2))		
     	}
