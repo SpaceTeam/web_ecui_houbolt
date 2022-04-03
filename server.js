@@ -652,58 +652,11 @@ app.get('/config/thresholds', (req, res) => {
 	res.sendFile(configPath + 'thresholds.json')
 });
 
-
-require('isomorphic-fetch')
-require('dotenv').config()
-
-app.get('/grafana/panels', (req, res) => {
-
-    let getRequest = {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer eyJrIjoiVk9wUUFYV1dtV201Mk5RM2JvN3loOEJPQUFGa0NsMFoiLCJuIjoiZWN1aV9ncmFmYW5hIiwiaWQiOjF9`
-        }
-
-      }
-    // for (let i=10; i < 15; i++)
-    // {
-        
-    //     fetch('http://192.168.1.7:3000/d-solo/_wWiqssnk/uhoubolt?orgId=1&panelId='+i, getRequest)    
-    //         .then(function(response) {
-                
-    //             if (response.status >= 400) {
-    //                 throw new Error("Bad response from server");
-    //             }
-    //         })
-    //         .then(function(result) {
-    //             console.log(result);
-    //             res.send(result)
-    //         })
-    // }
-    const http = require('http')
-
-
-
-    const request = http.request('http://192.168.1.7:3000/api/dashboards/uid/_wWiqssnk', getRequest, response => {
-    console.log(`statusCode: ${res.statusCode}`)
-
-        response.on('data', d => {
-            process.stdout.write(d);
-            var dashboard = JSON.parse(d);
-            console.log(dashboard);
-            res.send(d);
-        })
-    })
-
-    request.on('error', error => {
-    console.error(error)
-    })
-
-    request.end()
+app.get('/config/grafana', (req, res) => {
 
     
+    res.sendFile(configPath + 'grafanaPanelConfig.json');
+
   })
 
 app.post('/pnid', function(req, res){
