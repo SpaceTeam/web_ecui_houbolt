@@ -593,6 +593,12 @@ function onLLServerConnect()
 {
     ioClient.emit("llserver-connect");
     llServerConnected = true;
+
+    if (clients.length > 0)
+    {
+        console.log('states-start');
+        llServerMod.sendMessage(llServer, 'states-start');
+    }
 }
 
 function onLLServerDisconnect()

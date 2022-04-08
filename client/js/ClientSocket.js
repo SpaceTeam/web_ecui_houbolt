@@ -6,6 +6,7 @@ var abortSequences = [];
 var jsonSequence = {};
 var jsonAbortSequence = {};
 var jsonSensors = {};
+var jsonStateLabels = [];
 var checklistLoaded = false;
 var isContinousTransmission = true;
 
@@ -777,6 +778,6 @@ socket.on('states', function(jsonStates) {
 socket.on('states-load', function(jsonStates) {
     console.log('states-load');
     console.log(jsonStates);
-    
-    setStateNamesPNID(jsonStates);
+    jsonStateLabels = jsonStates;
+    setStateNamesPNID(jsonStateLabels);
 });
