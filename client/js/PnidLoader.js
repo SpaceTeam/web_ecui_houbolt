@@ -24,6 +24,8 @@ function onPnidSelectChange(value)
         $( "#pnid" ).empty();
         $( "#pnid" ).append(data);
         initPNID(false, "theming/", [{theme: "lightTheme", icon: "brightness-high", type: "light"},{theme: "darkTheme", icon: "moon", type: "dark"}]);
+        
         clearElementBuffer();
+        setStateNamesPNID(jsonStateLabels);
       });
 }

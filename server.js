@@ -593,6 +593,12 @@ function onLLServerConnect()
 {
     ioClient.emit("llserver-connect");
     llServerConnected = true;
+
+    if (clients.length > 0)
+    {
+        console.log('states-start');
+        llServerMod.sendMessage(llServer, 'states-start');
+    }
 }
 
 function onLLServerDisconnect()
@@ -651,6 +657,13 @@ app.get('/config/thresholds', (req, res) => {
     //let rawdata = fs.readFileSync(configPath + 'thresholds.json');
 	res.sendFile(configPath + 'thresholds.json')
 });
+
+app.get('/config/grafana', (req, res) => {
+
+    
+    res.sendFile(configPath + 'grafanaPanelConfig.json');
+
+  })
 
 app.post('/pnid', function(req, res){
     console.log(req.body.file);

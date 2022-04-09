@@ -6,6 +6,7 @@ var abortSequences = [];
 var jsonSequence = {};
 var jsonAbortSequence = {};
 var jsonSensors = {};
+var jsonStateLabels = [];
 var checklistLoaded = false;
 var isContinousTransmission = true;
 
@@ -757,7 +758,7 @@ socket.on('states', function(jsonStates) {
     //PRINT non sensor values only
     for (index in jsonStates)
     {
-    	if (!jsonStates[index]["name"].includes(":sensor"))
+    	if (!jsonStates[index]["name"].includes(":sensor") || jsonStates[index]["name"].includes("gui:"))
     	{
     		console.log(JSON.stringify(jsonStates[index], null, 2))		
     	}
@@ -777,6 +778,6 @@ socket.on('states', function(jsonStates) {
 socket.on('states-load', function(jsonStates) {
     console.log('states-load');
     console.log(jsonStates);
-    
-    setStateNamesPNID(jsonStates);
+    jsonStateLabels = jsonStates;
+    setStateNamesPNID(jsonStateLabels);
 });
