@@ -3,13 +3,14 @@
         "endTime": 3.2
     },
     "actions" : {
-        "fuelMainValve": 0,
-        "igniter": 0,
-        "oxMainValve": 0,
-        "fuelDepressSolenoid": 0,
-		"oxDepressSolenoid": 0,
-		"fuelPressSolenoid": 0,
-		"oxPressSolenoid": 0,
-        "oxSuperchargeValve": 0
+        "ox_pressurize_solenoid:SetState": [0],
+        "ox_depressurize_solenoid:SetState": [0],
+        "fuel_pressurize_solenoid:SetState": [0],
+        "fuel_depressurize_solenoid:SetState": [0],
+        "fuel_main_valve:SetTargetPosition": [0],
+        "ox_main_valve:SetTargetPosition": [0],
+        "supercharge_valve:SetTargetPosition": [65000],
+        "fuel_purge_solenoid:SetState": [0],
+        "ox_purge_solenoid:SetState": [0]
     }
 }

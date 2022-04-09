@@ -40,7 +40,7 @@ var checklistMan = new checklistManMod();
 var sequenceRunning = false;
 var llServerConnected = false;
 
-var commandsJson = [];
+var commandsJson = null;
 
 const ServerMode = {
     FRANZ: 0,
@@ -115,11 +115,15 @@ var onCommandsLoad = function(ioClient, socket)
 {
     console.log("commands-load");
     console.log(commandsJson);
-    if (commandsJson === {})
+    if (commandsJson === null)
     {
         llServerMod.sendMessage(llServer, 'commands-load');
     }
-    socket.emit('commands-load', commandsJson);
+    else
+    {
+        socket.emit('commands-load', commandsJson);
+    }
+    
 }
 
 var onChecklistStart = function (ioClient, socket) {
@@ -249,6 +253,13 @@ var onAbortAll = function(ioClient, abortMsg)
     }
 }
 
+var onAutoAbortChange = function(ioClient, socket, isAutoAbortActive)
+{
+    if (!sequenceRunning) {
+        llServerMod.sendMessage(llServer, 'auto-abort-change', isAutoAbortActive);
+    }
+}
+
 var onTimerStart = function (ioClient) {
 
     if (!sequenceRunning) {
@@ -290,6 +301,7 @@ eventEmitter.on('onCommandsLoad', onCommandsLoad);
 
 eventEmitter.on('onAbort', onAbort);
 eventEmitter.on('onAbortAll', onAbortAll);
+eventEmitter.on('onAutoAbortChange', onAutoAbortChange);
 
 eventEmitter.on('onTimerStart', onTimerStart);
 
@@ -309,9 +321,9 @@ ioClient.on('connection', function(socket){
             var intDel = setInterval(function () {
                 if (llServer !== undefined)
                 {
-                    llServerMod.sendMessage(llServer, 'commands-load');
-                    llServerMod.sendMessage(llServer, 'states-load');
-                    llServerMod.sendMessage(llServer, 'states-start');
+                    // llServerMod.sendMessage(llServer, 'commands-load');
+                    // llServerMod.sendMessage(llServer, 'states-load');
+                    // llServerMod.sendMessage(llServer, 'states-start');
                     if (llServerConnected)
                     {
                         socket.emit("llserver-connect");
@@ -322,9 +334,9 @@ ioClient.on('connection', function(socket){
         }
         else
         {
-            llServerMod.sendMessage(llServer, 'commands-load');
-            llServerMod.sendMessage(llServer, 'states-load');
-            llServerMod.sendMessage(llServer, 'states-start');
+            // llServerMod.sendMessage(llServer, 'commands-load');
+            // llServerMod.sendMessage(llServer, 'states-load');
+            // llServerMod.sendMessage(llServer, 'states-start');
             if (llServerConnected)
             {
                 socket.emit("llserver-connect");
@@ -377,6 +389,10 @@ ioClient.on('connection', function(socket){
                 //TODO: CAREFUL even if not running tell llServer from abort IN ANY CASE
                 eventEmitter.emit('onAbort', ioClient, socket);
             }
+        });
+
+        socket.on('auto-abort-change', function(isAutoAbortActive){
+            eventEmitter.emit('onAutoAbortChange', ioClient, socket, isAutoAbortActive);
         });
 
         socket.on('checklist-start', function(msg){
@@ -433,12 +449,28 @@ ioClient.on('connection', function(socket){
             }
         });
 
+        socket.on('states-get', function(jsonStates){
+            console.log('states-get');
+            llServerMod.sendMessage(llServer, 'states-get', jsonStates);
+            
+        });
+
 		socket.on('states-set', function(jsonStates){
             console.log('states-set');
             if (master === socket.id) {
                 llServerMod.sendMessage(llServer, 'states-set', jsonStates);
             }
 
+        });
+
+        socket.on('states-load', function(jsonStates){
+            console.log('states-load');
+            llServerMod.sendMessage(llServer, 'states-load');
+        });
+
+        socket.on('states-start', function(jsonStates){
+            console.log('states-start');
+            llServerMod.sendMessage(llServer, 'states-start');
         });
 
         socket.on('commands-set', function(jsonCommands){
@@ -549,7 +581,9 @@ function processLLServerMessage(data) {
                     console.log("abort from llserver");
                     eventEmitter.emit('onAbortAll', ioClient, jsonData.content);
                     break;
-
+                case "auto-abort-change":
+                    console.log("auto abort change from llserver", jsonData.content);
+                    ioClient.emit('auto-abort-change', jsonData.content);
             }
         }
     }
@@ -559,11 +593,18 @@ function onLLServerConnect()
 {
     ioClient.emit("llserver-connect");
     llServerConnected = true;
+
+    if (clients.length > 0)
+    {
+        console.log('states-start');
+        llServerMod.sendMessage(llServer, 'states-start');
+    }
 }
 
 function onLLServerDisconnect()
 {
     ioClient.emit("llserver-disconnect");
+    commandsJson = null;
     llServerConnected = false;
 }
 
@@ -616,6 +657,13 @@ app.get('/config/thresholds', (req, res) => {
     //let rawdata = fs.readFileSync(configPath + 'thresholds.json');
 	res.sendFile(configPath + 'thresholds.json')
 });
+
+app.get('/config/grafana', (req, res) => {
+
+    
+    res.sendFile(configPath + 'grafanaPanelConfig.json');
+
+  })
 
 app.post('/pnid', function(req, res){
     console.log(req.body.file);

@@ -23,39 +23,45 @@ To enable all of these features, multiple Software Layers have been developed.
 9. [JSON-Formats](#json-formats)
 10. [Appendix](#appendix)
 
+## Init
+
+After cloning the submodules need to be initialized and pulled using
+
+```bash
+git submodule init
+git submodule update
+```
+
+This may be needed to be done in the pnid_houbolt submodule as well (alternatively `git submodule update --recursively` should also do the trick).
+
 ## Run
 
-To run ECUI first turn on the Controller and connect via an Ethernet Cable from your PC to the Controller
-Then open your Terminal (CMD) and open an ssh connection to the raspberry pi
+To run ECUI either log into the teststand server VM (can be skipped if run locally for development).
 
-	ssh pi@raspberrypi.local
-	
-Password is raspberry
-Then change to the LLServer directory
+Then run
 
-	cd TXV_ECUI_LLServer/
-	./TXV_ECUI_LLSERVER
-	
-If something goes wrong you can restart it with
+```bash
+node server.js port=3001
+```
 
-	./TXV_ECUI_LLSERVER
-	
-After that you can go into Google Chrome and type in the search bar
+to start the ECUI webserver. Instead of node it's convenient to use `nodemon` instead, especially during
+development as nodemon automatically detects changes to files and restarts the server if needed.
 
-	raspberrypi.local:3000
-	
+It might be necessary to (re)start the LLServer (again, can be skipped for local development), this can be done by
+going to its directory (on the teststand server next to the ECUI directory) and then running `./llserver_ecui_houbolt`
+Then press Enter wherever it asks you to (usually once or twice on init when finding modules) and then it should be running.
+
 To edit a Sequence or Checklist open FileZilla on your PC and connect to the ECUI
 Then open the TXV_ECUI_WEB -> sequence folder and Rightclick on 
 Sequence.json or Checklist.json and and choose edit
 
 then you can edit the sequence or checklist
 
-when you're done press STRG+S and go back to FileZilla. Choose "Delete Local File and upload" and click Yes
+when you're done press CTRL+S and go back to FileZilla. Choose "Delete Local File and upload" and click Yes
 then you can refresh the Webpage in the Browser.
 
 To view the logs go in FileZilla into the TXV_ECUI_LLServer -> logs folder and download the desired log file
-	
-	
+
 
 ## Install
 
@@ -116,8 +122,6 @@ sudo iptables -A FORWARD -p tcp -d 172.17.0.2 --dport 80 -j ACCEPT
 1. eth0: is the interface to outside
 2. 172.17.0.2: is the address of the docker container
 3. 80: is the port for the webserver
-
-
 
 
 ## Architecture

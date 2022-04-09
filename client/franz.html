@@ -43,7 +43,7 @@
         <div id="textDisplayTemp" class="row control-row">
             <label class="popup-value-out"></label>
         </div>
-        <div id="externalDisplayTemp" class="row control-row">
+        <div id="externalDisplayTemp" class="row control-row externalContainer">
             <iframe src=""></iframe>
         </div>
         <div id="sliderTemp" class="row control-row">
@@ -145,7 +145,10 @@
         <p id="title">ECUI</p>
         <p id="subtitle">Test Stand</p>
         <div class="master-client-controls">
-
+            <div class="master-only" style="text-align: right;">
+                <input type="checkbox" id="autoAbortCbox" onclick="onAutoAbortChange(this);">
+                Auto Abort
+            </div>
             <div class="master-only" id="masterLock" hidden>
                 <input type="checkbox" id="masterLockBox" onclick="onMasterLockClicked(this);">
                 Master Locked
@@ -378,7 +381,6 @@ Notes: Hotfire
             </div>
         </div>
     </div>
-
 
 
     <script src="/socket.io/socket.io.js"></script>

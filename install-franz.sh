@@ -10,11 +10,11 @@ export NVM_DIR="$HOME/.nvm"
 nvm install 12.10.0
 npm install
 
-sudo cp ecui-web-large-teststand.service /etc/systemd/system/
+sudo cp ecui-web-franz.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable ecui-web-large-teststand.service
-sudo systemctl start ecui-web-large-teststand.service
-sudo systemctl status ecui-web-large-teststand.service
+sudo systemctl enable ecui-web-franz.service
+sudo systemctl start ecui-web-franz.service
+sudo systemctl status ecui-web-franz.service
 
 sudo chmod +x update.sh
 ./update.sh

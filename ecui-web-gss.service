@@ -5,7 +5,7 @@ After=syslog.target network-online.target
 
 [Service]
 Type=simple
-ExecStart=/home/pi/.nvm/versions/node/v12.10.0/bin/node /home/pi/web_ecui_houbolt/server.js --smallOxfill
+ExecStart=/home/pi/.nvm/versions/node/v12.10.0/bin/node /home/pi/web_ecui_houbolt/server.js
 WorkingDirectory=/home/pi/web_ecui_houbolt/
 Restart=always
 RestartSec=10
