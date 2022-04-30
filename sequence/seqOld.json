@@ -1,0 +1,192 @@
+{
+	"globals":
+	{
+		"endTime": 12,
+		"interpolation":
+		{
+			"fuelMainValve": "linear",
+			"syncLed": "none",
+			"igniter": "none",
+			"igniter1": "none",
+			"oxMainValve": "linear",
+			"oxPressSolenoid": "none",
+			"oxDepressSolenoid": "none",
+			"fuelPressSolenoid": "none",
+			"fuelDepressSolenoid": "none",
+			"oxSuperchargeValve": "none"
+		},
+		"interval": 0.01,
+		"ranges":
+		[
+			"chamberPressure"
+		],
+		"startTime": -12
+	},
+	"data":
+	[
+		{
+			"timestamp": "START",
+			"name": "start",
+			"desc": "set all to zero",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"fuelMainValve": 0,
+					"syncLed": 0,
+					"igniter": 0,
+					"igniter1": 0,
+					"oxMainValve": 0,
+					"fuelDepressSolenoid": 0,
+					"oxDepressSolenoid": 0,
+					"fuelPressSolenoid": 0,
+					"oxPressSolenoid": 0,
+					"oxSuperchargeValve": 0,
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [-5, 20]
+					}
+				}
+			]
+		},
+		{
+			"timestamp": -7,
+			"name": "press",
+			"desc": "pressurize tanks",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"oxSuperchargeValve": 100
+				},
+				{
+					"timestamp": 0.5,
+					"fuelDepressSolenoid": 100
+				},
+				{
+					"timestamp": 1,
+					"fuelPressSolenoid": 100
+				},
+				{
+					"timestamp": 1.5,
+					"oxDepressSolenoid": 100
+				},
+				{
+					"timestamp": 2,
+					"oxPressSolenoid": 100
+				}
+			]
+		},
+		{
+			"timestamp": -3.0,
+			"name": "ignition",
+			"desc": "lets light this candle",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"igniter": 100, 
+					"igniter1": 100
+				},
+				{
+					"timestamp": 3,
+                    "fuelMainValve": 0,
+					"oxMainValve": 0,
+					"syncLed": 100
+				},
+				{
+					"timestamp": 4,
+					"fuelMainValve": 100,
+					"oxMainValve": 100,
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [4, 20]
+					}
+				},
+				{
+					"timestamp": 4,
+					"syncLed": 0
+				},
+				{
+					"timestamp": 4.5,
+					"igniter": 0,
+					"igniter1": 0
+				}
+			]
+		},
+		{
+			"timestamp": 4,
+			"name": "shutdown",
+			"desc": "shutting down",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+                    "fuelMainValve": 100,
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [-5, 20]
+					}
+				},
+				{
+					"timestamp": 0.2,
+					"fuelMainValve": 0,
+                    "oxMainValve": 100
+				},
+				{
+					"timestamp": 0.4,
+					"oxMainValve": 0
+				}
+			]
+		},
+		{
+			"timestamp": 5,
+			"name": "depress",
+			"desc": "depressurizing",
+			"actions":
+			[
+				{
+					"timestamp": 0.5,
+					"fuelPressSolenoid": 0
+				},
+				{
+					"timestamp": 1,
+					"fuelDepressSolenoid": 0
+				},
+				{
+					"timestamp": 1.5,
+					"oxPressSolenoid": 0
+				},
+				{
+					"timestamp": 2,
+					"oxDepressSolenoid": 0
+				},
+				{
+					"timestamp": 2.5,
+					"oxSuperchargeValve": 0
+				}
+			]
+		},
+		{
+			"timestamp": "END",
+			"name": "end",
+			"desc": "the end",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"fuelMainValve": 0,
+					"syncLed": 0,
+					"igniter": 0,
+					"igniter1": 0,
+					"oxMainValve": 0,
+					"fuelDepressSolenoid": 0,
+					"oxDepressSolenoid": 0,
+					"fuelPressSolenoid": 0,
+					"oxPressSolenoid": 0,
+					"oxSuperchargeValve": 0
+				}
+			]
+		}
+	]
+}

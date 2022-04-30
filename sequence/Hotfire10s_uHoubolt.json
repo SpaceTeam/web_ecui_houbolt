@@ -1,0 +1,118 @@
+{
+	"globals":
+	{
+		"endTime": 65,
+		"interpolation":
+		{
+			"fuel_main_valve:SetTargetPosition": "linear",
+			"ox_main_valve:SetTargetPosition": "linear",
+			"igniter0:SetState": "none", 
+			"igniter1:SetState": "none"
+		},
+		"interval": 0.01,
+		"ranges":
+		[
+			"chamberPressure"
+		],
+		"startTime": -5
+	},
+	"data":
+	[
+		{
+			"timestamp": "START",
+			"name": "start",
+			"desc": "set all to zero",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"fuel_main_valve:SetTargetPosition": [0],
+                    "ox_main_valve:SetTargetPosition": [0],
+					"igniter0:SetState": [0], 
+					"igniter1:SetState": [0],
+					"sensorsNominalRange":
+					{
+						"chamberPressure": [-5, 20]
+					}
+				}
+			]
+		},
+		{
+			"timestamp": -3.0,
+			"name": "ignition",
+			"desc": "lets light this candle",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"igniter0:SetState": [65000], 
+					"igniter1:SetState": [65000]
+				}
+			]
+		},
+		{
+			"timestamp": 0.0,
+			"name": "open air",
+			"desc": "max power",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"fuel_main_valve:SetTargetPosition": [0],
+					"ox_main_valve:SetTargetPosition": [0]
+				},
+				{
+					"timestamp": 0.5,
+					"ox_main_valve:SetTargetPosition": [15000],
+					"fuel_main_valve:SetTargetPosition": [15000]
+				},
+				{
+					"timestamp": 1.2,
+					"fuel_main_valve:SetTargetPosition": [25000],
+					"ox_main_valve:SetTargetPosition": [25000]
+				},
+				{
+					"timestamp": 1.5,
+					"igniter0:SetState": [0], 
+					"igniter1:SetState": [0]
+				},
+				{
+					"timestamp": 1.7,
+					"fuel_main_valve:SetTargetPosition": [65000],
+					"ox_main_valve:SetTargetPosition": [65000]	
+				}
+			]
+		},
+		{
+			"timestamp": 60.0,
+			"name": "close air",
+			"desc": "max power",
+			"actions":
+			[
+				{
+					"timestamp": 0,
+					"fuel_main_valve:SetTargetPosition": [65000],
+					"ox_main_valve:SetTargetPosition": [65000]
+				},
+                {
+					"timestamp": 0.7,
+					"fuel_main_valve:SetTargetPosition": [0],
+					"ox_main_valve:SetTargetPosition": [0]
+				}
+			]
+		},
+		{
+			"timestamp": "END",
+			"name": "end",
+			"desc": "the end",
+			"actions":
+			[
+				{
+					"timestamp": 0.0,
+					"fuel_main_valve:SetTargetPosition": [0],
+					"ox_main_valve:SetTargetPosition": [0]
+				}
+			]
+		}
+	]
+}
