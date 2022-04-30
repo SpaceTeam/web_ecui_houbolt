@@ -1,6 +1,8 @@
 const express = require('express');
 const path = __dirname + '/client/';
-const configPath = path + 'pnid_houbolt/client/config/';
+
+const configBasePath = path + 'pnid_houbolt/client/config/';
+var configPath = configBasePath + 'uHoubolt/';
 
 var app = express();
 var http = require('http').Server(app);
@@ -12,6 +14,7 @@ const bp = require('body-parser');
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
 
+
 // Search for argument port= in node cli arguments
 process.argv.forEach(arg => {
     if(arg.startsWith("port=")){
@@ -22,7 +25,22 @@ process.argv.forEach(arg => {
         if(reqPort >= 0 && reqPort <= 65353) port = reqPort;
         else console.log(arg + " doesn't include a valid port number, using default port instead: " + port);
     }
+    else if (arg.startsWith("config="))
+    {
+        var newConfigPath = configBasePath + arg.slice(arg.indexOf("=") + 1) + '/';
+        
+        // check validity of requested port
+        const fs = require('fs');
+        if (!fs.existsSync(newConfigPath)) {
+            console.error(arg + " doesn't include a valid config path, using default path instead: " + configPath);
+        }  
+        else
+        {
+            configPath = newConfigPath;
+        } 
+    }
   });
+  console.log("using config path: " + configPath);
 
 port = process.env.PORT || port;
 
@@ -40,7 +58,7 @@ var checklistMan = new checklistManMod();
 var sequenceRunning = false;
 var llServerConnected = false;
 
-var commandsJson = null;
+var commandsJson = [];
 
 const ServerMode = {
     FRANZ: 0,
@@ -115,14 +133,15 @@ var onCommandsLoad = function(ioClient, socket)
 {
     console.log("commands-load");
     console.log(commandsJson);
-    if (commandsJson === null)
-    {
-        llServerMod.sendMessage(llServer, 'commands-load');
-    }
-    else
-    {
-        socket.emit('commands-load', commandsJson);
-    }
+    llServerMod.sendMessage(llServer, 'commands-load');
+    // if (commandsJson === [])
+    // {
+    //     llServerMod.sendMessage(llServer, 'commands-load');
+    // }
+    // else
+    // {
+    //     socket.emit('commands-load', commandsJson);
+    // }
     
 }
 
@@ -569,8 +588,8 @@ function processLLServerMessage(data) {
                     ioClient.emit('states-load', jsonData.content);
                     break;
                 case "commands-load":
-                    console.log("commands-load");
-                    commandsJson = jsonData.content;
+                    console.log("commands-load llserver");
+                    //commandsJson += jsonData.content;
                     ioClient.emit('commands-load', jsonData.content);
                     break;
                 case "commands-error":
