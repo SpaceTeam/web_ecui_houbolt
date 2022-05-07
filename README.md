@@ -34,6 +34,9 @@ git submodule update
 
 This may be needed to be done in the pnid_houbolt submodule as well (alternatively `git submodule update --recursively` should also do the trick).
 
+### Load Configs
+The configs are stored in [another repository](https://github.com/SpaceTeam/config_ecui), each branch in there is for another hardware setup, so choose the one you want to run on. On start (see [Run](#Run)), either a config path has to be specified (`config=<config path>` CLI argument) or it is left free, in which case the server will use the config path specified in [configPath.txt](#configPath.txt). For ease of use the path in this file can be changed to your personal path setup *BUT DON'T COMMIT THESE CHANGES*, to not have git constantly scream at you for having a tracked file with modified content, use `git update-index --assume-unchanged configPath.txt`, which will make git ignore this file, even if it has local changes. This will however make switching branches annoying, so if you don't want to mess around with that, specify it as CLI argument instead.
+
 ## Run
 
 To run ECUI either log into the teststand server VM (can be skipped if run locally for development).

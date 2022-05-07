@@ -1,8 +1,13 @@
 const express = require('express');
 const path = __dirname + '/client/';
 
-const configBasePath = path + 'pnid_houbolt/client/config/';
-var configPath = configBasePath + 'uHoubolt/';
+const fs = require('fs');
+const path_mod = require('path');
+
+const webConfigSubPath = 'web';
+const pnidConfigSubPath = 'pnid';
+var configPath = '';
+var gotConfigArg = false;
 
 var app = express();
 var http = require('http').Server(app);
@@ -14,6 +19,11 @@ const bp = require('body-parser');
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
 
+function readConfigPathFromFile()
+{
+    let data = fs.readFileSync('configPath.txt', {encoding: 'utf8', flag: 'r'});
+    return data.trim();
+}
 
 // Search for argument port= in node cli arguments
 process.argv.forEach(arg => {
@@ -27,20 +37,38 @@ process.argv.forEach(arg => {
     }
     else if (arg.startsWith("config="))
     {
-        var newConfigPath = configBasePath + arg.slice(arg.indexOf("=") + 1) + '/';
+        gotConfigArg = true;
+        var newConfigPath = arg.slice(arg.indexOf("=") + 1);
         
         // check validity of requested port
-        const fs = require('fs');
-        if (!fs.existsSync(newConfigPath)) {
-            console.error(arg + " doesn't include a valid config path, using default path instead: " + configPath);
+        if (!fs.existsSync(newConfigPath))
+        {
+            console.log(arg + " doesn't include a valid config path, using path specified in configPath.txt instead.");
+            configPath = readConfigPathFromFile();
+            if (configPath == "" || configPath == undefined)
+            {
+                console.error("Config is needed, but couldn't find any valid config paths, stopping.");
+                process.exit(1);
+            }
         }  
         else
         {
             configPath = newConfigPath;
         } 
     }
-  });
-  console.log("using config path: " + configPath);
+});
+
+if (!gotConfigArg)
+{
+    configPath = readConfigPathFromFile();
+    if (configPath == "" || configPath == undefined)
+    {
+        console.error("Config is needed, but couldn't find any valid config paths, stopping.");
+        process.exit(1);
+    }
+}
+
+console.log("using config path: " + configPath);
 
 port = process.env.PORT || port;
 
@@ -659,30 +687,24 @@ app.get('/pnidList', function(req, res){
     res.json(pnidManMod.getAllPnIDs());
 });
 
-app.get('/config/custom', (req, res) => {
+app.get('/pnid_config/custom', (req, res) => {
     console.log("requested config");
-    //let rawdata = fs.readFileSync(configPath + 'config.json');
-	res.sendFile(configPath + 'config.json')
+	res.sendFile(path_mod.join(configPath, pnidConfigSubPath, 'config.json'))
 });
 
-app.get('/config/default', (req, res) => {
+app.get('/pnid_config/default', (req, res) => {
     console.log("requested default config");
-    //let rawdata = fs.readFileSync(configPath + 'defaultConfig.json');
-	res.sendFile(configPath + 'defaultConfig.json')
+	res.sendFile(path_mod.join(configPath, pnidConfigSubPath, 'defaultConfig.json'))
 });
 
-app.get('/config/thresholds', (req, res) => {
+app.get('/pnid_config/thresholds', (req, res) => {
     console.log("requested thresholds definitions");
-    //let rawdata = fs.readFileSync(configPath + 'thresholds.json');
-	res.sendFile(configPath + 'thresholds.json')
+	res.sendFile(path_mod.join(configPath, pnidConfigSubPath, 'thresholds.json'))
 });
 
-app.get('/config/grafana', (req, res) => {
-
-    
-    res.sendFile(configPath + 'grafanaPanelConfig.json');
-
-  })
+app.get('/pnid_config/grafana', (req, res) => {
+    res.sendFile(path_mod.join(configPath, pnidConfigSubPath, 'grafanaPanelConfig.json'));
+});
 
 app.post('/pnid', function(req, res){
     console.log(req.body.file);
