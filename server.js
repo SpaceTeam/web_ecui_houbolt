@@ -4,7 +4,6 @@ const path = __dirname + '/client/';
 const fs = require('fs');
 const path_mod = require('path');
 
-const configBasePath = path + 'pnid_houbolt/client/config/';
 const webConfigSubPath = 'web';
 const pnidConfigSubPath = 'pnid';
 var configPath = '';
@@ -23,7 +22,7 @@ app.use(bp.urlencoded({ extended: true }))
 function readConfigPathFromFile()
 {
     let data = fs.readFileSync('configPath.txt', {encoding: 'utf8', flag: 'r'});
-    return data;
+    return data.trim();
 }
 
 // Search for argument port= in node cli arguments
