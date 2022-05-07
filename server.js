@@ -88,27 +88,6 @@ var llServerConnected = false;
 
 var commandsJson = [];
 
-const ServerMode = {
-    FRANZ: 0,
-    SMALL_TESTSTAND: 1,
-    SMALL_OXFILL: 2
-}
-var serverMode = ServerMode.FRANZ
-if (process.argv[2] == "--smallTeststand")
-{
-	serverMode = ServerMode.SMALL_TESTSTAND
-	console.log("Using Small Teststand Profile");
-}
-else if (process.argv[2] == "--smallOxfill")
-{
-	serverMode = ServerMode.SMALL_OXFILL
-	console.log("Using Small Oxfill Profile");
-}
-else
-{
-	console.log("Defaulting to Large Teststand Profile...");
-}
-
 // Import net module.
 var net = require('net');
 var llServerMod = require('./server/LLServerSocket');
@@ -663,23 +642,8 @@ function getClientSocketById (id) {
 }
 
 app.get('/', function(req, res){
-	if (serverMode == ServerMode.SMALL_TESTSTAND)
-	{
-		res.sendFile(path + 'small_teststand.html')
-	}
-	else if (serverMode == ServerMode.SMALL_OXFILL)
-	{
-		res.sendFile(path + 'small_oxfill.html')
-	}
-	else if (serverMode == ServerMode.FRANZ)
-	{
-		res.sendFile(path + 'franz.html')
-	}
-	else
-	{
-		res.sendFile(path + '404.html')
-	}
-	
+    res.sendFile(path + 'ecui.html');
+	//res.sendFile(path + '404.html')
 });
 
 app.get('/pnidList', function(req, res){
