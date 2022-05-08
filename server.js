@@ -2,7 +2,7 @@ const express = require('express');
 const path = __dirname + '/client/';
 
 const fs = require('fs');
-const path_mod = require('path');
+const pathMod = require('path');
 
 const webConfigSubPath = 'web';
 const pnidConfigSubPath = 'pnid';
@@ -653,26 +653,26 @@ app.get('/pnidList', function(req, res){
 
 app.get('/web_config/main', (req, res) => {
     console.log("requested ecui config");
-	res.sendFile(path_mod.join(configPath, webConfigSubPath, 'ecui_config.json'))
+	res.sendFile(pathMod.join(configPath, webConfigSubPath, 'ecui_config.json'))
 });
 
 app.get('/pnid_config/custom', (req, res) => {
     console.log("requested config");
-	res.sendFile(path_mod.join(configPath, pnidConfigSubPath, 'config.json'))
+	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'config.json'))
 });
 
 app.get('/pnid_config/default', (req, res) => {
     console.log("requested default config");
-	res.sendFile(path_mod.join(configPath, pnidConfigSubPath, 'defaultConfig.json'))
+	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'defaultConfig.json'))
 });
 
 app.get('/pnid_config/thresholds', (req, res) => {
     console.log("requested thresholds definitions");
-	res.sendFile(path_mod.join(configPath, pnidConfigSubPath, 'thresholds.json'))
+	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'thresholds.json'))
 });
 
 app.get('/pnid_config/grafana', (req, res) => {
-    res.sendFile(path_mod.join(configPath, pnidConfigSubPath, 'grafanaPanelConfig.json'));
+    res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'grafanaPanelConfig.json'));
 });
 
 app.post('/pnid', function(req, res){
