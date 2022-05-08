@@ -79,7 +79,7 @@ var sequenceManMod = require('./server/SequenceManager');
 var pnidManMod = require('./server/PnIDManager');
 var checklistManMod = require('./server/ChecklistManager');
 
-var sequenceMan = new sequenceManMod();
+var sequenceMan = new sequenceManMod(configPath);
 var pnidMan = new pnidManMod();
 var checklistMan = new checklistManMod();
 
@@ -649,6 +649,11 @@ app.get('/', function(req, res){
 app.get('/pnidList', function(req, res){
     console.log(pnidManMod.getAllPnIDs());
     res.json(pnidManMod.getAllPnIDs());
+});
+
+app.get('/web_config/main', (req, res) => {
+    console.log("requested ecui config");
+	res.sendFile(path_mod.join(configPath, webConfigSubPath, 'ecui_config.json'))
 });
 
 app.get('/pnid_config/custom', (req, res) => {

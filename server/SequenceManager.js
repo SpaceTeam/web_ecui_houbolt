@@ -1,7 +1,5 @@
-const sequenceSaveDir = './sequence/';
-const abortSequenceSaveDir = "./sequence/abort_sequence/";
 const fs = require('fs');
-
+const pathMod = require('path');
 const timerMod = require('./Timer');
 
 module.exports = class SequenceManager {
@@ -13,11 +11,21 @@ module.exports = class SequenceManager {
     static _syncCallback;
     static _running = false;
     static _syncInterval;
-    static _sequencePath = sequenceSaveDir + SequenceManager.getAllSequences()[0];
-    static _abortSequencePath = abortSequenceSaveDir + "AbortSequence.json";
+    static _sequencePath;
+    static _abortSequencePath;
+    static _sequenceSaveDir;
+    static _abortSequenceSaveDir;
+
+    constructor(configPath) {
+        SequenceManager._sequenceSaveDir = pathMod.join(configPath, "web", "sequences/");
+        SequenceManager._abortSequenceSaveDir = pathMod.join(SequenceManager._sequenceSaveDir, "abort_sequences/");
+        SequenceManager._sequencePath = SequenceManager._sequenceSaveDir + SequenceManager.getAllSequences()[0];
+        SequenceManager._abortSequencePath = pathMod.join(SequenceManager._abortSequenceSaveDir, "AbortSequence.json");
+    }
 
     static init() {
         console.log('initialized SequenceManager');
+        console.log("sequence:", _sequencePath);
         SequenceManager._sequence = SequenceManager.loadSequence();
         SequenceManager._abortSequence = SequenceManager.loadAbortSequence();
     }
@@ -69,7 +77,7 @@ module.exports = class SequenceManager {
         try
         {
             let data = JSON.stringify(sequence, null, 4);
-            fs.writeFileSync(sequenceSaveDir + SequenceManager._sequencePath, data);
+            fs.writeFileSync(SequenceManager._sequenceSaveDir + SequenceManager._sequencePath, data);
         }
         catch (e) {
             console.error(e.message)
@@ -81,7 +89,7 @@ module.exports = class SequenceManager {
         try
         {
             let data = JSON.stringify(abortSequence, null, 4);
-            fs.writeFileSync(abortSequenceSaveDir + SequenceManager._abortSequencePath, data);
+            fs.writeFileSync(SequenceManager._abortSequenceSaveDir + SequenceManager._abortSequencePath, data);
         }
         catch (e) {
             console.error(e.message)
@@ -93,9 +101,9 @@ module.exports = class SequenceManager {
     {
         let sequences = [];
 
-        fs.readdirSync(sequenceSaveDir).forEach(function(file) {
+        fs.readdirSync(SequenceManager._sequenceSaveDir).forEach(function(file) {
 
-            let filePath = sequenceSaveDir + file;
+            let filePath = SequenceManager._sequenceSaveDir + file;
             var stat = fs.statSync(filePath);
 
             if (stat && stat.isFile())
@@ -126,9 +134,9 @@ module.exports = class SequenceManager {
     {
         let abortSequences = [];
 
-        fs.readdirSync(abortSequenceSaveDir).forEach(function(file) {
+        fs.readdirSync(SequenceManager._abortSequenceSaveDir).forEach(function(file) {
 
-            let filePath = abortSequenceSaveDir + file;
+            let filePath = SequenceManager._abortSequenceSaveDir + file;
             var stat = fs.statSync(filePath);
 
             if (stat && stat.isFile()) {
@@ -156,12 +164,12 @@ module.exports = class SequenceManager {
 
     static setSequence(fileName)
     {
-        SequenceManager._sequencePath = sequenceSaveDir + fileName;
+        SequenceManager._sequencePath = SequenceManager._sequenceSaveDir + fileName;
     }
 
     static setAbortSequence(fileName)
     {
-        SequenceManager._abortSequencePath = abortSequenceSaveDir + fileName;
+        SequenceManager._abortSequencePath = SequenceManager._abortSequenceSaveDir + fileName;
 
     }
 
