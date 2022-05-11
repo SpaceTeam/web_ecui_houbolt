@@ -22,7 +22,8 @@ app.use(bp.urlencoded({ extended: true }))
 function readConfigPathFromFile()
 {
     let data = fs.readFileSync('configPath.txt', {encoding: 'utf8', flag: 'r'});
-    return data.trim();
+    resolve = require('path').resolve
+    return resolve(data.trim());
 }
 
 // Search for argument port= in node cli arguments

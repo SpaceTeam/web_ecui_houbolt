@@ -1,1 +1,1 @@
-/home/teststand/.config_ecui
+../config_ecui
