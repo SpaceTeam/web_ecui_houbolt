@@ -1,5 +1,7 @@
 const pnidSaveDir = 'client/pnid_houbolt/client/';
 const fs = require('fs');
+const pathMod = require('path');
+const childprocess = require('child_process');
 
 const { exception } = require('console');
 
@@ -7,6 +9,51 @@ module.exports = class PnIDManager {
 
     static _curPnID = PnIDManager.getAllPnIDs()[0];
     static _pnids = [];
+    static _configPath = "";
+
+    constructor(configPath) {
+        PnIDManager._configPath = configPath;
+        //PnIDManager.parsePnIDs();
+    }
+
+    static parsePnIDs() {
+        console.log("parse pnids");
+        let files = PnIDManager.createFileList(pathMod.join(PnIDManager._configPath, "pnid", "schematics"));
+        console.log("found schematic files for parsing");
+        console.log(files);
+        files.forEach(file => {
+            let fileName = file.split("/").pop();
+            try {
+                let parserProc = childprocess.execSync(
+                    "./client/pnid_houbolt/kicad-schematic-parser.js",
+                    [file, pathMod.join(PnIDManager._configPath, "pnid", "schematics", "PnID.lib"),
+                    pathMod.join("client", fileName + ".pnid")], {stdio: "pipe"}
+                );
+            } catch (e) {
+                console.log("Error while parsing schematic '" + fileName + "':", e.stderr);
+            }
+            
+
+            //parserProc.on("error", );
+        });
+    }
+
+    static createFileList(curPath, curFiles = []) {
+        let files = fs.readdirSync(curPath);
+        
+        files.forEach(file => {
+            if (fs.statSync(pathMod.join(curPath, file)).isDirectory()) {
+                curFiles = PnIDManager.createFileList(pathMod.join(curPath, file), curFiles);
+            } else {
+                //get the file extension
+                if (file.split(".").pop() == "sch") {
+                    //todo: this will probably also include a file just called "sch" without anything else
+                    curFiles.push(pathMod.join(curPath, file));
+                }
+            }
+        });
+        return curFiles;
+    }
 
     static setPnID(filename) {
         if (PnIDManager._pnids.length === 0)
