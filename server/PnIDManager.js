@@ -13,29 +13,31 @@ module.exports = class PnIDManager {
 
     constructor(configPath) {
         PnIDManager._configPath = configPath;
-        //PnIDManager.parsePnIDs();
+        PnIDManager.parsePnIDs();
     }
 
     static parsePnIDs() {
-        console.log("parse pnids");
         let files = PnIDManager.createFileList(pathMod.join(PnIDManager._configPath, "pnid", "schematics"));
-        console.log("found schematic files for parsing");
-        console.log(files);
-        files.forEach(file => {
-            let fileName = file.split("/").pop();
-            try {
-                let parserProc = childprocess.execSync(
-                    "./client/pnid_houbolt/kicad-schematic-parser.js",
-                    [file, pathMod.join(PnIDManager._configPath, "pnid", "schematics", "PnID.lib"),
-                    pathMod.join("client", fileName + ".pnid")], {stdio: "pipe"}
-                );
-            } catch (e) {
-                console.log("Error while parsing schematic '" + fileName + "':", e.stderr);
-            }
-            
-
-            //parserProc.on("error", );
-        });
+        if (files.length > 0) {
+            console.log("found schematics for parsing to pnids");
+            console.log(files);
+            files.forEach(file => {
+                let fileName = file.split("/").pop().slice(0, -4); //remove leading path segments and trailing file extension
+                try {
+                    let parserProc = childprocess.execFileSync(
+                        "./client/pnid_houbolt/kicad-schematic-parser.js",
+                        [file, pathMod.join(PnIDManager._configPath, "pnid", "schematics", "pnid_library", "PnID.lib"),
+                        pathMod.join("client", "pnid_houbolt", "client", fileName + ".pnid")], {stdio: "pipe"}
+                    );
+                } catch (e) {
+                    //todo better error handling
+                    console.log("Error while parsing schematic '" + fileName + "':", e.stderr);
+                }
+            });
+        } else {
+            console.log("found no schematics for parsing to pnids");
+        }
+        
     }
 
     static createFileList(curPath, curFiles = []) {
