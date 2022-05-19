@@ -26,7 +26,7 @@ module.exports = class PnIDManager {
                 try {
                     let parserProc = childprocess.execFileSync(
                         "./client/pnid_houbolt/kicad-schematic-parser.js",
-                        [file, pathMod.join(PnIDManager._configPath, "pnid", "schematics", "pnid_library", "PnID.lib"),
+                        [file, pathMod.join(PnIDManager._configPath, "pnid", "schematics", "pnid-lib", "PnID.lib"),
                         pathMod.join("client", "pnid_houbolt", "client", fileName + ".pnid")], {stdio: "pipe"}
                     );
                 } catch (e) {
