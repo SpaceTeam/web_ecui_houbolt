@@ -7,13 +7,14 @@ const { exception } = require('console');
 
 module.exports = class PnIDManager {
 
-    static _curPnID = PnIDManager.getAllPnIDs()[0];
+    static _curPnID = "";
     static _pnids = [];
     static _configPath = "";
 
     constructor(configPath) {
         PnIDManager._configPath = configPath;
         PnIDManager.parsePnIDs();
+        PnIDManager._curPnID = PnIDManager.getAllPnIDs()[0];
     }
 
     static parsePnIDs() {
