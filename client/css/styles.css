@@ -166,6 +166,12 @@ form input {
 
 .list-group-item {
     background-color: var(--background-primary);
+    transition: background-color ease-in-out 0.1s;
+}
+
+.list-group-item:hover {
+    background-color: var(--background-secondary);
+    transition: background-color ease-in-out 0.2s;
 }
 
 .input-group-text {
