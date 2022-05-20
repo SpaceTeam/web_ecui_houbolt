@@ -11,8 +11,9 @@ module.exports = class PnIDManager {
     static _pnids = [];
     static _configPath = "";
 
-    constructor(configPath) {
+    constructor(programmDirPath, configPath) {
         PnIDManager._configPath = configPath;
+        PnIDManager._programmDirPath = programmDirPath;
         PnIDManager.parsePnIDs();
         PnIDManager._curPnID = PnIDManager.getAllPnIDs()[0];
     }
@@ -25,10 +26,11 @@ module.exports = class PnIDManager {
             files.forEach(file => {
                 let fileName = file.split("/").pop().slice(0, -4); //remove leading path segments and trailing file extension
                 try {
-                    let parserProc = childprocess.execFileSync(
-                        "./client/pnid_houbolt/kicad-schematic-parser.js",
-                        [file, pathMod.join(PnIDManager._configPath, "pnid", "schematics", "pnid-lib", "PnID.lib"),
-                        pathMod.join("client", "pnid_houbolt", "client", fileName + ".pnid")], {stdio: "pipe"}
+                    console.log("Parsing", fileName + "...");
+                    let parserProc = childprocess.execSync(
+                        `node ./client/pnid_houbolt/kicad-schematic-parser.js ${file} \
+                        ${pathMod.join(PnIDManager._configPath, 'pnid', 'schematics', 'pnid-lib', 'PnID.lib')} \
+                        ${pathMod.join(PnIDManager._programmDirPath, 'client', 'pnid_houbolt', 'client', fileName + '.pnid')}`, {stdio: "inherit"}
                     );
                 } catch (e) {
                     //todo better error handling

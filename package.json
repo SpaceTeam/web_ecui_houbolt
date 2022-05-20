@@ -4,6 +4,9 @@
   "description": "Node.js on Docker",
   "author": "First Last <first.last@example.com>",
   "main": "server.js",
+  "engines" : { 
+    "node" : ">=16.0.0"
+  },
   "scripts": {
     "start": "node server.js",
     "start.dev": "nodemon --ignore sequence/"

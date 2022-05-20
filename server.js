@@ -81,7 +81,7 @@ var pnidManMod = require('./server/PnIDManager');
 var checklistManMod = require('./server/ChecklistManager');
 
 var sequenceMan = new sequenceManMod(configPath);
-var pnidMan = new pnidManMod(configPath);
+var pnidMan = new pnidManMod(__dirname, configPath);
 var checklistMan = new checklistManMod();
 
 var sequenceRunning = false;
