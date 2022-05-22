@@ -411,23 +411,31 @@ function onSendPostSequenceComment()
 
 function onToggleSequenceButton(btn)
 {
-    if ($(btn).text() === 'Start Sequence')
+    if ($(btn).text() === 'Start Sequence' || $(btn).text() === 'Pad not idle! Retry Seq')
     {
-        socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
-        $(btn).text('Abort Sequence');
-        $('.tab-button').each(function () {
-            if ($(btn).id === "control-tab-button" || $(btn).id === "calibration-tab-button")
-            {
-                //$(this).prop('disabled', true);
-            }
-        });
-        $('#sendPostSeqCommentButton').prop('disabled', false);
+        if (getRocketInternalStateName() != "PAD_IDLE")
+        {
+            $(btn).text("Pad not idle! Retry Seq");
+        }
+        else
+        {
+            socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
+            $(btn).text('Abort Sequence');
+            $('.tab-button').each(function () {
+                if ($(btn).id === "control-tab-button" || $(btn).id === "calibration-tab-button")
+                {
+                    //$(this).prop('disabled', true);
+                }
+            });
+            $('#sendPostSeqCommentButton').prop('disabled', false);
 
-        //scroll to pnid
-        // document.getElementById('monitorTabsContent').scrollIntoView({
-        //     behavior: "smooth",
-        //     block:    "start",
-        // });
+            //scroll to pnid
+            // document.getElementById('monitorTabsContent').scrollIntoView({
+            //     behavior: "smooth",
+            //     block:    "start",
+            // });
+        }
+        
     }
     else if ($(btn).text() === 'Abort Sequence')
     {
