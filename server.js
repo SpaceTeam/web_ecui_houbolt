@@ -514,6 +514,14 @@ ioClient.on('connection', function(socket){
 
         });
 
+        socket.on('pythonScript-start', function(scriptPath){
+            console.log('pythonScript-start');
+            if (master === socket.id) {
+                llServerMod.sendMessage(llServer, 'pythonScript-start', scriptPath);
+            }
+
+        });
+
         socket.on('disconnect', function(msg){
             console.log('user disconnected');
             if (master === socket.id) {
