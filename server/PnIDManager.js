@@ -1,12 +1,64 @@
 const pnidSaveDir = 'client/pnid_houbolt/client/';
 const fs = require('fs');
+const pathMod = require('path');
+const childprocess = require('child_process');
 
 const { exception } = require('console');
 
 module.exports = class PnIDManager {
 
-    static _curPnID = PnIDManager.getAllPnIDs()[0];
+    static _curPnID = "";
     static _pnids = [];
+    static _configPath = "";
+
+    constructor(programmDirPath, configPath) {
+        PnIDManager._configPath = configPath;
+        PnIDManager._programmDirPath = programmDirPath;
+        PnIDManager.parsePnIDs();
+        PnIDManager._curPnID = PnIDManager.getAllPnIDs()[0];
+    }
+
+    static parsePnIDs() {
+        let files = PnIDManager.createFileList(pathMod.join(PnIDManager._configPath, "pnid", "schematics"));
+        if (files.length > 0) {
+            console.log("found schematics for parsing to pnids");
+            console.log(files);
+            files.forEach(file => {
+                let fileName = file.split("/").pop().slice(0, -4); //remove leading path segments and trailing file extension
+                try {
+                    console.log("Parsing", fileName + "...");
+                    let parserProc = childprocess.execSync(
+                        `node ./client/pnid_houbolt/kicad-schematic-parser.js ${file} \
+                        ${pathMod.join(PnIDManager._configPath, 'pnid', 'schematics', 'pnid-lib', 'PnID.lib')} \
+                        ${pathMod.join(PnIDManager._programmDirPath, 'client', 'pnid_houbolt', 'client', fileName + '.pnid')}`, {stdio: "inherit"}
+                    );
+                } catch (e) {
+                    //todo better error handling
+                    console.log("Error while parsing schematic '" + fileName + "':", e.stderr);
+                }
+            });
+        } else {
+            console.log("found no schematics for parsing to pnids");
+        }
+        
+    }
+
+    static createFileList(curPath, curFiles = []) {
+        let files = fs.readdirSync(curPath);
+        
+        files.forEach(file => {
+            if (fs.statSync(pathMod.join(curPath, file)).isDirectory()) {
+                curFiles = PnIDManager.createFileList(pathMod.join(curPath, file), curFiles);
+            } else {
+                //get the file extension
+                if (file.split(".").pop() == "sch") {
+                    //todo: this will probably also include a file just called "sch" without anything else
+                    curFiles.push(pathMod.join(curPath, file));
+                }
+            }
+        });
+        return curFiles;
+    }
 
     static setPnID(filename) {
         if (PnIDManager._pnids.length === 0)

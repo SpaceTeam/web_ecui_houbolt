@@ -1,8 +1,13 @@
 const express = require('express');
 const path = __dirname + '/client/';
 
-const configBasePath = path + 'pnid_houbolt/client/config/';
-var configPath = configBasePath + 'uHoubolt/';
+const fs = require('fs');
+const pathMod = require('path');
+
+const webConfigSubPath = 'web';
+const pnidConfigSubPath = 'pnid';
+var configPath = '';
+var gotConfigArg = false;
 
 var app = express();
 var http = require('http').Server(app);
@@ -14,6 +19,12 @@ const bp = require('body-parser');
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
 
+function readConfigPathFromFile()
+{
+    let data = fs.readFileSync('configPath.txt', {encoding: 'utf8', flag: 'r'});
+    resolve = require('path').resolve
+    return resolve(data.trim());
+}
 
 // Search for argument port= in node cli arguments
 process.argv.forEach(arg => {
@@ -27,20 +38,38 @@ process.argv.forEach(arg => {
     }
     else if (arg.startsWith("config="))
     {
-        var newConfigPath = configBasePath + arg.slice(arg.indexOf("=") + 1) + '/';
+        gotConfigArg = true;
+        var newConfigPath = arg.slice(arg.indexOf("=") + 1);
         
         // check validity of requested port
-        const fs = require('fs');
-        if (!fs.existsSync(newConfigPath)) {
-            console.error(arg + " doesn't include a valid config path, using default path instead: " + configPath);
+        if (!fs.existsSync(newConfigPath))
+        {
+            console.log(arg + " doesn't include a valid config path, using path specified in configPath.txt instead.");
+            configPath = readConfigPathFromFile();
+            if (configPath == "" || configPath == undefined)
+            {
+                console.error("Config is needed, but couldn't find any valid config paths, stopping.");
+                process.exit(1);
+            }
         }  
         else
         {
             configPath = newConfigPath;
         } 
     }
-  });
-  console.log("using config path: " + configPath);
+});
+
+if (!gotConfigArg)
+{
+    configPath = readConfigPathFromFile();
+    if (configPath == "" || configPath == undefined)
+    {
+        console.error("Config is needed, but couldn't find any valid config paths, stopping.");
+        process.exit(1);
+    }
+}
+
+console.log("using config path: " + configPath);
 
 port = process.env.PORT || port;
 
@@ -51,35 +80,14 @@ var sequenceManMod = require('./server/SequenceManager');
 var pnidManMod = require('./server/PnIDManager');
 var checklistManMod = require('./server/ChecklistManager');
 
-var sequenceMan = new sequenceManMod();
-var pnidMan = new pnidManMod();
+var sequenceMan = new sequenceManMod(configPath);
+var pnidMan = new pnidManMod(__dirname, configPath);
 var checklistMan = new checklistManMod();
 
 var sequenceRunning = false;
 var llServerConnected = false;
 
 var commandsJson = [];
-
-const ServerMode = {
-    FRANZ: 0,
-    SMALL_TESTSTAND: 1,
-    SMALL_OXFILL: 2
-}
-var serverMode = ServerMode.FRANZ
-if (process.argv[2] == "--smallTeststand")
-{
-	serverMode = ServerMode.SMALL_TESTSTAND
-	console.log("Using Small Teststand Profile");
-}
-else if (process.argv[2] == "--smallOxfill")
-{
-	serverMode = ServerMode.SMALL_OXFILL
-	console.log("Using Small Oxfill Profile");
-}
-else
-{
-	console.log("Defaulting to Large Teststand Profile...");
-}
 
 // Import net module.
 var net = require('net');
@@ -635,23 +643,8 @@ function getClientSocketById (id) {
 }
 
 app.get('/', function(req, res){
-	if (serverMode == ServerMode.SMALL_TESTSTAND)
-	{
-		res.sendFile(path + 'small_teststand.html')
-	}
-	else if (serverMode == ServerMode.SMALL_OXFILL)
-	{
-		res.sendFile(path + 'small_oxfill.html')
-	}
-	else if (serverMode == ServerMode.FRANZ)
-	{
-		res.sendFile(path + 'franz.html')
-	}
-	else
-	{
-		res.sendFile(path + '404.html')
-	}
-	
+    res.sendFile(path + 'ecui.html');
+	//res.sendFile(path + '404.html')
 });
 
 app.get('/pnidList', function(req, res){
@@ -659,30 +652,29 @@ app.get('/pnidList', function(req, res){
     res.json(pnidManMod.getAllPnIDs());
 });
 
-app.get('/config/custom', (req, res) => {
+app.get('/web_config/main', (req, res) => {
+    console.log("requested ecui config");
+	res.sendFile(pathMod.join(configPath, webConfigSubPath, 'ecui_config.json'))
+});
+
+app.get('/pnid_config/custom', (req, res) => {
     console.log("requested config");
-    //let rawdata = fs.readFileSync(configPath + 'config.json');
-	res.sendFile(configPath + 'config.json')
+	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'config.json'))
 });
 
-app.get('/config/default', (req, res) => {
+app.get('/pnid_config/default', (req, res) => {
     console.log("requested default config");
-    //let rawdata = fs.readFileSync(configPath + 'defaultConfig.json');
-	res.sendFile(configPath + 'defaultConfig.json')
+	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'defaultConfig.json'))
 });
 
-app.get('/config/thresholds', (req, res) => {
+app.get('/pnid_config/thresholds', (req, res) => {
     console.log("requested thresholds definitions");
-    //let rawdata = fs.readFileSync(configPath + 'thresholds.json');
-	res.sendFile(configPath + 'thresholds.json')
+	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'thresholds.json'))
 });
 
-app.get('/config/grafana', (req, res) => {
-
-    
-    res.sendFile(configPath + 'grafanaPanelConfig.json');
-
-  })
+app.get('/pnid_config/grafana', (req, res) => {
+    res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'grafanaPanelConfig.json'));
+});
 
 app.post('/pnid', function(req, res){
     console.log(req.body.file);
