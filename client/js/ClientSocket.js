@@ -294,8 +294,18 @@ function updateCommandSearch(input)
     let commandList = $("#command-list");
     if (input.value == "")
     {
-        commandList.find("div.card").show(200);
-        commandList.find("li").show(200);
+        commandList.find("div.card").each(function (index, element) {
+            if ($(element).is(":hidden"))
+            {
+                element.show(200);
+            }
+        });
+        commandList.find("li").each(function (index, element) {
+            if ($(element).is(":hidden"))
+            {
+                element.show(200);
+            }
+        });
     }
     else
     {
@@ -325,8 +335,18 @@ function updateCommandSearch(input)
             {
                 $("#empty-search-indicator").children().first().text(`No commands containing '${input.value}' found.`);
             }
-            commandList.find("div.card").show(200);
-            commandList.find("li").show(200);
+            commandList.find("div.card").each(function (index, element) {
+                if ($(element).is(":hidden"))
+                {
+                    element.show(200);
+                }
+            });
+            commandList.find("li").each(function (index, element) {
+                if ($(element).is(":hidden"))
+                {
+                    element.show(200);
+                }
+            });
         }
         else
         {
@@ -350,7 +370,10 @@ function updateCommandSearch(input)
                         {
                             //we found an entry in matches from this command group, this means we want to show it
                             //console.log("found match for category", categoryIndex, command);
-                            $(element).show(200);
+                            if ($(element).is(":hidden"))
+                            {
+                                $(element).show(200);
+                            }
                             showCategory = true;
                             break;
                         }
@@ -361,12 +384,25 @@ function updateCommandSearch(input)
                     }
                     if (showCategory == false)
                     {
-                        //console.log("category", element);
-                        $(element).hide(100);
+                        if ($(element).is(":visible")) {
+                            $(element).hide(100);
+                        }
                     }
                 });
-                $(invertedMatches).parent().hide(100);
-                $(matches).parent().show(200);
+                $(invertedMatches).each(function(index, element)
+                {
+                    if ($(element).is(":visible"))
+                    {
+                        element.hide(100);
+                    }
+                });
+                $(matches).each(function(index, element)
+                {
+                    if ($(element).is(":hidden"))
+                    {
+                        element.show(200);
+                    }
+                });
             }
         }
     }
