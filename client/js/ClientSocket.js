@@ -355,21 +355,16 @@ function updateCommandSearch(input)
             commandList.find("div.card").remove('[id="empty-search-indicator"]');
             if (invertedMatches.length > 0)
             {
-                //console.log("command list begin", commandList.children());
-                //for (let {categoryIndex, val} of commandList.children().entries())
                 commandList.children().each(function(categoryIndex, element)
                 {
                     showCategory = true;
-                    //console.log("val", element, "children", $(element).find("li"), "index", categoryIndex);
                     let categoryCommands = $(element).find("div.command");
                     for (let command of categoryCommands)
                     {
-                        //console.log("command", command);
                         //check each command group if there's at least one entry in matches
                         if (matches.some(e => $(e).attr("id") === $(command).attr("id")))
                         {
                             //we found an entry in matches from this command group, this means we want to show it
-                            //console.log("found match for category", categoryIndex, command);
                             if ($(element).is(":hidden"))
                             {
                                 $(element).show(200);

@@ -9,11 +9,12 @@ module.exports = class PnIDManager {
 
     static _curPnID = "";
     static _pnids = [];
+    static _parsedPnids = {};
     static _configPath = "";
 
-    constructor(programmDirPath, configPath) {
+    constructor(programDirPath, configPath) {
         PnIDManager._configPath = configPath;
-        PnIDManager._programmDirPath = programmDirPath;
+        PnIDManager._programDirPath = programDirPath;
         PnIDManager.parsePnIDs();
         PnIDManager._curPnID = PnIDManager.getAllPnIDs()[0];
     }
@@ -30,8 +31,13 @@ module.exports = class PnIDManager {
                     let parserProc = childprocess.execSync(
                         `node ./client/pnid_houbolt/kicad-schematic-parser.js "${file}" \
                         "${pathMod.join(PnIDManager._configPath, 'pnid', 'schematics', 'pnid-lib', 'PnID.lib')}" \
-                        "${pathMod.join(PnIDManager._programmDirPath, 'client', 'pnid_houbolt', 'client', fileName + '.pnid')}"`, {stdio: "inherit"}
+                        "${pathMod.join(PnIDManager._programDirPath, 'client', 'pnid_houbolt', 'client', fileName + '.pnid')}"`, {stdio: "inherit"}
                     );
+                    //I really dislike having to write the pnid to disk and then delete it again but I can't find a different reasonably easy solution
+                    //The parser would need to somehow directly return the data (via pipe?) to the caller process, but the parser should also be able to
+                    //write to file so that'd need more CLI args for the parser and that's all just too much to do on something that is slated to be replaced anyways
+                    PnIDManager._parsedPnids[fileName] = fs.readFileSync(pathMod.join(PnIDManager._programDirPath, 'client', 'pnid_houbolt', 'client', fileName + '.pnid'));
+                    fs.unlinkSync(pathMod.join(PnIDManager._programDirPath, 'client', 'pnid_houbolt', 'client', fileName + '.pnid'));
                 } catch (e) {
                     //todo better error handling
                     console.log("Error while parsing schematic '" + fileName + "':", e.stderr);
@@ -83,7 +89,13 @@ module.exports = class PnIDManager {
         {
             throw exception("no pnids found inside pnid folder");
         }
-        return pnidSaveDir + PnIDManager._curPnID;
+        //if this is a pnid that got automatically parsed, return the data from RAM
+        if (PnIDManager._parsedPnids[PnIDManager._curPnID] != undefined)
+        {
+            return PnIDManager._parsedPnids[PnIDManager._curPnID];
+        }
+        //else read from file and return that
+        return fs.readFileSync(pathMod.join(PnIDManager._programDirPath, 'client', 'pnid_houbolt', 'client', PnIDManager._curPnID)).toString();
     }
 
     //returns list of sequences where the currently selected gets positioned first
@@ -116,10 +128,14 @@ module.exports = class PnIDManager {
             }
 
         });
+        for (const [key, value] of Object.entries(PnIDManager._parsedPnids))
+        {
+            PnIDManager._pnids.push(key);
+        }
 
         if (PnIDManager._pnids.length === 0)
         {
-            throw exception("no pnids found inside pnid folder");
+            throw exception("no pnids found to parse or already parsed in client folder");
         }
         return PnIDManager._pnids;
     }
