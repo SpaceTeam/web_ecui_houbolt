@@ -24,6 +24,8 @@ var isMaster = false;
 
 var disableSensorChartsOnLoad = true;
 
+var allCommandElementsList;
+
 //create observer to check if sensor charts shall be rendered
 var chartTabObserver = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
@@ -289,37 +291,84 @@ function insertTestCommands()
 
 function updateCommandSearch(input)
 {
-    //console.log(input.value);
+    let commandList = $("#command-list");
     if (input.value == "")
     {
-        $("#command-list").show();
-        $("#command-search-results").empty().hide();
+        commandList.find("div.card").show(200);
+        commandList.find("li").show(200);
     }
     else
     {
-        $("#command-list").hide();
-
-        $("#command-search-results").empty();
         let selector = $.escapeSelector(input.value);
-        let results = $(`[id*=${selector} i]`).filter(".command").clone();
-        if (results.length > 0)
+        let regex = new RegExp(`.*${input.value}.*`, 'i');
+        let matches = [];
+        let invertedMatches = [];
+        for (let command of allCommandElementsList)
         {
-            results.each(function (index) {
-                let entryData = results.eq(index);
-                let regExp = new RegExp(`(${input.value})`, 'gi');
-                let highlightedTitle = entryData.attr("id").replace(regExp, '<b>$1</b>')
-                entryData.find("label").first().html(highlightedTitle);
-                let listEntry = `<li class="list-group-item">${entryData[0].outerHTML}</li>`;
-                $("#command-search-results").append(listEntry);
-            });
+            if (regex.test($(command).attr("id")))
+            {
+                matches.push(command);
+            }
+            else
+            {
+                invertedMatches.push(command);
+            }
+        }
+        if (invertedMatches.length == allCommandElementsList.length)
+        {
+            //found no matches. unhide entire list and prepend/update indicator that no results were found
+            if ($("#empty-search-indicator").length == 0)
+            {
+                commandList.prepend(`<div id="empty-search-indicator" class="card"><div style="text-align: center; margin: 1.4em; font-size: 16px" disabled>No commands containing '${input.value}' found.</div></div>`);
+            }
+            else
+            {
+                $("#empty-search-indicator").children().first().text(`No commands containing '${input.value}' found.`);
+            }
+            commandList.find("div.card").show(200);
+            commandList.find("li").show(200);
         }
         else
         {
-            $("#command-search-results").append(`<li class="list-group-item"><label class="input-label">No commands containing '${input.value}' found.</label></li>`);
-            $("#command-list").show();
+            //found matches, removing the found no matches indicator
+            let showCategory = true;
+            commandList.find("div.card").remove('[id="empty-search-indicator"]');
+            if (invertedMatches.length > 0)
+            {
+                //console.log("command list begin", commandList.children());
+                //for (let {categoryIndex, val} of commandList.children().entries())
+                commandList.children().each(function(categoryIndex, element)
+                {
+                    showCategory = true;
+                    //console.log("val", element, "children", $(element).find("li"), "index", categoryIndex);
+                    let categoryCommands = $(element).find("div.command");
+                    for (let command of categoryCommands)
+                    {
+                        //console.log("command", command);
+                        //check each command group if there's at least one entry in matches
+                        if (matches.some(e => $(e).attr("id") === $(command).attr("id")))
+                        {
+                            //we found an entry in matches from this command group, this means we want to show it
+                            //console.log("found match for category", categoryIndex, command);
+                            $(element).show(200);
+                            showCategory = true;
+                            break;
+                        }
+                        else
+                        {
+                            showCategory = false;
+                        }
+                    }
+                    if (showCategory == false)
+                    {
+                        //console.log("category", element);
+                        $(element).hide(100);
+                    }
+                });
+                $(invertedMatches).parent().hide(100);
+                $(matches).parent().show(200);
+            }
         }
-
-        $("#command-search-results").show();
     }
 }
 
@@ -387,6 +436,7 @@ function loadCommands(jsonCommands)
         categoryData.append(commandHtml);
     }); 
     //console.log("categories:", commandCategories);
+    allCommandElementsList = $("#command-container").find("div.command");
 }
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------

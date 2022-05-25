@@ -28,9 +28,9 @@ module.exports = class PnIDManager {
                 try {
                     console.log("Parsing", fileName + "...");
                     let parserProc = childprocess.execSync(
-                        `node ./client/pnid_houbolt/kicad-schematic-parser.js ${file} \
-                        ${pathMod.join(PnIDManager._configPath, 'pnid', 'schematics', 'pnid-lib', 'PnID.lib')} \
-                        ${pathMod.join(PnIDManager._programmDirPath, 'client', 'pnid_houbolt', 'client', fileName + '.pnid')}`, {stdio: "inherit"}
+                        `node ./client/pnid_houbolt/kicad-schematic-parser.js "${file}" \
+                        "${pathMod.join(PnIDManager._configPath, 'pnid', 'schematics', 'pnid-lib', 'PnID.lib')}" \
+                        "${pathMod.join(PnIDManager._programmDirPath, 'client', 'pnid_houbolt', 'client', fileName + '.pnid')}"`, {stdio: "inherit"}
                     );
                 } catch (e) {
                     //todo better error handling
