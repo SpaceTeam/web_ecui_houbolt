@@ -631,7 +631,10 @@ function onLLServerConnect()
 
     if (clients.length > 0)
     {
-        console.log('states-start');
+        console.log('llserver-connect init');
+        ioClient.emit("commands-clear");
+        llServerMod.sendMessage(llServer, 'commands-load');
+        llServerMod.sendMessage(llServer, 'states-load');
         llServerMod.sendMessage(llServer, 'states-start');
     }
 }

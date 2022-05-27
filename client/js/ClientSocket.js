@@ -292,11 +292,20 @@ function insertTestCommands()
 var commandCategories = []; //I dislike that this is global, but I don't see an easy fix for this otherwise. I'd need to read all already created categories and re-parse the category names from them which sucks more than this global variable imo
 var commandStates = [];
 
+function clearCommands()
+{
+    $("#commandSearch").empty();
+    $('#command-list').empty();
+
+    commandCategories = [];
+    commandStates = [];
+}
+
 function loadCommands(jsonCommands)
 {
     $("#commandSearch").empty();
     let commandContainer = $('#command-list');
-    //commandContainer.empty();
+
     let commandTemplate = $('#tempCommand').children().first().clone();
 
     jsonCommands.forEach(command => {
@@ -643,6 +652,13 @@ socket.on('sequence-load', function(jsonSeqsInfo) {
 
     //load dropdowns
     loadSequenceSelect();
+
+});
+
+socket.on('commands-clear', function() {
+
+    console.log('commands-clear');
+    clearCommands();
 
 });
 
