@@ -687,7 +687,10 @@ app.get('/pnid_config/grafana', (req, res) => {
 app.post('/pnid', function(req, res){
     console.log(req.body.file);
     pnidManMod.setPnID(req.body.file);
-    res.sendFile(__dirname + "/" + pnidManMod.getPnID());
+    //apparently res.send is not great compared to res.sendFile because sendFile can be done asynchronously
+    //and is easier on memory/garbage collecting. this is however only relevant on larger servers and we
+    //prefer not storing these files on disk. still, would be nice to make a better solution
+    res.send(pnidManMod.getPnID());
 });
 
 http.listen(port, function(){
