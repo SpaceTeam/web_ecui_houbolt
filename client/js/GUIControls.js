@@ -1,3 +1,4 @@
+
 //abort if any key is pressed
 document.onkeydown = function (event) {
     var seqButton = $('#toggleSequenceButton');
@@ -99,3 +100,135 @@ $('#saftlButton').click(function() {
         }, 2000);
     })
 });
+
+function updateCommandSearch(input)
+{
+    let commandList = $("#command-list");
+    if (input.value == "")
+    {
+        commandList.find(".collapse").collapse('hide');
+        commandList.find("div.card").each(function (index, element) {
+            if ($(element).is(":hidden"))
+            {
+                $(element).show(200);
+            }
+        });
+        commandList.find("li").each(function (index, element) {
+            if ($(element).is(":hidden"))
+            {
+                $(element).show(200);
+            }
+        });
+    }
+    else
+    {
+        commandList.find(".collapse").collapse('show');
+        let regex = new RegExp(`.*${input.value}.*`, 'i');
+        let matches = [];
+        let invertedMatches = [];
+        for (let command of allCommandElementsList)
+        {
+            if (regex.test($(command).attr("id")))
+            {
+                matches.push(command);
+            }
+            else
+            {
+                invertedMatches.push(command);
+            }
+        }
+        if (invertedMatches.length == allCommandElementsList.length)
+        {
+            //found no matches. unhide entire list and prepend/update indicator that no results were found
+            if ($("#empty-search-indicator").length == 0)
+            {
+                commandList.prepend(`<div id="empty-search-indicator" class="card indicator"><div style="text-align: center; margin: 1.4em; font-size: 16px" disabled>No commands containing '${input.value}' found.</div></div>`);
+            }
+            else
+            {
+                $("#empty-search-indicator").children().first().text(`No commands containing '${input.value}' found.`);
+            }
+            commandList.find("div.card:not(div.indicator)").each(function (index, element) {
+                if ($(element).is(":visible"))
+                {
+                    $(element).hide(200);
+                }
+            });
+            commandList.find("li").each(function (index, element) {
+                if ($(element).is(":visible"))
+                {
+                    $(element).hide(200);
+                }
+            });
+        }
+        else
+        {
+            //found matches, removing the found no matches indicator
+            let showCategory = true;
+            commandList.find("div.card").remove('[id="empty-search-indicator"]');
+            if (invertedMatches.length > 0)
+            {
+                //console.log("command list begin", commandList.children());
+                //for (let {categoryIndex, val} of commandList.children().entries())
+                commandList.children().each(function(categoryIndex, element)
+                {
+                    //console.log("val", element, "children", $(element).find("li"), "index", categoryIndex);
+                    let categoryCommands = $(element).find("div.command");
+                    let commandMatches = []
+                    for (let command of categoryCommands)
+                    {
+                        //console.log("command", command);
+                        //check each command group if there's at least one entry in matches
+                        if (matches.some(e => $(e).attr("id") === $(command).attr("id")))
+                        {
+                            //we found an entry in matches from this command group, this means we want to show it
+                            //console.log("found match for category", categoryIndex, command);
+                            if ($(element).is(":hidden"))
+                            {
+                                $(element).show(200);
+                            }
+                            if ($(command).is(":hidden"))
+                            {
+                                $(command).parent().show(200);
+                            }
+                            commandMatches.push(command);
+                        }
+                    }
+                    if (commandMatches.length == 0)
+                    {
+                        if ($(element).is(":visible")) {
+                            $(element).hide(100);
+                        }
+                    }
+                });
+                $(invertedMatches).each(function(index, command)
+                {
+                    if ($(command).is(":visible"))
+                    {
+                        $(command).parent().hide(100);
+                        
+                        
+                    }
+                });
+                /* $(matches).each(function(index, element)
+                {
+                    if ($(element).is(":hidden"))
+                    {
+                        $(element).show(200);
+                    }
+                }); */
+            }
+        }
+    }
+}
+
+function updateCommandList(jsonStates, commandStates)
+{
+    for (stateObj of jsonStates)
+    {
+        if (commandStates.includes(stateObj["name"]))
+        {
+            $("[data-command-state-name=\""+stateObj["name"]+"\"]").val(stateObj["value"]);
+        }
+    }
+}

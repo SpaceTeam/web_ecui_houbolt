@@ -289,126 +289,8 @@ function insertTestCommands()
     loadCommands(JSON.parse('{"commandList":[{"commandName":"ox_purge_solenoid:GetDutyCycle","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:GetMeasurement","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:RequestCalibrate","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:SetMeasurement","parameterNames":["paramA","paramB"]},{"commandName":"ox_pressurize_solenoid:SetSomething","parameterNames":["param2","param4"]},{"commandName":"ox_pressurize_solenoid:GetSomething","parameterNames":["param2","param4"]}]}')["commandList"]);
 }
 
-function updateCommandSearch(input)
-{
-    let commandList = $("#command-list");
-    if (input.value == "")
-    {
-        commandList.find("div.card").each(function (index, element) {
-            if ($(element).is(":hidden"))
-            {
-                element.show(200);
-            }
-        });
-        commandList.find("li").each(function (index, element) {
-            if ($(element).is(":hidden"))
-            {
-                element.show(200);
-            }
-        });
-    }
-    else
-    {
-        let selector = $.escapeSelector(input.value);
-        let regex = new RegExp(`.*${input.value}.*`, 'i');
-        let matches = [];
-        let invertedMatches = [];
-        for (let command of allCommandElementsList)
-        {
-            if (regex.test($(command).attr("id")))
-            {
-                matches.push(command);
-            }
-            else
-            {
-                invertedMatches.push(command);
-            }
-        }
-        if (invertedMatches.length == allCommandElementsList.length)
-        {
-            //found no matches. unhide entire list and prepend/update indicator that no results were found
-            if ($("#empty-search-indicator").length == 0)
-            {
-                commandList.prepend(`<div id="empty-search-indicator" class="card"><div style="text-align: center; margin: 1.4em; font-size: 16px" disabled>No commands containing '${input.value}' found.</div></div>`);
-            }
-            else
-            {
-                $("#empty-search-indicator").children().first().text(`No commands containing '${input.value}' found.`);
-            }
-            commandList.find("div.card").each(function (index, element) {
-                if ($(element).is(":hidden"))
-                {
-                    element.show(200);
-                }
-            });
-            commandList.find("li").each(function (index, element) {
-                if ($(element).is(":hidden"))
-                {
-                    element.show(200);
-                }
-            });
-        }
-        else
-        {
-            //found matches, removing the found no matches indicator
-            let showCategory = true;
-            commandList.find("div.card").remove('[id="empty-search-indicator"]');
-            if (invertedMatches.length > 0)
-            {
-                //console.log("command list begin", commandList.children());
-                //for (let {categoryIndex, val} of commandList.children().entries())
-                commandList.children().each(function(categoryIndex, element)
-                {
-                    showCategory = true;
-                    //console.log("val", element, "children", $(element).find("li"), "index", categoryIndex);
-                    let categoryCommands = $(element).find("div.command");
-                    for (let command of categoryCommands)
-                    {
-                        //console.log("command", command);
-                        //check each command group if there's at least one entry in matches
-                        if (matches.some(e => $(e).attr("id") === $(command).attr("id")))
-                        {
-                            //we found an entry in matches from this command group, this means we want to show it
-                            //console.log("found match for category", categoryIndex, command);
-                            if ($(element).is(":hidden"))
-                            {
-                                $(element).show(200);
-                            }
-                            showCategory = true;
-                            break;
-                        }
-                        else
-                        {
-                            showCategory = false;
-                        }
-                    }
-                    if (showCategory == false)
-                    {
-                        if ($(element).is(":visible")) {
-                            $(element).hide(100);
-                        }
-                    }
-                });
-                $(invertedMatches).each(function(index, element)
-                {
-                    if ($(element).is(":visible"))
-                    {
-                        element.hide(100);
-                    }
-                });
-                $(matches).each(function(index, element)
-                {
-                    if ($(element).is(":hidden"))
-                    {
-                        element.show(200);
-                    }
-                });
-            }
-        }
-    }
-}
-
 var commandCategories = []; //I dislike that this is global, but I don't see an easy fix for this otherwise. I'd need to read all already created categories and re-parse the category names from them which sucks more than this global variable imo
+var commandStates = [];
 
 function loadCommands(jsonCommands)
 {
@@ -464,6 +346,24 @@ function loadCommands(jsonCommands)
             prevGroup.after(parameterGroup);
             prevGroup = parameterGroup;
             parameterGroup = prevGroup.clone();
+        }
+
+        if (command["commandName"].match(/.*:[GS]et[A-Z0-9].*/))
+        {
+            console.log("getter setter found: ", command["commandName"]);
+            let currValueTemp = $('#tempCommandCurrValue').children().first().clone();
+            
+            //TODO: THIS IS DIRTY CODE PLS EXTEND LLSERVER TO TRANSMIT RELATED STATE NAME
+            let splitCommand = command["commandName"].split(':');
+            let relatedStateName = splitCommand[0]+":"+splitCommand[1].substring(3);
+            //---------------
+            if (!commandStates.includes(relatedStateName))
+            {
+                commandStates.push(relatedStateName);
+            }
+            
+            currValueTemp.find("input").attr("data-command-state-name", relatedStateName);
+            prevGroup.after(currValueTemp);
         }
         commandHtml.find('.parameter-group').eq(0).remove();
         commandHtml.find('.parameter').inputSpinner();
@@ -865,7 +765,7 @@ socket.on('states', function(jsonStates) {
     // 		console.log(JSON.stringify(jsonStates[index], null, 2))		
     // 	}
     // }
-    
+    updateCommandList(jsonStates, commandStates);
     updatePNID(jsonStates);
 });
 

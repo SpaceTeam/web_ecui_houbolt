@@ -469,6 +469,11 @@ hr {
     padding-right: 0 !important;
 }
 
+.parameter-group input
+{
+    border: 1px solid #6C757C !important;
+}
+
 /* .spinner-disable::-webkit-outer-spin-button,
 .spinner-disable::-webkit-inner-spin-button
 {

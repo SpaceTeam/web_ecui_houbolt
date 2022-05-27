@@ -77,7 +77,6 @@
             updateAttributes()
 
             var numberFormat = new Intl.NumberFormat(locale, {
-                minimumFractionDigits: decimals,
                 maximumFractionDigits: decimals
             })
             var value = parseFloat($original[0].value)
@@ -239,7 +238,6 @@
                 if (decimals !== newDecimals) {
                     decimals = newDecimals
                     numberFormat = new Intl.NumberFormat(locale, {
-                        minimumFractionDigits: decimals,
                         maximumFractionDigits: decimals
                     })
                 }

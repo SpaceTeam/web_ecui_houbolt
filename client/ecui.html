@@ -114,8 +114,8 @@
         
         <div id="tempCommandCategory" class="card">
             <div class="card-header">
-                <h2 class="mb-0">
-                    <button class="btn btn-link" data-toggle="collapse" data-target="" aria-expanded="false" aria-controls="">
+                <h2 class="mb-0 w-100 h-100">
+                    <button class="btn btn-link w-100 h-100 text-left" data-toggle="collapse" data-target="" aria-expanded="false" aria-controls="">
                         tempTitle
                     </button>
                 </h2>
@@ -145,6 +145,18 @@
                 </div>
 
             </li>
+        </div>
+        <div id="tempCommandCurrValue">
+            <div class="parameter-group col-auto">
+
+                <div class="input-group flex-nowrap" style="width: 18rem;">
+                    <div class="input-group-prepend" >
+                        <span class="input-group-text parameter-name">Current Value</span>
+                    </div>
+                    <input type="text" style="width: 2rem; height: auto !important" class="form-control text-center" value="0.0" data-command-state-name="temp">
+                </div>
+                
+            </div>
         </div>
 
     </div>
@@ -355,7 +367,7 @@ Notes: Hotfire
         <div class="tab-pane fade master-only" id="commands-tab" role="tabpanel" aria-labelledby="commands-tab-button">
             <div id="command-container">
                 <div class="form-outline">
-                    <input type="search" id="commandSearch" class="form-control" placeholder="Search for Command" aria-label="Search" onkeyup="updateCommandSearch(this)"/>
+                    <input type="search" id="commandSearch" style="height: auto !important;" class="form-control" placeholder="Search for Command" aria-label="Search" oninput="updateCommandSearch(this)"/>
                 </div>
                 <div id="command-search-results" class="accordion">
                 </div>
