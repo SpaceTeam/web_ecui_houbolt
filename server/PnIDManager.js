@@ -137,7 +137,7 @@ module.exports = class PnIDManager {
         {
             throw exception("no pnids found to parse or already parsed in client folder");
         }
-        return PnIDManager._pnids;
+        return PnIDManager._pnids.sort();
     }
 
     
