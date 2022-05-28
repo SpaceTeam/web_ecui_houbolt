@@ -160,6 +160,7 @@ function onLLServerConnect()
 {
     $('#statusBar').attr('hidden', '');
     $('#statusBar').text(null);
+    socket.emit('pythonScript-start', '/home/teststand/config_ecui/python/water_cycle_control.py');
 }
 
 function onLLServerDisconnect()
@@ -359,7 +360,7 @@ function loadCommands(jsonCommands)
 
         if (command["commandName"].match(/.*:[GS]et[A-Z0-9].*/))
         {
-            console.log("getter setter found: ", command["commandName"]);
+            //console.log("getter setter found: ", command["commandName"]);
             let currValueTemp = $('#tempCommandCurrValue').children().first().clone();
             
             //TODO: THIS IS DIRTY CODE PLS EXTEND LLSERVER TO TRANSMIT RELATED STATE NAME
@@ -591,7 +592,14 @@ socket.on('master-lock', (flag) => {
     else $('#masterLockBox').prop('checked', false);
 });
 
-socket.on('connect', function() {socket.emit('checklist-start'); socket.emit('commands-load'); socket.emit('states-load'); socket.emit('states-start');});
+socket.on('connect', function() 
+{
+    socket.emit('checklist-start'); 
+    socket.emit('commands-load'); 
+    socket.emit('states-load'); 
+    socket.emit('states-start');
+    socket.emit('pythonScript-start', '/home/teststand/config_ecui/python/water_cycle_control.py');
+});
 
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
 socket.on('connect_error', function(error) {
