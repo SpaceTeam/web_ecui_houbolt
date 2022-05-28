@@ -769,7 +769,8 @@ socket.on('sequence-done', function() {
 
 var firstSensorFetch = true;
 
-socket.on('states', function(jsonStates) {
+function onStates(jsonStates)
+{
     // console.log('states');
     //console.log(JSON.stringify(jsonStates, null, 2));
 
@@ -791,6 +792,10 @@ socket.on('states', function(jsonStates) {
     // }
     updateCommandList(jsonStates, commandStates);
     updatePNID(jsonStates);
+}
+
+socket.on('states', function(jsonStates) {
+    onStates(jsonStates);
 });
 
 socket.on('states-load', function(jsonStates) {
@@ -798,4 +803,11 @@ socket.on('states-load', function(jsonStates) {
     console.log(jsonStates);
     jsonStateLabels = jsonStates;
     setStateNamesPNID(jsonStateLabels);
+});
+
+socket.on('states-init', function(jsonStates) {
+    console.log('states-init');
+    console.log(jsonStates);
+    jsonStateLabels = jsonStates;
+    setTimeout((jsonStateLabels)=>{onStates(jsonStates);}, 4000);
 });

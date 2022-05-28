@@ -603,6 +603,10 @@ function processLLServerMessage(data) {
                     console.log("states-load");
                     ioClient.emit('states-load', jsonData.content);
                     break;
+                case "states-init":
+                    console.log("states-init");
+                    ioClient.emit('states-init', jsonData.content);
+                    break;
                 case "commands-load":
                     console.log("commands-load llserver");
                     //commandsJson += jsonData.content;
