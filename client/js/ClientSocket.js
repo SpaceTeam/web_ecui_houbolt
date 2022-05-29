@@ -9,6 +9,7 @@ var jsonSensors = {};
 var jsonStateLabels = [];
 var checklistLoaded = false;
 var isContinousTransmission = true;
+var latestStates = {};
 
 var seqChart = new SequenceChart("sequenceChart", "Sequence");
 
@@ -466,6 +467,17 @@ function onAutoAbortChange(checkbox)
     socket.emit('auto-abort-change', checkbox.checked);
 }
 
+function onInitValues()
+{
+    let states = [];
+    for (state in latestStates)
+    {
+        states.push({"name": state, "value": latestStates[state]["value"], "timestamp": latestStates[state]["timestamp"]});
+    }
+    console.log(latestStates, states);
+    loadValuesPNID(states);
+}
+
 function onManualControlEnable(checkbox)
 {
     //console.log("manual control:", checkbox.checked);
@@ -566,6 +578,7 @@ function onCommandExecute(command)
 
 socket.on('master-change', (flag) => {
 	if(flag === 'master'){
+        socket.emit('pythonScript-start', '/home/teststand/config_ecui/python/water_cycle_control.py');
 		master = true;
         	$('.master-only').css('visibility', 'visible');
         	$('.master-only').css('height', 'auto');
@@ -768,6 +781,7 @@ socket.on('sequence-done', function() {
 });
 
 var firstSensorFetch = true;
+var statesPrintRegex = /^(:sensor)|gui:/g
 
 function onStates(jsonStates)
 {
@@ -777,7 +791,7 @@ function onStates(jsonStates)
     //PRINT non sensor values only
     for (index in jsonStates)
     {
-    	if (!jsonStates[index]["name"].includes(":sensor") || jsonStates[index]["name"].includes("gui:"))
+    	if (jsonStates[index]["name"].match(statesPrintRegex))
     	{
     		console.log(JSON.stringify(jsonStates[index], null, 2))		
     	}
@@ -795,6 +809,10 @@ function onStates(jsonStates)
 }
 
 socket.on('states', function(jsonStates) {
+    for (state of jsonStates)
+    {
+        latestStates[state["name"]] = {"value": state["value"], "timestamp": state["timestamp"]};
+    }
     onStates(jsonStates);
 });
 
@@ -808,6 +826,10 @@ socket.on('states-load', function(jsonStates) {
 socket.on('states-init', function(jsonStates) {
     console.log('states-init');
     console.log(jsonStates);
-    jsonStateLabels = jsonStates;
-    setTimeout((jsonStateLabels)=>{onStates(jsonStates);}, 4000);
+    for (state of jsonStates)
+    {
+        console.log(state);
+        latestStates[state["name"]] = {"value": state["value"], "timestamp": state["timestamp"]};
+    }
+    onStates(jsonStates);
 });
