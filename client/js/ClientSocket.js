@@ -410,7 +410,7 @@ function onToggleSequenceButton(btn)
 {
     if ($(btn).text() === 'Start Sequence' || $(btn).text() === 'Pad not idle! Retry Seq')
     {
-        if (getRocketInternalStateName() != "PAD_IDLE")
+        if (hasInternalControl() && getRocketInternalStateName() != "PAD_IDLE")
         {
             $(btn).text("Pad not idle! Retry Seq");
         }
