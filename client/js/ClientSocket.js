@@ -25,7 +25,10 @@ var isMaster = false;
 
 var disableSensorChartsOnLoad = true;
 
-var allCommandElementsList;
+var allCommandElementsList = {
+    "can": [],
+    "lora": []
+};
 
 //create observer to check if sensor charts shall be rendered
 var chartTabObserver = new MutationObserver(function(mutations) {
@@ -288,46 +291,99 @@ function countdownTimerTick()
 
 function insertTestCommands()
 {
-    loadCommands(JSON.parse('{"commandList":[{"commandName":"ox_purge_solenoid:GetDutyCycle","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:GetMeasurement","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:RequestCalibrate","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:SetMeasurement","parameterNames":["paramA","paramB"]},{"commandName":"ox_pressurize_solenoid:SetSomething","parameterNames":["param2","param4"]},{"commandName":"ox_pressurize_solenoid:GetSomething","parameterNames":["param2","param4"]}]}')["commandList"]);
+    loadCommands(JSON.parse(`
+        {"commandList":
+            [
+                {"commandName":"ox_purge_solenoid:GetDutyCycle","parameterNames":["paramA","paramB"]},
+                {"commandName":"ox_purge_solenoid:GetMeasurement","parameterNames":["paramA","paramB"]},
+                {"commandName":"ox_purge_solenoid:RequestCalibrate","parameterNames":["paramA","paramB"]},
+                {"commandName":"ox_purge_solenoid:SetMeasurement","parameterNames":["paramA","paramB"]},
+                {"commandName":"ox_pressurize_solenoid:SetSomething","parameterNames":["param2","param4"]},
+                {"commandName":"ox_pressurize_solenoid:GetSomething","parameterNames":["param2","param4"]},
+                {"commandName":"lora:ox_purge_solenoid:GetDutyCycle","parameterNames":["paramA","paramB"]},
+                {"commandName":"lora:ox_purge_solenoid:GetMeasurement","parameterNames":["paramA","paramB"]},
+                {"commandName":"lora:ox_purge_solenoid:RequestCalibrate","parameterNames":["paramA","paramB"]},
+                {"commandName":"lora:ox_purge_solenoid:SetMeasurement","parameterNames":["paramA","paramB"]},
+                {"commandName":"lora:ox_pressurize_solenoid:SetSomething","parameterNames":["param2","param4"]},
+                {"commandName":"lora:ox_pressurize_solenoid:GetSomething","parameterNames":["param2","param4"]}
+            ]
+        }`
+    )["commandList"]);
 }
 
-var commandCategories = []; //I dislike that this is global, but I don't see an easy fix for this otherwise. I'd need to read all already created categories and re-parse the category names from them which sucks more than this global variable imo
-var commandStates = [];
+var commandCategories = {
+    "can": [],
+    "lora": [],
+}; //I dislike that this is global, but I don't see an easy fix for this otherwise. I'd need to read all already created categories and re-parse the category names from them which sucks more than this global variable imo
+//now with hardcoded can vs lora separation I dislike this even more. yay.
+var commandStates = {
+    "can": [],
+    "lora": [],
+}; 
 
 function clearCommands()
 {
     $("#commandSearch").empty();
     $('#command-list').empty();
 
-    commandCategories = [];
-    commandStates = [];
+    commandCategories = {
+        "can": [],
+        "lora": [],
+    }; 
+    commandStates = {
+        "can": [],
+        "lora": [],
+    };
+
+    allCommandElementsList = {
+        "can": [],
+        "lora": [],
+    };
 }
 
 function loadCommands(jsonCommands)
 {
     $("#commandSearch").empty();
-    let commandContainer = $('#command-list');
+    let commandContainerCAN = $('#command-list');
+    let commandContainerLORA = $('#command-list-lora');
 
     let commandTemplate = $('#tempCommand').children().first().clone();
 
     jsonCommands.forEach(command => {
-        let commandCategory = command["commandName"].split(":")[0];
-        let commandName = command["commandName"].split(":")[1];
+        let typePrefix = "can";
+        if (command["commandName"].startsWith("lora:"))
+        {
+            typePrefix = "lora";
+        }
+
+        let commandContainer = undefined;
+        if (typePrefix == "lora")
+        {
+            commandContainer = commandContainerLORA;
+        }
+        else
+        {
+            commandContainer = commandContainerCAN;
+        }
+
+        let commandNameArray = command["commandName"].split(":");
+        let commandCategory = commandNameArray[commandNameArray.length - 2];
+        let commandName = commandNameArray[commandNameArray.length - 1];
         let commandCategoryHtml = $("#tempCommandCategory").first().clone();
         let categoryData = commandCategoryHtml.find("div.card-body").first()
-        if (commandCategories.includes(commandCategory))
+        if (commandCategories[typePrefix].includes(commandCategory))
         {
-            categoryData = $(`#${commandCategory}`).find("div.card-body").first();
+            categoryData = commandContainer.find(`#${typePrefix}_${commandCategory}`).find("div.card-body").first();
         }
         else
         {
             let categoryHeader = commandCategoryHtml.find("div.card-header").first();
-            commandCategories.push(commandCategory);
-            commandCategoryHtml.attr("id", commandCategory);
-            categoryHeader.attr("id", "heading_" + commandCategory);
+            commandCategories[typePrefix].push(commandCategory);
+            commandCategoryHtml.attr("id", typePrefix + "_" + commandCategory);
+            categoryHeader.attr("id", "heading_" + typePrefix + "_" + commandCategory);
             let headerButton = categoryHeader.find("button");
-            headerButton.attr("data-target", `#collapse_${commandCategory}`).attr("aria-controls", `collapse_${commandCategory}`).html(commandCategory);
-            commandCategoryHtml.find("div.collapse").attr("aria-labelledby", "heading_" + commandCategory).attr("id", "collapse_" + commandCategory);
+            headerButton.attr("data-target", `#collapse_${typePrefix}_${commandCategory}`).attr("aria-controls", `collapse_${typePrefix}_${commandCategory}`).html(commandCategory);
+            commandCategoryHtml.find("div.collapse").attr("aria-labelledby", "heading_" + typePrefix + "_" + commandCategory).attr("id", "collapse_" + typePrefix + "_" + commandCategory);
             commandContainer.append(commandCategoryHtml);
         }
         let commandHtml = commandTemplate.clone();
@@ -368,9 +424,9 @@ function loadCommands(jsonCommands)
             let splitCommand = command["commandName"].split(':');
             let relatedStateName = splitCommand[0]+":"+splitCommand[1].substring(3);
             //---------------
-            if (!commandStates.includes(relatedStateName))
+            if (!commandStates[typePrefix].includes(relatedStateName))
             {
-                commandStates.push(relatedStateName);
+                commandStates[typePrefix].push(relatedStateName);
             }
             
             currValueTemp.find("input").attr("data-command-state-name", relatedStateName);
@@ -383,7 +439,8 @@ function loadCommands(jsonCommands)
         categoryData.append(commandHtml);
     }); 
     //console.log("categories:", commandCategories);
-    allCommandElementsList = $("#command-container").find("div.command");
+    allCommandElementsList["can"] = $("#command-list").find("div.command");
+    allCommandElementsList["lora"] = $("#command-list-lora").find("div.command");
 }
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------
