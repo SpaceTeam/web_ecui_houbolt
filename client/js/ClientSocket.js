@@ -574,7 +574,7 @@ function onManualControlEnable(checkbox)
     }
 }
 
-function abortSequence(abortMsg)
+function abortSequence(abortMsg, timeEnd = jsonAbortSequence.globals.endTime)
 {
     clearInterval(countdownIntervalDelegate);
 
@@ -593,12 +593,12 @@ function abortSequence(abortMsg)
     setTimeout(function () {
             emptySensorCharts();
             isContinousTransmission = true;
-        }, jsonAbortSequence.globals.endTime*1000+500);
+        }, timeEnd*1000+500);
 
     $('#toggleSequenceButton').attr("disabled", true);
     setTimeout(function () {
         $('#toggleSequenceButton').removeAttr("disabled");
-    }, jsonAbortSequence.globals.endTime*1000);
+    }, timeEnd*1000);
 
     seqChart.reset();
     seqChart.loadSequenceChart(jsonSequence);
@@ -777,10 +777,14 @@ socket.on('sequence-start', function() {
 });
 
 socket.on('timer-start', function () {
+    startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
+});
 
+function startTimer(timeStart, timeEnd)
+{
     intervalMillis = 100; //hard code timer step to 100 for client
-    timeMillis = jsonSequence.globals.startTime * 1000;
-    endTime = jsonSequence.globals.endTime;
+    timeMillis = timeStart * 1000;
+    endTime = timeEnd;
     responsiveVoice.enableEstimationTimeout = true;
 
     countdownTime = jsonSequence.globals.startTime;
@@ -789,7 +793,7 @@ socket.on('timer-start', function () {
 
     timerTick();
     intervalDelegate = setInterval(timerTick, intervalMillis);
-});
+}
 
 socket.on('sequence-sync', function(time) {
     //console.log('sequence-sync:');
@@ -812,12 +816,16 @@ socket.on('sequence-sync', function(time) {
 
 socket.on('sequence-done', function() {
     console.log('sequence-done:');
+    timerStop(endTime);
+});
 
+function timerStop(timeEnd)
+{
     seqChart.stop();
 
-    $('.timer').text(endTime);
+    $('.timer').text(timeEnd);
     clearInterval(intervalDelegate);
-    if (Number.isInteger(endTime))
+    if (Number.isInteger(timeEnd))
     {
         $('.timer').append('.0');
     }
@@ -835,7 +843,7 @@ socket.on('sequence-done', function() {
         }, 3000);
 
     $('#masterRequest').prop('disabled', false);
-});
+}
 
 var firstSensorFetch = true;
 var statesPrintRegex = /^(:sensor)|gui:/g
