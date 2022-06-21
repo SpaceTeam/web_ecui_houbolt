@@ -1,3 +1,15 @@
+/* montserrat-regular - latin */
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    src: local(''),
+         url('../lib/fonts/montserrat-v24-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+         url('../lib/fonts/montserrat-v24-latin-regular.woff') format('woff'), /* Modern Browsers */
+         url('../lib/fonts/montserrat-v24-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+}
+  
+
 body, html {
     height: 100%;
 }
@@ -7,7 +19,7 @@ body, html {
 }
 
 body {
-    font: 13px Helvetica, SansSerif;
+    font: 13px Montserrat, Helvetica, SansSerif;
     background-color: var(--background-primary);
     color: var(--content-primary);
     margin-top: 0px;
@@ -42,7 +54,7 @@ form input {
     font-weight: bolder;
     height: 1.4rem;
     padding-left: 2rem;
-    padding-top: 0.3rem;
+    padding-top: 0.15rem;
     background-color: var(--warning-color);
     color: black;
 }
@@ -272,12 +284,14 @@ hr {
    margin-top: 1.4rem;
    margin-left: 1rem;
    font-size: 1.8rem;
+   font-weight: 400;
  }
 
 #subtitle {
    margin-top: 1.8rem;
    margin-left: 1rem;
    font-size: 1rem;
+   font-weight: 300;
  }
 
 .tab-button.active {
@@ -360,7 +374,7 @@ hr {
 }
 
 #versionLabel {
-    font-size: 1rem;
+    font-size: 0.8rem;
 	float: right;
     margin-bottom: 0px;
 }
