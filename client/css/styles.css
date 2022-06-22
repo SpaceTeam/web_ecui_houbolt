@@ -3,10 +3,9 @@
     font-family: 'Montserrat';
     font-style: normal;
     font-weight: 400;
-    src: local(''),
-         url('../lib/fonts/montserrat-v24-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
-         url('../lib/fonts/montserrat-v24-latin-regular.woff') format('woff'), /* Modern Browsers */
-         url('../lib/fonts/montserrat-v24-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+    src: url('../lib/fonts/montserrat-v24-latin-regular.woff2') format('woff2'); /* Super Modern Browsers */
+    src: url('../lib/fonts/montserrat-v24-latin-regular.woff') format('woff'); /* Modern Browsers */
+    src: url('../lib/fonts/montserrat-v24-latin-regular.ttf') format('truetype'); /* Safari, Android, iOS */
 }
   
 

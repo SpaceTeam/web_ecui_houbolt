@@ -237,7 +237,11 @@ function updateCommandList(jsonStates, commandStates)
 {
     for (stateObj of jsonStates)
     {
-        if (commandStates.includes(stateObj["name"]))
+        if (commandStates["can"].includes(stateObj["name"]))
+        {
+            $("[data-command-state-name=\""+stateObj["name"]+"\"]").val(stateObj["value"]);
+        }
+        else if (commandStates["lora"].includes(stateObj["name"]))
         {
             $("[data-command-state-name=\""+stateObj["name"]+"\"]").val(stateObj["value"]);
         }
