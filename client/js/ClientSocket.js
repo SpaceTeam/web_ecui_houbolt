@@ -18,8 +18,8 @@ var timeMillis;
 var intervalMillis;
 var intervalDelegate;
 
-var countdownTime;
-var countdownIntervalDelegate;
+var countdownTime = null;
+var countdownIntervalDelegate = null;
 
 var isMaster = false;
 
@@ -783,9 +783,12 @@ function startTimer(timeStart, timeEnd)
     responsiveVoice.enableEstimationTimeout = true;
 
     countdownTime = jsonSequence.globals.startTime;
+    clearInterval(countdownIntervalDelegate);
     countdownTimerTick();
     countdownIntervalDelegate = setInterval(countdownTimerTick, 1000);
 
+    $('.timer').css("color", "green");
+    clearInterval(intervalDelegate);
     timerTick();
     intervalDelegate = setInterval(timerTick, intervalMillis);
 }
@@ -820,6 +823,7 @@ function timerStop(timeEnd)
 
     $('.timer').text(timeEnd);
     clearInterval(intervalDelegate);
+    //clearInterval(countdownIntervalDelegate);
     if (Number.isInteger(timeEnd))
     {
         $('.timer').append('.0');
