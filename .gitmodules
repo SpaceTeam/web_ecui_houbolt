@@ -1,7 +1,7 @@
 [submodule "client/pnid_houbolt"]
 	path = client/pnid_houbolt
-	url = git@github.com-pnid:SpaceTeam/pnid_houbolt.git
+	url = git@github.com:SpaceTeam/pnid_houbolt.git
 	branch = dev
 [submodule "client/theming"]
 	path = client/theming
-	url = git@github.com-theme:SpaceTeam/SpaceTeamTheme.git
+	url = git@github.com:SpaceTeam/SpaceTeamTheme.git
