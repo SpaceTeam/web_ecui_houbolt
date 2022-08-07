@@ -27,5 +27,11 @@ function onPnidSelectChange(value)
         
         clearElementBuffer();
         setStateNamesPNID(jsonStateLabels);
+        try {
+            switchPnIDPopups(value);
+        }
+        catch (error) {
+            console.log("couldn't switch pnid popups:", error);
+        }
       });
 }
