@@ -514,6 +514,14 @@ ioClient.on('connection', function(socket){
 
         });
 
+        socket.on('pythonScript-runChecklistItem', function(jsonPythonContent){
+            console.log('pythonScript-runChecklistItem');
+            if (master === socket.id) {
+                llServerMod.sendMessage(llServer, 'pythonScript-runChecklistItem', jsonPythonContent);
+            }
+
+        });
+
         socket.on('pythonScript-start', function(scriptPath){
             console.log('pythonScript-start');
             if (master === socket.id) {
