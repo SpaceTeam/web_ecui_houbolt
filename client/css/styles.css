@@ -191,6 +191,10 @@ form input {
     border-color: #6c757d; /*todo: this is hardcoded to fit btn-outline-secondary from bootstrap. once bootstrap overrides are properly implemented move this to a variable*/
 }
 
+.input-group-prepend, .input-group-append {
+    z-index: 0;
+}
+
 .footer {
     position: absolute;
     bottom: 0;
