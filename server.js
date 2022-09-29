@@ -15,6 +15,8 @@ var ioClient = require('socket.io')(http);
 var clients = [];
 var port = 80;
 
+const { exec } = require('child_process');
+
 const bp = require('body-parser');
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
@@ -312,6 +314,112 @@ var onMasterLock = function (socket, flag) {
     console.log('master lock ' + flag);
 }
 
+var onRpiHalt = function () {
+    exec("/sbin/shutdown -h now", (error, stdout, stderr) => {
+        if (error) {
+            console.log('rpi halt error: ' + error.message);
+            return;
+        }
+        if (stderr) {
+            console.log('rpi halting: ' + stderr);
+            return;
+        }
+        console.log('rpi halting');
+    });
+}
+
+var onLLRestart = function () {
+    exec("systemctl restart ecui-llserver.service", (error, stdout, stderr) => {
+        if (error) {
+            console.log('ll restart error: ' + error.message);
+            return;
+        }
+        if (stderr) {
+            console.log('ll restart stderr: ' + stderr);
+            return;
+        }
+        console.log('ll restarting');
+    });
+}
+
+var onExportLog = function () {
+    let localDate = new Date();
+    // get utc date
+    var dateObj = new Date(localDate.getTime() + localDate.getTimezoneOffset() * 60000); // covert to UTC time
+
+    // current date
+    // adjust 0 before single digit date
+    let date = ("0" + dateObj.getDate()).slice(-2);
+
+    // current month
+    let month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
+
+    // current year
+    let year = dateObj.getFullYear();
+
+    // current hours
+    let hours = ("0" + dateObj.getHours()).slice(-2);
+
+    // current minutes
+    let minutes = ("0" + dateObj.getMinutes()).slice(-2);
+
+    // current seconds
+    let seconds = ("0" + dateObj.getSeconds()).slice(-2);
+
+    // prints date & time in YYYY-MM-DD HH:MM:SS format
+    let currTime = year + "-" + month + "-" + date + "T" + hours + ":" + minutes + ":" + seconds + "Z";
+
+    let utc = dateObj.getTime() - 60000; // go back mins (60.000ms)
+
+    // create new Date object for old time
+    let oldDateObj = new Date(utc);
+    let oldDate = ("0" + oldDateObj.getDate()).slice(-2);
+    let oldMonth = ("0" + (oldDateObj.getMonth() + 1)).slice(-2);
+    let oldYear = oldDateObj.getFullYear();
+    let oldHours = ("0" + oldDateObj.getHours()).slice(-2);
+    let oldMinutes = ("0" + oldDateObj.getMinutes()).slice(-2);
+    let oldSeconds = ("0" + oldDateObj.getSeconds()).slice(-2);
+    let oldTime = oldYear + "-" + oldMonth + "-" + oldDate + "T" + oldHours + ":" + oldMinutes + ":" + oldSeconds + "Z";
+
+    console.log('exporting log from ' + oldTime + ' to ' + currTime);
+    // execute export command with increased (50MB) buffer size for the large log file
+    /*
+    exec("python3 /home/pi/export.py hotfire" + date + "T" + hours + minutes + seconds + "Z" + ".csv testDb sensors " + oldTime + " --end " + currTime, {maxBuffer: 50000 * 1024}, (error, stdout, stderr) => {
+        if (error) {
+            console.log('log export error: ' + error.message);
+            return;
+        }
+        if (stderr) {
+            console.log('log export stderr: ' + stderr);
+            return;
+        }
+        console.log('log exporting');
+    })
+    */
+    var spawn = require('child_process').spawn;
+    var child = spawn('python3', ['../export.py', 'hotfire' + date + 'T' + hours + minutes + seconds + 'Z' + '.csv', 'testDb',  'sensors', '' + oldTime, '--end', '' + currTime]);
+
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', function(data) {
+    //Here is where the output goes
+
+        console.log('stdout: ' + data);
+    });
+
+    child.stderr.setEncoding('utf8');
+    child.stderr.on('data', function(data) {
+    //Here is where the error output goes
+
+        console.log('stderr: ' + data);
+    });
+
+    child.on('close', function(code) {
+    //Here you can get the exit code of the script
+
+        console.log('Exporting done: ' + code);
+    });
+}
+
 //Assign the event handler to an event:
 //TODO: check if events slowing down process and instead emit messages of sockets directly inside incoming message events
 eventEmitter.on('onChecklistStart', onChecklistStart);
@@ -334,6 +442,9 @@ eventEmitter.on('onTimerStart', onTimerStart);
 
 eventEmitter.on('onMasterChange', onMasterChange);
 eventEmitter.on('onMasterLock', onMasterLock);
+eventEmitter.on('onRpiHalt', onRpiHalt);
+eventEmitter.on('onLLRestart', onLLRestart);
+eventEmitter.on('onExportLog', onExportLog);
 
 //senDataInterval = setInterval(function(){onSendTestSensorData(ioClient)}, 100);
 var master = null;
@@ -421,6 +532,29 @@ ioClient.on('connection', function(socket){
         socket.on('auto-abort-change', function(isAutoAbortActive){
             eventEmitter.emit('onAutoAbortChange', ioClient, socket, isAutoAbortActive);
         });
+
+        socket.on('rpi-halt', function(){
+            console.log('rpi-halt');
+            if (master === socket.id) {
+                eventEmitter.emit('onRpiHalt', ioClient, socket);
+
+            }
+        });
+
+        socket.on('ll-restart', function(){
+            console.log('ll-restart');
+            if (master === socket.id) {
+                eventEmitter.emit('onLLRestart', ioClient, socket);
+
+            }
+        });
+
+	socket.on('log-export', function(){
+	    console.log('export-log');
+	    if (master == socket.id) {
+		eventEmitter.emit('onExportLog', ioClient, socket);
+	    }
+	});
 
         socket.on('checklist-start', function(msg){
             console.log('checklist-start');

@@ -530,6 +530,38 @@ function onInitValues()
     loadValuesPNID(states);
 }
 
+function onRpiHalt()
+{
+    console.log("rpi halt clicked");
+    socket.emit('rpi-halt');
+}
+
+function onLLRestart()
+{
+    console.log("ll restart clicked");
+    socket.emit('ll-restart');
+}
+
+function onPopupToggle(checkbox)
+{
+    if (checkbox.checked)
+    {
+    	showPopups();
+        console.log("show popups");
+    }
+    else
+    {
+    	hidePopups();
+        console.log("hide popups");
+    }
+}
+
+function onExportLog()
+{
+    console.log("log export clicked");
+    socket.emit('log-export');
+}
+
 function onManualControlEnable(checkbox)
 {
     //console.log("manual control:", checkbox.checked);
