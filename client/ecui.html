@@ -52,6 +52,7 @@
             </div>
         </div>
         <div id="textDisplayTemp" class="row control-row popup-row">
+            <a class="popup-value-out popup-label"></a>
             <label class="popup-value-out"></label>
         </div>
         <div id="externalDisplayTemp" class="row control-row popup-row externalContainer">
@@ -222,8 +223,8 @@
         </li>
     </ul>
     <hr>
-    <div id="errorBar"></div>
-    <div id="statusBar">No Connection to LLServer</div>
+    <div id="webStatusBar" class="warning-bar">No Connection to Web Server</div>
+    <div id="llserverStatusBar" class="warning-bar">No Connection to LLServer</div>
 
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade master-only" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
