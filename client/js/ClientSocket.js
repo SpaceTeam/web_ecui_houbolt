@@ -162,15 +162,15 @@ function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
 function onLLServerConnect()
 {
-    $('#statusBar').attr('hidden', '');
-    $('#statusBar').text(null);
+    $('#llserverStatusBar').attr('hidden', '');
+    $('#llserverStatusBar').text(null);
     socket.emit('pythonScript-start', '/home/teststand/config_ecui/python/water_cycle_control.py');
 }
 
 function onLLServerDisconnect()
 {
-    $('#statusBar').removeAttr('hidden');
-    $('#statusBar').text("No Connection to LLServer");
+    $('#llserverStatusBar').removeAttr('hidden');
+    $('#llserverStatusBar').text("No Connection to LLServer");
 }
 
 //TODO: NOT COMPATIBLE WITH NEW PNID
@@ -664,17 +664,16 @@ socket.on('connect', function()
     socket.emit('states-load'); 
     socket.emit('states-start');
     socket.emit('pythonScript-start', '/home/teststand/config_ecui/python/water_cycle_control.py');
+    $('#webStatusBar').attr("hidden", "");
+    $('#webStatusBar').text(null);
 });
 
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
 socket.on('connect_error', function(error) {
     console.log('Connection error: ' + error);
-    $('#disableAll').css("display", "block");
-    $('#errorBar').css("display","block");
-    $('#errorBar').css("background-color","#FF0000");
-    $('#errorBar').text("Connection lost to webserver!");
-    // Disable scrolling (as the page is not supposed to work, allow as low interaction as possible + cope with variable pnid height)
-    document.body.style.overflow = 'hidden';
+    //$('#disableAll').css("display", "block");
+    $('#webStatusBar').removeAttr("hidden");
+    $('#webStatusBar').text("Connection lost to webserver");
 });
 
 socket.on('llserver-connect', function()
