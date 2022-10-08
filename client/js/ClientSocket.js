@@ -354,6 +354,8 @@ function loadCommands(jsonCommands)
         if (command["commandName"].startsWith("lora:"))
         {
             typePrefix = "lora";
+            //skip lora commands
+            return
         }
 
         let commandContainer = undefined;
