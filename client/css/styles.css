@@ -48,7 +48,7 @@ form input {
     padding-right: 3px;
 }
 
-#statusBar {
+.warning-bar {
     font-size: 1rem;
     font-weight: bolder;
     height: 1.4rem;
@@ -191,7 +191,7 @@ form input {
     border-color: #6c757d; /*todo: this is hardcoded to fit btn-outline-secondary from bootstrap. once bootstrap overrides are properly implemented move this to a variable*/
 }
 
-.input-group-prepend, .input-group-append {
+.input-group {
     z-index: 0;
 }
 
