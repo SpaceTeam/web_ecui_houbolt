@@ -173,10 +173,8 @@ function onLLServerDisconnect()
     $('#llserverStatusBar').text("No Connection to LLServer");
 }
 
-//TODO: NOT COMPATIBLE WITH NEW PNID
-function timerTick()
+function tMinusTimerTick()
 {
-    //console.log(timeMillis);
     let time = timeMillis/1000;
     $('.timer').text(time);
 
@@ -193,11 +191,19 @@ function timerTick()
         // }
         $('.timer').append('.0');
     }
+}
+
+//TODO: NOT COMPATIBLE WITH NEW PNID
+function timerTick()
+{
+    tMinusTimerTick();
+    //console.log(timeMillis);
 
     seqChart.update(timeMillis);
 
     //update pnid - doesn't work if timestamps overlap (don't try it anyways)
-    let latestAction = undefined;
+    //todo: commented out for now, not sure why this exists in the first place I don't think we need it anymore
+    /*let latestAction = undefined;
     for (let ind in jsonSequence.data)
     {
         let currCmd = jsonSequence.data[ind];
@@ -232,7 +238,7 @@ function timerTick()
             updatePNID(key, latestAction[key] !== 0);
         }
 
-    }
+    }*/
 
     timeMillis += intervalMillis;
 }
