@@ -101,9 +101,20 @@ $('#saftlButton').click(function() {
     })
 });
 
-function updateCommandSearch(input)
+function updateCommandSearch(commandListName, input)
 {
-    let commandList = $("#command-list");
+    let commandList = undefined;
+    let typePrefix = undefined
+    if (commandListName == "can") 
+    {
+        commandList = $("#command-list");
+        typePrefix = "can";
+    }
+    else if (commandListName == "lora")
+    {
+        commandList = $("#command-list-lora");
+        typePrefix = "lora";
+    }
     if (input.value == "")
     {
         commandList.find(".collapse").collapse('hide');
@@ -126,7 +137,7 @@ function updateCommandSearch(input)
         let regex = new RegExp(`.*${input.value}.*`, 'i');
         let matches = [];
         let invertedMatches = [];
-        for (let command of allCommandElementsList)
+        for (let command of allCommandElementsList[typePrefix])
         {
             if (regex.test($(command).attr("id")))
             {
@@ -137,7 +148,7 @@ function updateCommandSearch(input)
                 invertedMatches.push(command);
             }
         }
-        if (invertedMatches.length == allCommandElementsList.length)
+        if (invertedMatches.length == allCommandElementsList[typePrefix].length)
         {
             //found no matches. unhide entire list and prepend/update indicator that no results were found
             if ($("#empty-search-indicator").length == 0)
@@ -226,7 +237,11 @@ function updateCommandList(jsonStates, commandStates)
 {
     for (stateObj of jsonStates)
     {
-        if (commandStates.includes(stateObj["name"]))
+        if (commandStates["can"].includes(stateObj["name"]))
+        {
+            $("[data-command-state-name=\""+stateObj["name"]+"\"]").val(stateObj["value"]);
+        }
+        else if (commandStates["lora"].includes(stateObj["name"]))
         {
             $("[data-command-state-name=\""+stateObj["name"]+"\"]").val(stateObj["value"]);
         }

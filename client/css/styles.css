@@ -1,3 +1,14 @@
+/* montserrat-regular - latin */
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../lib/fonts/montserrat-v24-latin-regular.woff2') format('woff2'); /* Super Modern Browsers */
+    src: url('../lib/fonts/montserrat-v24-latin-regular.woff') format('woff'); /* Modern Browsers */
+    src: url('../lib/fonts/montserrat-v24-latin-regular.ttf') format('truetype'); /* Safari, Android, iOS */
+}
+  
+
 body, html {
     height: 100%;
 }
@@ -7,7 +18,7 @@ body, html {
 }
 
 body {
-    font: 13px Helvetica, SansSerif;
+    font: 13px Montserrat, Helvetica, SansSerif;
     background-color: var(--background-primary);
     color: var(--content-primary);
     margin-top: 0px;
@@ -37,12 +48,12 @@ form input {
     padding-right: 3px;
 }
 
-#statusBar {
+.warning-bar {
     font-size: 1rem;
     font-weight: bolder;
     height: 1.4rem;
     padding-left: 2rem;
-    padding-top: 0.3rem;
+    padding-top: 0.15rem;
     background-color: var(--warning-color);
     color: black;
 }
@@ -180,6 +191,10 @@ form input {
     border-color: #6c757d; /*todo: this is hardcoded to fit btn-outline-secondary from bootstrap. once bootstrap overrides are properly implemented move this to a variable*/
 }
 
+.input-group {
+    z-index: 0;
+}
+
 .footer {
     position: absolute;
     bottom: 0;
@@ -272,12 +287,14 @@ hr {
    margin-top: 1.4rem;
    margin-left: 1rem;
    font-size: 1.8rem;
+   font-weight: 400;
  }
 
 #subtitle {
    margin-top: 1.8rem;
    margin-left: 1rem;
    font-size: 1rem;
+   font-weight: 300;
  }
 
 .tab-button.active {
@@ -355,11 +372,11 @@ hr {
 }
 
 #timer {
-    margin-top: 20px;
+    font-size: 3em;
 }
 
 #versionLabel {
-    font-size: 1rem;
+    font-size: 0.8rem;
 	float: right;
     margin-bottom: 0px;
 }

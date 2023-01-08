@@ -18,14 +18,17 @@ var timeMillis;
 var intervalMillis;
 var intervalDelegate;
 
-var countdownTime;
-var countdownIntervalDelegate;
+var countdownTime = null;
+var countdownIntervalDelegate = null;
 
 var isMaster = false;
 
 var disableSensorChartsOnLoad = true;
 
-var allCommandElementsList;
+var allCommandElementsList = {
+    "can": [],
+    "lora": []
+};
 
 //create observer to check if sensor charts shall be rendered
 var chartTabObserver = new MutationObserver(function(mutations) {
@@ -159,21 +162,19 @@ function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
 function onLLServerConnect()
 {
-    $('#statusBar').attr('hidden', '');
-    $('#statusBar').text(null);
+    $('#llserverStatusBar').attr('hidden', '');
+    $('#llserverStatusBar').text(null);
     socket.emit('pythonScript-start', '/home/teststand/config_ecui/python/water_cycle_control.py');
 }
 
 function onLLServerDisconnect()
 {
-    $('#statusBar').removeAttr('hidden');
-    $('#statusBar').text("No Connection to LLServer");
+    $('#llserverStatusBar').removeAttr('hidden');
+    $('#llserverStatusBar').text("No Connection to LLServer");
 }
 
-//TODO: NOT COMPATIBLE WITH NEW PNID
-function timerTick()
+function tMinusTimerTick()
 {
-    //console.log(timeMillis);
     let time = timeMillis/1000;
     $('.timer').text(time);
 
@@ -190,11 +191,19 @@ function timerTick()
         // }
         $('.timer').append('.0');
     }
+}
+
+//TODO: NOT COMPATIBLE WITH NEW PNID
+function timerTick()
+{
+    tMinusTimerTick();
+    //console.log(timeMillis);
 
     seqChart.update(timeMillis);
 
     //update pnid - doesn't work if timestamps overlap (don't try it anyways)
-    let latestAction = undefined;
+    //todo: commented out for now, not sure why this exists in the first place I don't think we need it anymore
+    /*let latestAction = undefined;
     for (let ind in jsonSequence.data)
     {
         let currCmd = jsonSequence.data[ind];
@@ -229,7 +238,7 @@ function timerTick()
             updatePNID(key, latestAction[key] !== 0);
         }
 
-    }
+    }*/
 
     timeMillis += intervalMillis;
 }
@@ -288,46 +297,101 @@ function countdownTimerTick()
 
 function insertTestCommands()
 {
-    loadCommands(JSON.parse('{"commandList":[{"commandName":"ox_purge_solenoid:GetDutyCycle","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:GetMeasurement","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:RequestCalibrate","parameterNames":["paramA","paramB"]},{"commandName":"ox_purge_solenoid:SetMeasurement","parameterNames":["paramA","paramB"]},{"commandName":"ox_pressurize_solenoid:SetSomething","parameterNames":["param2","param4"]},{"commandName":"ox_pressurize_solenoid:GetSomething","parameterNames":["param2","param4"]}]}')["commandList"]);
+    loadCommands(JSON.parse(`
+        {"commandList":
+            [
+                {"commandName":"ox_purge_solenoid:GetDutyCycle","parameterNames":["paramA","paramB"]},
+                {"commandName":"ox_purge_solenoid:GetMeasurement","parameterNames":["paramA","paramB"]},
+                {"commandName":"ox_purge_solenoid:RequestCalibrate","parameterNames":["paramA","paramB"]},
+                {"commandName":"ox_purge_solenoid:SetMeasurement","parameterNames":["paramA","paramB"]},
+                {"commandName":"ox_pressurize_solenoid:SetSomething","parameterNames":["param2","param4"]},
+                {"commandName":"ox_pressurize_solenoid:GetSomething","parameterNames":["param2","param4"]},
+                {"commandName":"lora:ox_purge_solenoid:GetDutyCycle","parameterNames":["paramA","paramB"]},
+                {"commandName":"lora:ox_purge_solenoid:GetMeasurement","parameterNames":["paramA","paramB"]},
+                {"commandName":"lora:ox_purge_solenoid:RequestCalibrate","parameterNames":["paramA","paramB"]},
+                {"commandName":"lora:ox_purge_solenoid:SetMeasurement","parameterNames":["paramA","paramB"]},
+                {"commandName":"lora:ox_pressurize_solenoid:SetSomething","parameterNames":["param2","param4"]},
+                {"commandName":"lora:ox_pressurize_solenoid:GetSomething","parameterNames":["param2","param4"]}
+            ]
+        }`
+    )["commandList"]);
 }
 
-var commandCategories = []; //I dislike that this is global, but I don't see an easy fix for this otherwise. I'd need to read all already created categories and re-parse the category names from them which sucks more than this global variable imo
-var commandStates = [];
+var commandCategories = {
+    "can": [],
+    "lora": [],
+}; //I dislike that this is global, but I don't see an easy fix for this otherwise. I'd need to read all already created categories and re-parse the category names from them which sucks more than this global variable imo
+//now with hardcoded can vs lora separation I dislike this even more. yay.
+var commandStates = {
+    "can": [],
+    "lora": [],
+}; 
 
 function clearCommands()
 {
     $("#commandSearch").empty();
     $('#command-list').empty();
 
-    commandCategories = [];
-    commandStates = [];
+    commandCategories = {
+        "can": [],
+        "lora": [],
+    }; 
+    commandStates = {
+        "can": [],
+        "lora": [],
+    };
+
+    allCommandElementsList = {
+        "can": [],
+        "lora": [],
+    };
 }
 
 function loadCommands(jsonCommands)
 {
     $("#commandSearch").empty();
-    let commandContainer = $('#command-list');
+    let commandContainerCAN = $('#command-list');
+    let commandContainerLORA = $('#command-list-lora');
 
     let commandTemplate = $('#tempCommand').children().first().clone();
 
     jsonCommands.forEach(command => {
-        let commandCategory = command["commandName"].split(":")[0];
-        let commandName = command["commandName"].split(":")[1];
+        let typePrefix = "can";
+        if (command["commandName"].startsWith("lora:"))
+        {
+            typePrefix = "lora";
+            //skip lora commands
+            return
+        }
+
+        let commandContainer = undefined;
+        if (typePrefix == "lora")
+        {
+            commandContainer = commandContainerLORA;
+        }
+        else
+        {
+            commandContainer = commandContainerCAN;
+        }
+
+        let commandNameArray = command["commandName"].split(":");
+        let commandCategory = commandNameArray[commandNameArray.length - 2];
+        let commandName = commandNameArray[commandNameArray.length - 1];
         let commandCategoryHtml = $("#tempCommandCategory").first().clone();
         let categoryData = commandCategoryHtml.find("div.card-body").first()
-        if (commandCategories.includes(commandCategory))
+        if (commandCategories[typePrefix].includes(commandCategory))
         {
-            categoryData = $(`#${commandCategory}`).find("div.card-body").first();
+            categoryData = commandContainer.find(`#${typePrefix}_${commandCategory}`).find("div.card-body").first();
         }
         else
         {
             let categoryHeader = commandCategoryHtml.find("div.card-header").first();
-            commandCategories.push(commandCategory);
-            commandCategoryHtml.attr("id", commandCategory);
-            categoryHeader.attr("id", "heading_" + commandCategory);
+            commandCategories[typePrefix].push(commandCategory);
+            commandCategoryHtml.attr("id", typePrefix + "_" + commandCategory);
+            categoryHeader.attr("id", "heading_" + typePrefix + "_" + commandCategory);
             let headerButton = categoryHeader.find("button");
-            headerButton.attr("data-target", `#collapse_${commandCategory}`).attr("aria-controls", `collapse_${commandCategory}`).html(commandCategory);
-            commandCategoryHtml.find("div.collapse").attr("aria-labelledby", "heading_" + commandCategory).attr("id", "collapse_" + commandCategory);
+            headerButton.attr("data-target", `#collapse_${typePrefix}_${commandCategory}`).attr("aria-controls", `collapse_${typePrefix}_${commandCategory}`).html(commandCategory);
+            commandCategoryHtml.find("div.collapse").attr("aria-labelledby", "heading_" + typePrefix + "_" + commandCategory).attr("id", "collapse_" + typePrefix + "_" + commandCategory);
             commandContainer.append(commandCategoryHtml);
         }
         let commandHtml = commandTemplate.clone();
@@ -368,9 +432,9 @@ function loadCommands(jsonCommands)
             let splitCommand = command["commandName"].split(':');
             let relatedStateName = splitCommand[0]+":"+splitCommand[1].substring(3);
             //---------------
-            if (!commandStates.includes(relatedStateName))
+            if (!commandStates[typePrefix].includes(relatedStateName))
             {
-                commandStates.push(relatedStateName);
+                commandStates[typePrefix].push(relatedStateName);
             }
             
             currValueTemp.find("input").attr("data-command-state-name", relatedStateName);
@@ -383,7 +447,8 @@ function loadCommands(jsonCommands)
         categoryData.append(commandHtml);
     }); 
     //console.log("categories:", commandCategories);
-    allCommandElementsList = $("#command-container").find("div.command");
+    allCommandElementsList["can"] = $("#command-list").find("div.command");
+    allCommandElementsList["lora"] = $("#command-list-lora").find("div.command");
 }
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------
@@ -408,30 +473,25 @@ function onSendPostSequenceComment()
 
 function onToggleSequenceButton(btn)
 {
-    if ($(btn).text() === 'Start Sequence' || $(btn).text() === 'Pad not idle! Retry Seq')
+    if ($(btn).text() === 'Start Sequence')
     {
-        if (getRocketInternalStateName() != "PAD_IDLE")
-        {
-            $(btn).text("Pad not idle! Retry Seq");
-        }
-        else
-        {
-            socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
-            $(btn).text('Abort Sequence');
-            $('.tab-button').each(function () {
-                if ($(btn).id === "control-tab-button" || $(btn).id === "calibration-tab-button")
-                {
-                    //$(this).prop('disabled', true);
-                }
-            });
-            $('#sendPostSeqCommentButton').prop('disabled', false);
+        
+        socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
+        $(btn).text('Abort Sequence');
+        $('.tab-button').each(function () {
+            if ($(btn).id === "control-tab-button" || $(btn).id === "calibration-tab-button")
+            {
+                //$(this).prop('disabled', true);
+            }
+        });
+        $('#sendPostSeqCommentButton').prop('disabled', false);
 
-            //scroll to pnid
-            // document.getElementById('monitorTabsContent').scrollIntoView({
-            //     behavior: "smooth",
-            //     block:    "start",
-            // });
-        }
+        //scroll to pnid
+        // document.getElementById('monitorTabsContent').scrollIntoView({
+        //     behavior: "smooth",
+        //     block:    "start",
+        // });
+        
         
     }
     else if ($(btn).text() === 'Abort Sequence')
@@ -517,7 +577,7 @@ function onManualControlEnable(checkbox)
     }
 }
 
-function abortSequence(abortMsg)
+function abortSequence(abortMsg, timeEnd = jsonAbortSequence.globals.endTime)
 {
     clearInterval(countdownIntervalDelegate);
 
@@ -536,12 +596,12 @@ function abortSequence(abortMsg)
     setTimeout(function () {
             emptySensorCharts();
             isContinousTransmission = true;
-        }, jsonAbortSequence.globals.endTime*1000+500);
+        }, timeEnd*1000+500);
 
     $('#toggleSequenceButton').attr("disabled", true);
     setTimeout(function () {
         $('#toggleSequenceButton').removeAttr("disabled");
-    }, jsonAbortSequence.globals.endTime*1000);
+    }, timeEnd*1000);
 
     seqChart.reset();
     seqChart.loadSequenceChart(jsonSequence);
@@ -612,17 +672,16 @@ socket.on('connect', function()
     socket.emit('states-load'); 
     socket.emit('states-start');
     socket.emit('pythonScript-start', '/home/teststand/config_ecui/python/water_cycle_control.py');
+    $('#webStatusBar').attr("hidden", "");
+    $('#webStatusBar').text(null);
 });
 
 socket.on('connect_timeout', function() {console.log('connect-timeout')});
 socket.on('connect_error', function(error) {
     console.log('Connection error: ' + error);
-    $('#disableAll').css("display", "block");
-    $('#errorBar').css("display","block");
-    $('#errorBar').css("background-color","#FF0000");
-    $('#errorBar').text("Connection lost to webserver!");
-    // Disable scrolling (as the page is not supposed to work, allow as low interaction as possible + cope with variable pnid height)
-    document.body.style.overflow = 'hidden';
+    //$('#disableAll').css("display", "block");
+    $('#webStatusBar').removeAttr("hidden");
+    $('#webStatusBar').text("Connection lost to webserver");
 });
 
 socket.on('llserver-connect', function()
@@ -720,19 +779,26 @@ socket.on('sequence-start', function() {
 });
 
 socket.on('timer-start', function () {
+    startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
+});
 
+function startTimer(timeStart, timeEnd)
+{
     intervalMillis = 100; //hard code timer step to 100 for client
-    timeMillis = jsonSequence.globals.startTime * 1000;
-    endTime = jsonSequence.globals.endTime;
+    timeMillis = timeStart * 1000;
+    endTime = timeEnd;
     responsiveVoice.enableEstimationTimeout = true;
 
     countdownTime = jsonSequence.globals.startTime;
+    clearInterval(countdownIntervalDelegate);
     countdownTimerTick();
     countdownIntervalDelegate = setInterval(countdownTimerTick, 1000);
 
+    $('.timer').css("color", "green");
+    clearInterval(intervalDelegate);
     timerTick();
     intervalDelegate = setInterval(timerTick, intervalMillis);
-});
+}
 
 socket.on('sequence-sync', function(time) {
     //console.log('sequence-sync:');
@@ -755,12 +821,17 @@ socket.on('sequence-sync', function(time) {
 
 socket.on('sequence-done', function() {
     console.log('sequence-done:');
+    timerStop(endTime);
+});
 
+function timerStop(timeEnd)
+{
     seqChart.stop();
 
-    $('.timer').text(endTime);
+    $('.timer').text(timeEnd);
     clearInterval(intervalDelegate);
-    if (Number.isInteger(endTime))
+    //clearInterval(countdownIntervalDelegate);
+    if (Number.isInteger(timeEnd))
     {
         $('.timer').append('.0');
     }
@@ -778,7 +849,7 @@ socket.on('sequence-done', function() {
         }, 3000);
 
     $('#masterRequest').prop('disabled', false);
-});
+}
 
 var firstSensorFetch = true;
 var statesPrintRegex = /^(:sensor)|gui:/g
