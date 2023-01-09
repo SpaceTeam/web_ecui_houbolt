@@ -98,9 +98,10 @@ beforehand
 ## Docker
 Alternatively TXV_ECUI_WEB (GUI) could be deployed via docker. Use the docker file found in the repo.
 
+NOTE: you need to have a valid github ssh key in order to pull the private repository
 ```
-cd TXV_ECUI_WEB
-DOCKER_BUILDKIT=0 docker build --build-arg branch=dev -t web_ecui .
+cd web_ecui_houbolt
+DOCKER_BUILDKIT=0 docker build --build-arg branch=dev --build-arg ssh_key_path=<your_private_ssh_key_path> -t web_ecui .
 docker run -p 80:80 -p 5555:5555 -v <path_to_config_repo>/config_ecui/:/home/config_ecui/ -it --rm --name web-ecui web_ecui
 
 ```

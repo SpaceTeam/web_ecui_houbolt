@@ -5,6 +5,7 @@ EXPOSE 5555
 EXPOSE 80
 
 ARG branch=main
+ARG ssh_key_path=~/.ssh/id_github
 
 WORKDIR /home
 
@@ -20,7 +21,7 @@ RUN mkdir /root/.ssh/
 # Copy over private key, and set permissions
 # Warning! Anyone who gets their hands on this image will be able
 # to retrieve this private key file from the corresponding image layer
-ADD id_github /root/.ssh/id_github
+ADD $ssh_key_path /root/.ssh/id_github
 RUN  echo "    IdentityFile /root/.ssh/id_github" >> /etc/ssh/ssh_config
 
 # Create known_hosts
