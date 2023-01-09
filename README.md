@@ -100,8 +100,8 @@ Alternatively TXV_ECUI_WEB (GUI) could be deployed via docker. Use the docker fi
 
 ```
 cd TXV_ECUI_WEB
-docker build . -t txv_ecui_web
-docker run -v `pwd`:/TXV_ECUI_WEB txv_ecui_web
+DOCKER_BUILDKIT=0 docker build --build-arg branch=dev -t web_ecui .
+docker run -p 80:80 -p 5555:5555 -v <path_to_config_repo>/config_ecui/:/home/config_ecui/ -it --rm --name web-ecui web_ecui
 
 ```
 
