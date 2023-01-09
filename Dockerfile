@@ -1,40 +1,50 @@
-FROM ubuntu:18.04
+# specify the node base image with your desired version node:<version>
+FROM node:16
+# replace this with your application's default port
+EXPOSE 5555
+EXPOSE 80
 
-# Replace shell with bash so we can source files
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+ARG branch=main
 
-# Set debconf to run non-interactively
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+WORKDIR /home
 
-# Install base dependencies
-RUN apt-get update && apt-get install -y -q --no-install-recommends \
-        apt-transport-https \
-        build-essential \
-        ca-certificates \
-        curl \
-        git \
-        libssl-dev \
-        wget \
-    && rm -rf /var/lib/apt/lists/*
+# Update aptitude with new repo
+RUN apt-get update
 
-ENV NVM_DIR /.nvm
-ENV NODE_VERSION 12.10.0
+# Install software 
+RUN apt-get install -y git
 
-RUN mkdir $NVM_DIR
+# Make ssh dir
+RUN mkdir /root/.ssh/
 
-COPY package.json /
+# Copy over private key, and set permissions
+# Warning! Anyone who gets their hands on this image will be able
+# to retrieve this private key file from the corresponding image layer
+ADD id_github /root/.ssh/id_github
+RUN  echo "    IdentityFile /root/.ssh/id_github" >> /etc/ssh/ssh_config
 
-# Install nvm with node and npm
-RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash \
-    && . $NVM_DIR/nvm.sh \
-    && nvm install $NODE_VERSION \
-    && npm install
+# Create known_hosts
+RUN touch /root/.ssh/known_hosts
+# Add bitbuckets key
+RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-ENV PATH      $NVM_DIR/v$NODE_VERSION/bin:$PATH
+# Clone the conf files into the docker container
+RUN git clone git@github.com:SpaceTeam/web_ecui_houbolt.git
+WORKDIR /home/web_ecui_houbolt
 
-WORKDIR /web_ecui_houbolt
+RUN ls -la
 
-EXPOSE  80
-EXPOSE  5555
-CMD ["/.nvm/versions/node/v12.10.0/bin/node", "server.js"]
+# WORKDIR /home/web_ecui_houbolt
+# RUN ls -la
+RUN git checkout $branch
+RUN git pull
+RUN git submodule init
+RUN git submodule update
+RUN npm install
+
+RUN chmod +x update.sh
+RUN ./update.sh
+
+RUN echo "../config_ecui" >> configPath.txt
+
+ENTRYPOINT ls -la && node server
