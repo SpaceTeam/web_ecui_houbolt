@@ -79,7 +79,7 @@ form input {
     justify-content: space-evenly;
 }
 
-#masterRequest {
+.titleBarButton {
     margin-left: auto;
 	background: var(--accent-primary);
 	color: white;
@@ -92,11 +92,11 @@ form input {
 	text-align: right;
 }
 
-#masterRequest {
+.titleBarButton {
 	margin-top: 0.5rem;	
 }
 
-#masterLock, #masterRequest {
+#masterLock, .titleBarButton {
 	height: 2.1rem;
 	
 }

@@ -185,23 +185,23 @@
             <span id="timer" class="timer">0.0</span>
         </div>
         <div style="margin-left: 1em" class="navbarRightAlign">
-            <button class="btn btn-secondary m-auto" id="masterRequest" onclick="onPNIDInput('gui:FlushDatabase', 1, Date.now()*1000);">Flush Database</button>
+            <button class="btn btn-secondary m-auto titleBarButton" onclick="onPNIDInput('gui:FlushDatabase', 1, Date.now()*1000);">Flush Database</button>
         </div>
         <div style="margin-left: 1em" class="navbarRightAlign">
-            <button class="btn btn-secondary m-auto" id="masterRequest" onclick="onInitValues(this);">Init Values</button>
+            <button class="btn btn-secondary m-auto titleBarButton" onclick="onInitValues(this);">Init Values</button>
         </div>
+	<!-- <div style="margin-left: 1em" class="navbarRightAlign">
+            <button class="btn btn-secondary m-auto titleBarButton" onclick="onRpiHalt(this);">Halt RPi</button>
+        </div> -->
 	<div style="margin-left: 1em" class="navbarRightAlign">
-            <button class="btn btn-secondary m-auto" id="masterRequest" onclick="onRpiHalt(this);">Halt RPi</button>
+            <button class="btn btn-secondary m-auto titleBarButton" onclick="onLLRestart(this);">Restart LL</button>
         </div>
-	<div style="margin-left: 1em" class="navbarRightAlign">
-            <button class="btn btn-secondary m-auto" id="masterRequest" onclick="onLLRestart(this);">Restart LL</button>
-        </div>
-        <div style="margin-left: 1em" class="navbarRightAlign">
+        <!-- <div style="margin-left: 1em" class="navbarRightAlign">
             <label class="switch">
-                <input type="checkbox" id="masterRequest" onclick="onPopupToggle(this);">
+                <input type="checkbox titleBarButton" onclick="onPopupToggle(this);">
                 <span class="slider round btn btn-secondary"></span>
             </label>
-        </div>
+        </div> -->
         <div class="">
             <div class="master-only" style="text-align: right;">
                 <input type="checkbox" id="autoAbortCbox" onclick="onAutoAbortChange(this);">
@@ -212,7 +212,7 @@
                 Master Locked
             </div>
             <div class="client-only">
-                <button class="btn btn-secondary" id="masterRequest" onclick="onMasterRequestPressed(this);">Request Master</button>
+                <button class="btn btn-secondary titleBarButton" id="masterRequest" onclick="onMasterRequestPressed(this);">Request Master</button>
             </div>
             
             <p id="versionLabel">v<span id="version">1.0.0</span></p>

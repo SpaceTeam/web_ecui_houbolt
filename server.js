@@ -318,7 +318,7 @@ var onRpiHalt = function () {
 }
 
 var onLLRestart = function () {
-    exec("systemctl restart ecui-llserver.service", (error, stdout, stderr) => {
+    exec("docker restart llserver-ecui", (error, stdout, stderr) => {
         if (error) {
             console.log('ll restart error: ' + error.message);
             return;
