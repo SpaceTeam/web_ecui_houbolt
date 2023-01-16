@@ -24,6 +24,16 @@ class SequenceChart {
         // Create axes (just one)
         this.xAxis = this.chart.xAxes.push(new am4charts.DurationAxis());
         this.yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+        this.yAxis.max = 65535;
+        this.yAxis.min = 0;
+        
+        this.xAxis.tooltip.background.fill = am4core.color("#633878");
+        this.xAxis.tooltip.background.strokeWidth = 0;
+        this.xAxis.tooltip.background.cornerRadius = 3;
+        
+        this.yAxis.tooltip.background.fill = am4core.color("#633878");
+        this.yAxis.tooltip.background.strokeWidth = 0;
+        this.yAxis.tooltip.background.cornerRadius = 3;
 
         this.xAxis.dataFields.category = "time";
         this.xAxis.baseUnit = "millisecond";
@@ -59,7 +69,7 @@ class SequenceChart {
         series.strokeWidth = 4;
         series.minBulletDistance = 15;
         series.tooltip.getFillFromObject = false;
-        series.tooltip.label.fill = am4core.color("#FFFFFF");
+        series.tooltip.label.fill = am4core.color("#633878");
 
         if (isIndicator) {
             series.fillOpacity = 0.1;

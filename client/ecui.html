@@ -190,6 +190,18 @@
         <div style="margin-left: 1em" class="navbarRightAlign">
             <button class="btn btn-secondary m-auto" id="masterRequest" onclick="onInitValues(this);">Init Values</button>
         </div>
+	<div style="margin-left: 1em" class="navbarRightAlign">
+            <button class="btn btn-secondary m-auto" id="masterRequest" onclick="onRpiHalt(this);">Halt RPi</button>
+        </div>
+	<div style="margin-left: 1em" class="navbarRightAlign">
+            <button class="btn btn-secondary m-auto" id="masterRequest" onclick="onLLRestart(this);">Restart LL</button>
+        </div>
+        <div style="margin-left: 1em" class="navbarRightAlign">
+            <label class="switch">
+                <input type="checkbox" id="masterRequest" onclick="onPopupToggle(this);">
+                <span class="slider round btn btn-secondary"></span>
+            </label>
+        </div>
         <div class="">
             <div class="master-only" style="text-align: right;">
                 <input type="checkbox" id="autoAbortCbox" onclick="onAutoAbortChange(this);">
@@ -241,6 +253,10 @@
                     <div class="col col-2">
                         <button class="btn btn-secondary" id="toggleSequenceButton"
                             onclick="onToggleSequenceButton(this);">Start Sequence</button>
+                    </div>
+		    <div class="col col-2">
+                        <button class="btn btn-secondary" id="toggleSequenceButton"
+                            onclick="onExportLog(this);">Export</button>
                     </div>
                     <div class="col col-3 form-control-lg custom-control custom-checkbox row control-row" hidden>
                         <input type="checkbox" class="custom-control-input ckbx" id="debugSequenceCheck"
