@@ -19,13 +19,6 @@ const bp = require('body-parser');
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
 
-function readConfigPathFromFile()
-{
-    let data = fs.readFileSync('configPath.txt', {encoding: 'utf8', flag: 'r'});
-    resolve = require('path').resolve
-    return resolve(data.trim());
-}
-
 // Search for argument port= in node cli arguments
 process.argv.forEach(arg => {
     if(arg.startsWith("port=")){
@@ -44,13 +37,9 @@ process.argv.forEach(arg => {
         // check validity of requested port
         if (!fs.existsSync(newConfigPath))
         {
-            console.log(arg + " doesn't include a valid config path, using path specified in configPath.txt instead.");
-            configPath = readConfigPathFromFile();
-            if (configPath == "" || configPath == undefined)
-            {
-                console.error("Config is needed, but couldn't find any valid config paths, stopping.");
-                process.exit(1);
-            }
+            console.error("Config path provided in arguments does not exist.");
+            console.error("try to add as an argument configure docker env variable 'ECUI_CONFIG_PATH=<your_path>' or use 'echo \"ECUI_CONFIG_PATH=<your_path>\" >> /etc/environment'!");
+            process.exit(1);
         }  
         else
         {
@@ -61,10 +50,10 @@ process.argv.forEach(arg => {
 
 if (!gotConfigArg)
 {
-    configPath = readConfigPathFromFile();
-    if (configPath == "" || configPath == undefined)
+    configPath = process.env.ECUI_CONFIG_PATH;
+    if (configPath == undefined)
     {
-        console.error("Config is needed, but couldn't find any valid config paths, stopping.");
+        console.error("Config path is missing, try to add as an argument configure docker env variable 'ECUI_CONFIG_PATH=<your_path>' or use 'echo \"ECUI_CONFIG_PATH=<your_path>\" >> /etc/environment'!");
         process.exit(1);
     }
 }
