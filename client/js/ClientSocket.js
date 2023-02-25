@@ -164,7 +164,7 @@ function onLLServerConnect()
 {
     $('#llserverStatusBar').attr('hidden', '');
     $('#llserverStatusBar').text(null);
-    socket.emit('pythonScript-start', '$ECUI_CONFIG_PATH/python/water_cycle_control.py');
+    socket.emit('pythonScript-start', '/home/config_ecui/python/water_cycle_control.py');
 }
 
 function onLLServerDisconnect()
@@ -670,7 +670,7 @@ function onCommandExecute(command)
 
 socket.on('master-change', (flag) => {
 	if(flag === 'master'){
-        socket.emit('pythonScript-start', '$ECUI_CONFIG_PATH/python/water_cycle_control.py');
+        socket.emit('pythonScript-start', '/home/config_ecui/python/water_cycle_control.py');
 		master = true;
         	$('.master-only').css('visibility', 'visible');
         	$('.master-only').css('height', 'auto');
@@ -703,7 +703,7 @@ socket.on('connect', function()
     socket.emit('commands-load'); 
     socket.emit('states-load'); 
     socket.emit('states-start');
-    socket.emit('pythonScript-start', '$ECUI_CONFIG_PATH/python/water_cycle_control.py');
+    socket.emit('pythonScript-start', '/home/config_ecui/python/water_cycle_control.py');
     $('#webStatusBar').attr("hidden", "");
     $('#webStatusBar').text(null);
 });
