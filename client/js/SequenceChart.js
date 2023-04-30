@@ -24,8 +24,8 @@ class SequenceChart {
         // Create axes (just one)
         this.xAxis = this.chart.xAxes.push(new am4charts.DurationAxis());
         this.yAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
-        this.yAxis.max = 65535;
-        this.yAxis.min = 0;
+        // this.yAxis.max = 100;
+        // this.yAxis.min = 0;
         
         this.xAxis.tooltip.background.fill = am4core.color("#633878");
         this.xAxis.tooltip.background.strokeWidth = 0;

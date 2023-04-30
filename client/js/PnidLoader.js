@@ -46,5 +46,15 @@ function onPnidSelectChange(value)
         clearElementBuffer();
         setStateNamesPNID(jsonStateLabels);
         //onInitValues();
+        onRemoveUninitializedElementsText();
       });
+}
+
+function onRemoveUninitializedElementsText()
+{
+    $( "#pnid text" ).each(function() {
+        if ($(this).html().includes(":sensor")) {
+            $(this).html("")
+        }
+});
 }
