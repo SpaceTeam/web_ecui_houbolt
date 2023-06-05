@@ -21,7 +21,7 @@ var intervalDelegate;
 var countdownTime = null;
 var countdownIntervalDelegate = null;
 
-var isMaster = false;
+var master = false;
 
 var disableSensorChartsOnLoad = true;
 
@@ -677,6 +677,8 @@ socket.on('master-change', (flag) => {
 			$('#masterLock').removeAttr('hidden')
 		    $('.client-only').css('visibility', 'hidden');
         	$('.client-only').css('height', '0px');
+            $('.popup').find('input').removeAttr('disabled');
+            console.log("master on", master);
 	}
 	else {	
 		master = false;
@@ -689,12 +691,18 @@ socket.on('master-change', (flag) => {
 			{
 				$('#manualEnableCheck1').click();
 			}
+			$('.popup').find('input').attr('disabled', 'true');
+            console.log("master off", master);
 	}
 });
 
 socket.on('master-lock', (flag) => {
-    if(flag == 1) $('#masterLockBox').prop('checked', true);
-    else $('#masterLockBox').prop('checked', false);
+    if(flag == 1) {
+        $('#masterLockBox').prop('checked', true);
+    }
+    else {
+        $('#masterLockBox').prop('checked', false);
+    }
 });
 
 socket.on('connect', function() 
