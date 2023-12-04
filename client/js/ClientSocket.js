@@ -475,8 +475,8 @@ function onToggleSequenceButton(btn)
 {
     if ($(btn).text() === 'Start Sequence')
     {
-        
-        socket.emit('sequence-start', $('#commentTextbox').val() + '\n');
+        onSequenceSelectChange(document.getElementById("sequenceSelect").value)
+        setTimeout(function(){socket.emit('sequence-start', $('#commentTextbox').val() + '\n')}, 100);
         $(btn).text('Abort Sequence');
         $('.tab-button').each(function () {
             if ($(btn).id === "control-tab-button" || $(btn).id === "calibration-tab-button")
@@ -670,6 +670,7 @@ function onCommandExecute(command)
 
 socket.on('master-change', (flag) => {
 	if(flag === 'master'){
+        onSequenceSelectChange(document.getElementById("sequenceSelect").value)
         socket.emit('pythonScript-start', '/home/config_ecui/python/water_cycle_control.py');
 		master = true;
         	$('.master-only').css('visibility', 'visible');
