@@ -670,7 +670,11 @@ function onCommandExecute(command)
 
 socket.on('master-change', (flag) => {
 	if(flag === 'master'){
-        onSequenceSelectChange(document.getElementById("sequenceSelect").value)
+        let selectedSequence = document.getElementById("sequenceSelect").value;
+        if (selectedSequence != "") {
+            console.log("Selecting sequence on master change", selectedSequence);
+            onSequenceSelectChange(selectedSequence);
+        }
         socket.emit('pythonScript-start', '/home/config_ecui/python/water_cycle_control.py');
 		master = true;
         	$('.master-only').css('visibility', 'visible');
