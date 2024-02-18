@@ -2,6 +2,7 @@ const pnidSaveDir = 'client/pnid_houbolt/client/';
 const fs = require('fs');
 const pathMod = require('path');
 const childprocess = require('child_process');
+const chokidar = require('chokidar');
 
 const kicad_parser = require("kicad_svg_parser");
 
@@ -15,27 +16,67 @@ module.exports = class PnIDManager {
     static _pnids = [];
     static _parsedPnids = {};
     static _configPath = "";
+    static _pnidPath = "";
+    static _watcher = undefined
 
     constructor(programDirPath, configPath) {
         PnIDManager._configPath = configPath;
+        PnIDManager._pnidPath = pathMod.join(PnIDManager._configPath, "pnid", "schematics");
         PnIDManager._programDirPath = programDirPath;
-        PnIDManager.parsePnIDs();
-        PnIDManager._curPnID = PnIDManager.getAllPnIDs()[0];
+        //PnIDManager.parsePnIDs();
+
+        PnIDManager._watcher = chokidar.watch(PnIDManager._pnidPath, {
+            ignored: /(^|[\/\\])\../, // ignore dotfiles
+            persistent: true
+        });
+        PnIDManager._watcher.on("add", path => {
+            let fileFullName = path.split("/").pop();
+            let fileExt = path.split("/").pop().split(".").pop();
+            if (fileExt == "kicad_sch") {
+                console.log("Found schematic for parsing to PnID:", fileFullName);
+                PnIDManager.parsePnIDs([path]);
+            }
+        });
+        PnIDManager._watcher.on("change", path => {
+            let fileFullName = path.split("/").pop();
+            let fileExt = path.split("/").pop().split(".").pop();
+            if (fileExt == "kicad_sch") {
+                console.log("Detected change in schematic, updating PnID:", fileFullName);
+                PnIDManager.parsePnIDs([path]);
+            }
+        });
+        PnIDManager._watcher.on("unlink", path => {
+            let fileFullName = path.split("/").pop();
+            let fileExt = fileFullName.split(".").pop();
+            let fileName = fileFullName.slice(0, -(fileExt.length + 1)); //remove leading path segments and trailing file extension
+            if (fileExt == "kicad_sch") {
+                console.log("Detected deletion of schematic, removing from PnID list:", fileFullName);
+                if (PnIDManager._curPnID === fileName) {
+                    PnIDManager._curPnID = PnIDManager.getAllPnIDs()[0];
+                }
+                delete PnIDManager._parsedPnids[fileName];
+            }
+        })
+
+        //TODO: Potentially fragile because unknown behavior if parsing takes longer than timeout (if no pnid parsed within timeout: error, if only some parsed default selection may be inconsistent)
+        setTimeout(function () { PnIDManager._curPnID = PnIDManager.getAllPnIDs()[0] }, 1000);
     }
 
-    static parsePnIDs() {
-        let files = PnIDManager.createFileList(pathMod.join(PnIDManager._configPath, "pnid", "schematics"));
+    static parsePnIDs(fileList = undefined) {
+        let files = fileList || PnIDManager.createFileList(PnIDManager._pnidPath);
         if (files.length > 0) {
-            console.log("found schematics for parsing to pnids");
-            console.log(files);
+            //console.log("found schematics for parsing to pnids");
+            //console.log(files);
             files.forEach(file => {
-                let fileName = file.split("/").pop().slice(0, -10); //remove leading path segments and trailing file extension
+                let fileFullName = file.split("/").pop();
+                let fileExt = fileFullName.split(".").pop();
+                let fileName = fileFullName.slice(0, -(fileExt.length + 1)); //remove leading path segments and trailing file extension
                 try {
                     console.log("Parsing", fileName + "...", file);
                     PnIDManager._parsedPnids[fileName] = PnIDManager.convertPnID(file);
                     /*let parserProc = childprocess.execSync(
                         `node ./client/pnid_houbolt/kicad-schematic-parser.js "${file}" \
-                        "${pathMod.join(PnIDManager._configPath, 'pnid', 'schematics', 'pnid-lib', 'PnID.lib')}" \
+                        "${pathMod.join(PnIDManager._pnidPath, 'pnid-lib', 'PnID.lib')}" \
                         "${pathMod.join(PnIDManager._programDirPath, 'client', 'pnid_houbolt', 'client', fileName + '.pnid')}"`, {stdio: "inherit"}
                     );
                     //I really dislike having to write the pnid to disk and then delete it again but I can't find a different reasonably easy solution
@@ -51,7 +92,6 @@ module.exports = class PnIDManager {
         } else {
             console.log("found no schematics for parsing to pnids");
         }
-        
     }
 
     static convertPnID(schematic_file) {
