@@ -114,7 +114,7 @@ module.exports = class PnIDManager {
         const generator = new kicad_parser.SVGGenerator({
             debug: kicad_parser.DEFAULT_SVG_DEBUG_SETTINGS,
             classes: {
-                DIAGRAM: "",
+                DIAGRAM: "pnid-svg",
                 SYMBOL: "comp",
                 WIRE: "wire",
                 GRAPHICS: "pnid-graphics", //not needed in old
@@ -186,7 +186,7 @@ module.exports = class PnIDManager {
         console.info(`Generating html for schematic...`)
         let schematicData = new kicad_parser.SchematicData(schematic, undefined);
         //console.log(schematicData)
-        const svg = PnIDManager.convertSvgToOldFormat(generator.generateSVG(schematicData));
+        const svg = PnIDManager.convertSvgToOldFormat(PnIDManager.svgManualFixes(generator.generateSVG(schematicData)));
         fs.writeFileSync("out.html", svg);
         return svg;
         /*console.info(`Saving file '${output_file_name}'...`)
@@ -202,6 +202,23 @@ module.exports = class PnIDManager {
         if (searchIndex != -1) {
             svg = svg.substr(0, searchIndex) + svg.substr(searchIndex + "</g>".length);
         }
+        return svg;
+    }
+
+    //Kind of does the same as "convertSvgToOldFormat", but with a different connotation: The things in here are not necessarily useless hacks that only exist to fit the idiosyncrasies of the old parser, but genuine things that need clean up from the new parser
+    static svgManualFixes(svg) {
+        //remove padding. CAUTION/TODO: If the default padding in the parser changes this will break shit. Ideal solution would be to make padding customizable in parser!
+        let viewBoxResult = [...svg.matchAll(/viewBox="([+-]?\d+\.?\d*) ([+-]?\d+\.?\d*) ([+-]?\d+\.?\d*) ([+-]?\d+\.?\d*)"/g)];
+        let viewBox = [viewBoxResult[0][1], viewBoxResult[0][2], viewBoxResult[0][3], viewBoxResult[0][4]]; //why is JS such an utter pile of garbage?
+        let undoPad = 10;
+        viewBox[0] = Number(viewBox[0]) + undoPad;
+        viewBox[1] = Number(viewBox[1]) + undoPad;
+        viewBox[2] = Number(viewBox[2]) - undoPad * 2;
+        viewBox[3] = Number(viewBox[3]) - undoPad * 2;
+        svg = svg.replace(/viewBox=".*"/, `viewBox="${viewBox.join(' ')}"`);
+
+        //align pnid more to the left
+        svg = svg.replace(/viewBox="[+-]?\d+\.?\d*/, "viewBox=\"0");
         return svg;
     }
 
