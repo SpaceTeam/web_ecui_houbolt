@@ -165,7 +165,7 @@ module.exports = class PnIDManager {
                     return `<rect class="rect hitbox" visibility="hidden" pointer-events="all" onclick="clickEventListener('${symbol.$property?.find(p => p.key === "Value").value.replaceAll(":", "-")}')"></rect>`;
                 },
                 PROPERTY_ATTRIBUTES: (symbol, property) => {
-                    return `visibility="${property.effects.hide ? "hidden" : "visible"}"`;
+                    return `visibility="${property.effects["$hide"] ? "hidden" : "visible"}"`;
                 },
                 PROPERTY_TEXT: (symbol, property) => {},
                 PROPERTY_CLASSES: (symbol, property) => {
@@ -210,15 +210,18 @@ module.exports = class PnIDManager {
         //remove padding. CAUTION/TODO: If the default padding in the parser changes this will break shit. Ideal solution would be to make padding customizable in parser!
         let viewBoxResult = [...svg.matchAll(/viewBox="([+-]?\d+\.?\d*) ([+-]?\d+\.?\d*) ([+-]?\d+\.?\d*) ([+-]?\d+\.?\d*)"/g)];
         let viewBox = [viewBoxResult[0][1], viewBoxResult[0][2], viewBoxResult[0][3], viewBoxResult[0][4]]; //why is JS such an utter pile of garbage?
-        let undoPad = 10;
+        let undoPad = 5;
         viewBox[0] = Number(viewBox[0]) + undoPad;
         viewBox[1] = Number(viewBox[1]) + undoPad;
         viewBox[2] = Number(viewBox[2]) - undoPad * 2;
         viewBox[3] = Number(viewBox[3]) - undoPad * 2;
-        svg = svg.replace(/viewBox=".*"/, `viewBox="${viewBox.join(' ')}"`);
 
-        //align pnid more to the left
-        svg = svg.replace(/viewBox="[+-]?\d+\.?\d*/, "viewBox=\"0");
+        // align pnid more central
+        viewBox[2] += viewBox[0];
+        viewBox[0] = 0;
+
+        // apply view box fixes
+        svg = svg.replace(/viewBox=".*"/, `viewBox="${viewBox.join(' ')}"`);
         return svg;
     }
 
