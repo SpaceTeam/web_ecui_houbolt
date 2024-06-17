@@ -32,7 +32,7 @@ module.exports = class PnIDManager {
         PnIDManager._watcher.on("add", path => {
             let fileFullName = path.split("/").pop();
             let fileExt = path.split("/").pop().split(".").pop();
-            if (fileExt == "kicad_sch") {
+            if (fileExt == "kicad_sch" && !path.includes("backup")) {
                 console.log("Found schematic for parsing to PnID:", fileFullName);
                 PnIDManager.parsePnIDs([path]);
             }
