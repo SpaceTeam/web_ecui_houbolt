@@ -235,15 +235,80 @@ function updateCommandSearch(commandListName, input)
 
 function updateCommandList(jsonStates, commandStates)
 {
-    for (stateObj of jsonStates)
+	// TODO another potential optimization may be to cache the command state inputs,
+	// but it seems the browser already does some caching so maybe not necessary
+	let commandStateInputs = $("[data-command-state-name]");
+	let statesDict = {};
+	statesDict = jsonStates.reduce((statesDict, el) => {
+		statesDict[el.name] = {"value": el.value, "timestamp": el.timestamp};
+		return statesDict;
+	}, {});
+	//console.log("CSI", commandStateInputs.length);
+	
+	let count1 = 0;
+	let count2 = 0;
+	let firstNames = {};
+	let secondNames = {};
+	for (let commandInput of commandStateInputs)
+	{
+		let inputName = commandInput.dataset.commandStateName;
+		if (statesDict[inputName] !== undefined && commandStates["can"].includes(inputName))
+		{
+			/*count1 = count1 + 1;
+			if (firstNames[inputName] == undefined)
+			{
+				firstNames[inputName] = statesDict[inputName]["value"];
+			}
+			else
+			{
+				console.log("double hit?", inputName);
+			}
+			
+			if (inputName.startsWith("blmb_ox_tanking_valve"))
+			{
+				console.log("hit!", inputName);
+			}*/
+		    //console.log("match can", inputName, statesDict[inputName]["name"]);
+		    commandInput.value = statesDict[inputName]["value"];
+		}
+		else if (statesDict[inputName] !== undefined && commandStates["lora"].includes(inputName))
+		{
+		    //console.log("match lora", statesDict[inputName]["name"]);
+		    commandInput.value = statesDict[inputName]["value"];
+		}
+	}
+	
+	//This is the old known working (but slower) implementation
+    /*for (stateObj of jsonStates)
     {
         if (commandStates["can"].includes(stateObj["name"]))
         {
-            $("[data-command-state-name=\""+stateObj["name"]+"\"]").val(stateObj["value"]);
+        	//count2 = count2 + 1;
+        	
+			//secondNames[stateObj["name"]] = stateObj["value"];
+        	//console.log("match can 2", stateObj["name"]);
+        	let test = $("[data-command-state-name=\""+stateObj["name"]+"\"]");
+        	console.log("double results?", test.length);
+            test.val(stateObj["value"]);
         }
         else if (commandStates["lora"].includes(stateObj["name"]))
         {
+        	//console.log("match lora 2", stateObj["name"]);
             $("[data-command-state-name=\""+stateObj["name"]+"\"]").val(stateObj["value"]);
         }
-    }
+    }*/
+    /*console.log("counts", count1, count2);
+    for (let key of Object.keys(secondNames))
+    {
+		if (firstNames[key] !== undefined)
+		{
+			delete firstNames[key]
+		}
+		else
+		{
+			console.warn("uh oh", secondNames[key]);
+			firstNames[key] = "UH OH " + secondNames[key]
+		}
+	}
+	console.log("keys too many", Object.keys(firstNames).length, firstNames);*/
 }
