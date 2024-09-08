@@ -347,8 +347,22 @@ function clearCommands()
     };
 }
 
+var jsonCommandsCache = undefined;
+
 function loadCommands(jsonCommands)
 {
+    if (jsonCommandsCache == undefined)
+    {
+        jsonCommandsCache = jsonCommands
+    }
+    else if (jsonCommands.stringify() == jsonCommandsCache.stringify())
+    {
+        // if we receive the same loadCommands we received before, don't continue we already did the work
+        console.log("skipped load commands because duplicate data");
+        return;
+    }
+    jsonCommandsCache = jsonCommands
+
     $("#commandSearch").empty();
     let commandContainerCAN = $('#command-list');
     let commandContainerLORA = $('#command-list-lora');
@@ -790,7 +804,7 @@ socket.on('commands-clear', function() {
 socket.on('commands-load', function(jsonCommands) {
 
     console.log('commands-load');
-    console.log(jsonCommands);
+    //console.log(jsonCommands);
     loadCommands(jsonCommands);
 
 });

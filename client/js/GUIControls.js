@@ -278,7 +278,7 @@ function updateCommandList(jsonStates, commandStates)
 		}
 	}
 	
-	//This is the old known working (but slower) implementation
+	//---- This is the old known working (but slower) implementation
     /*for (stateObj of jsonStates)
     {
         if (commandStates["can"].includes(stateObj["name"]))
@@ -297,6 +297,8 @@ function updateCommandList(jsonStates, commandStates)
             $("[data-command-state-name=\""+stateObj["name"]+"\"]").val(stateObj["value"]);
         }
     }*/
+    //----
+
     /*console.log("counts", count1, count2);
     for (let key of Object.keys(secondNames))
     {
