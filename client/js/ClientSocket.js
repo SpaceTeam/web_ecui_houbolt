@@ -355,13 +355,13 @@ function loadCommands(jsonCommands)
     {
         jsonCommandsCache = jsonCommands
     }
-    else if (jsonCommands.stringify() == jsonCommandsCache.stringify())
+    else if (JSON.stringify({"key": jsonCommands}) == jsonCommandsCache)
     {
         // if we receive the same loadCommands we received before, don't continue we already did the work
         console.log("skipped load commands because duplicate data");
         return;
     }
-    jsonCommandsCache = jsonCommands
+    jsonCommandsCache = JSON.stringify({"key": jsonCommands})
 
     $("#commandSearch").empty();
     let commandContainerCAN = $('#command-list');
