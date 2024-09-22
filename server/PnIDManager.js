@@ -187,7 +187,7 @@ module.exports = class PnIDManager {
         let schematicData = new kicad_parser.SchematicData(schematic, undefined);
         //console.log(schematicData)
         const svg = PnIDManager.convertSvgToOldFormat(PnIDManager.svgManualFixes(generator.generateSVG(schematicData)));
-        fs.writeFileSync("out.html", svg);
+        //fs.writeFileSync("out.html", svg);
         return svg;
         /*console.info(`Saving file '${output_file_name}'...`)
         // save svg file

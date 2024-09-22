@@ -958,7 +958,7 @@ socket.on('states-init', function(jsonStates) {
     console.log(jsonStates);
     for (state of jsonStates)
     {
-        console.log(state);
+        //console.log(state);
         latestStates[state["name"]] = {"value": state["value"], "timestamp": state["timestamp"]};
     }
     onStates(jsonStates);
