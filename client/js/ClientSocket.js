@@ -23,6 +23,17 @@ var countdownIntervalDelegate = null;
 
 var master = false;
 
+// flags for one-time loaded calls. we need to filter out second calls
+// because the server just sends these to all clients instead of just
+// newly connected ones. is this a hack? absolutely! will this still make
+// it to production? you bet your ass it will!
+var hasLoadedCommands = false;
+var commandsLoadTimer = undefined;
+var hasLoadedStates = false;
+var statesLoadTimer = undefined;
+var hasInitStates = false;
+var statesInitTimer = undefined;
+
 var disableSensorChartsOnLoad = true;
 
 var allCommandElementsList = {
@@ -285,11 +296,11 @@ function countdownTimerTick()
 {
     if (countdownTime < 0 && countdownTime >= -10)
     {
-        responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
+        //responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
     }
     else if (countdownTime === 0)
     {
-        responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
+        //responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
         clearInterval(countdownIntervalDelegate);
     }
     countdownTime += 1;
@@ -637,7 +648,7 @@ function abortSequence(abortMsg, timeEnd = jsonAbortSequence.globals.endTime)
     sequenceButtonStop();
 
     setTimeout(function () {
-            responsiveVoice.speak(abortMsg, "US English Female", {rate: 1.0});
+            //responsiveVoice.speak(abortMsg, "US English Female", {rate: 1.0});
         }, 1000);
     setTimeout(function () {
             emptySensorCharts();
@@ -799,14 +810,33 @@ socket.on('commands-clear', function() {
     console.log('commands-clear');
     clearCommands();
 
+    clearTimeout(commandsLoadTimer);
+    hasLoadedCommands = false;
+    clearTimeout(statesLoadTimer);
+    hasLoadedStates = false;
+    clearTimeout(statesInitTimer);
+    hasInitStates = false;
 });
 
 socket.on('commands-load', function(jsonCommands) {
-
-    console.log('commands-load');
-    //console.log(jsonCommands);
-    loadCommands(jsonCommands);
-
+    if (!hasLoadedCommands) {
+        console.log('commands-load');
+        console.log(jsonCommands);
+        loadCommands(jsonCommands);
+        if (commandsLoadTimer === undefined) {
+            // only allow loading commands once per run. commands could be split
+            // into several messages if they get too long so we wait 10s after
+            // the first message and then ignore all remaining commands-loads
+            // see comment near top of file at hasLoaded... and ...Timer vars
+            // for more info
+            commandsLoadTimer = setTimeout(() => {
+                hasLoadedCommands = true;
+                commandsLoadTimer = undefined;
+            }, 10000);
+        }
+    } else {
+        console.log('commands-load skipped because already loaded');
+    }
 });
 
 //TODO: maybe change to commands-result to also receive if everything went fine
@@ -947,19 +977,41 @@ socket.on('states', function(jsonStates) {
 });
 
 socket.on('states-load', function(jsonStates) {
-    console.log('states-load');
-    console.log(jsonStates);
-    jsonStateLabels = jsonStates;
-    setStateNamesPNID(jsonStateLabels);
+    if (!hasLoadedStates) {
+        console.log('states-load');
+        console.log(jsonStates);
+        jsonStateLabels = jsonStates;
+        setStateNamesPNID(jsonStateLabels);
+        if (statesLoadTimer === undefined) {
+            // see comment in commands-load for more info
+            statesLoadTimer = setTimeout(() => {
+                hasLoadedStates = true;
+                statesLoadTimer = undefined;
+            }, 10000);
+        }
+    } else {
+        console.log('states-load skipped because already loaded');
+    }
+    
 });
 
 socket.on('states-init', function(jsonStates) {
-    console.log('states-init');
-    console.log(jsonStates);
-    for (state of jsonStates)
-    {
-        //console.log(state);
-        latestStates[state["name"]] = {"value": state["value"], "timestamp": state["timestamp"]};
+    if (!hasInitStates) {
+        console.log('states-init');
+        console.log(jsonStates);
+        for (state of jsonStates)
+        {
+            //console.log(state);
+            latestStates[state["name"]] = {"value": state["value"], "timestamp": state["timestamp"]};
+        }
+        onStates(jsonStates);
+        if (statesInitTimer === undefined) {
+            statesInitTimer = setTimeout(() => {
+                hasInitStates = true;
+                statesInitTimer = undefined;
+            }, 10000);
+        }
+    } else {
+        console.log('states-init skipped because already initialized once');
     }
-    onStates(jsonStates);
 });

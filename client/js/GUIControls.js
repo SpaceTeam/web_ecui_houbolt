@@ -133,7 +133,6 @@ function updateCommandSearch(commandListName, input)
     }
     else
     {
-        commandList.find(".collapse").collapse('show');
         let regex = new RegExp(`.*${input.value}.*`, 'i');
         let matches = [];
         let invertedMatches = [];
@@ -175,8 +174,8 @@ function updateCommandSearch(commandListName, input)
         else
         {
             //found matches, removing the found no matches indicator
+            document.getElementById("empty-search-indicator")?.remove();
             let showCategory = true;
-            commandList.find("div.card").remove('[id="empty-search-indicator"]');
             if (invertedMatches.length > 0)
             {
                 //console.log("command list begin", commandList.children());
@@ -190,15 +189,15 @@ function updateCommandSearch(commandListName, input)
                     {
                         //console.log("command", command);
                         //check each command group if there's at least one entry in matches
-                        if (matches.some(e => $(e).attr("id") === $(command).attr("id")))
+                        if (matches.some(e => e.id === command.id))
                         {
                             //we found an entry in matches from this command group, this means we want to show it
                             //console.log("found match for category", categoryIndex, command);
-                            if ($(element).is(":hidden"))
+                            if (window.getComputedStyle(element).display === "none")
                             {
                                 $(element).show(200);
                             }
-                            if ($(command).is(":hidden"))
+                            if (window.getComputedStyle(command).display === "none")
                             {
                                 $(command).parent().show(200);
                             }
@@ -207,14 +206,14 @@ function updateCommandSearch(commandListName, input)
                     }
                     if (commandMatches.length == 0)
                     {
-                        if ($(element).is(":visible")) {
+                        if (window.getComputedStyle(element).display !== "none") {
                             $(element).hide(100);
                         }
                     }
                 });
                 $(invertedMatches).each(function(index, command)
                 {
-                    if ($(command).is(":visible"))
+                    if (window.getComputedStyle(command).display !== "none")
                     {
                         $(command).parent().hide(100);
                         
@@ -243,7 +242,6 @@ function updateCommandList(jsonStates, commandStates)
 		statesDict[el.name] = {"value": el.value, "timestamp": el.timestamp};
 		return statesDict;
 	}, {});
-	//console.log("CSI", commandStateInputs.length);
 	
 	let count1 = 0;
 	let count2 = 0;
@@ -254,63 +252,11 @@ function updateCommandList(jsonStates, commandStates)
 		let inputName = commandInput.dataset.commandStateName;
 		if (statesDict[inputName] !== undefined && commandStates["can"].includes(inputName))
 		{
-			/*count1 = count1 + 1;
-			if (firstNames[inputName] == undefined)
-			{
-				firstNames[inputName] = statesDict[inputName]["value"];
-			}
-			else
-			{
-				console.log("double hit?", inputName);
-			}
-			
-			if (inputName.startsWith("blmb_ox_tanking_valve"))
-			{
-				console.log("hit!", inputName);
-			}*/
-		    //console.log("match can", inputName, statesDict[inputName]["name"]);
 		    commandInput.value = statesDict[inputName]["value"];
 		}
 		else if (statesDict[inputName] !== undefined && commandStates["lora"].includes(inputName))
 		{
-		    //console.log("match lora", statesDict[inputName]["name"]);
 		    commandInput.value = statesDict[inputName]["value"];
 		}
 	}
-	
-	//---- This is the old known working (but slower) implementation
-    /*for (stateObj of jsonStates)
-    {
-        if (commandStates["can"].includes(stateObj["name"]))
-        {
-        	//count2 = count2 + 1;
-        	
-			//secondNames[stateObj["name"]] = stateObj["value"];
-        	//console.log("match can 2", stateObj["name"]);
-        	let test = $("[data-command-state-name=\""+stateObj["name"]+"\"]");
-        	console.log("double results?", test.length);
-            test.val(stateObj["value"]);
-        }
-        else if (commandStates["lora"].includes(stateObj["name"]))
-        {
-        	//console.log("match lora 2", stateObj["name"]);
-            $("[data-command-state-name=\""+stateObj["name"]+"\"]").val(stateObj["value"]);
-        }
-    }*/
-    //----
-
-    /*console.log("counts", count1, count2);
-    for (let key of Object.keys(secondNames))
-    {
-		if (firstNames[key] !== undefined)
-		{
-			delete firstNames[key]
-		}
-		else
-		{
-			console.warn("uh oh", secondNames[key]);
-			firstNames[key] = "UH OH " + secondNames[key]
-		}
-	}
-	console.log("keys too many", Object.keys(firstNames).length, firstNames);*/
 }
