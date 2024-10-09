@@ -7,7 +7,13 @@
     src: url('../lib/fonts/montserrat-v24-latin-regular.woff') format('woff'); /* Modern Browsers */
     src: url('../lib/fonts/montserrat-v24-latin-regular.ttf') format('truetype'); /* Safari, Android, iOS */
 }
-  
+
+@font-face {
+    font-family: 'Inconsolata';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../lib/fonts/Inconsolata-VariableFont_wdth,wght.ttf') format('truetype');
+}
 
 body, html {
     height: 100%;
