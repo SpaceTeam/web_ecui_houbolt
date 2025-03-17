@@ -3,3 +3,5 @@ node_modules
 **/.DS_Store
 
 configPath.txt
+
+script_output_files/
