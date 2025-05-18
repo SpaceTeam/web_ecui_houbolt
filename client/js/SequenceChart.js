@@ -174,6 +174,7 @@ class SequenceChart {
     }
 
     start() {
+        return; //the sequence chart is *extremely* slow especially for large sequences
         if (!this.isRunning) {
             if (this.chart.data.length > 0) {
                 let seriesLength = this.chart.series.length;
@@ -183,16 +184,16 @@ class SequenceChart {
 
                     let currSeries = this.chart.series.getIndex(i);
                     let yValueName = currSeries.dataFields.valueY;
-                    console.log("name: " + currSeries.name + " interp: " + this.getInterpolationFromName(currSeries.name));
-                    console.log(this.addSeries(currSeries.name + " live", yValueName + " live", this.getInterpolationFromName(currSeries.name), true, currSeries.stroke));
+                    //console.log("name: " + currSeries.name + " interp: " + this.getInterpolationFromName(currSeries.name));
+                    //console.log(this.addSeries(currSeries.name + " live", yValueName + " live", this.getInterpolationFromName(currSeries.name), true, currSeries.stroke));
 
                     let time = this.chart.data[0].time;
 
                     let firstPnt = this._findNextPoint(yValueName, time);
-                    console.log(seriesLength);
-                    console.log(yValueName);
-                    console.log(time);
-                    console.log(firstPnt);
+                    //console.log(seriesLength);
+                    //console.log(yValueName);
+                    //console.log(time);
+                    //console.log(firstPnt);
                     let int = {};
                     int.prev = {};
                     int.prev.x = firstPnt.time;
@@ -220,6 +221,7 @@ class SequenceChart {
     }
 
     update(time) {
+        return; //the sequence chart is *extremely* slow especially for large sequences
         if (this.isRunning) {
             for (let serInd in this.seriesList) {
                 let currInt = this.liveIntervalList[serInd];
