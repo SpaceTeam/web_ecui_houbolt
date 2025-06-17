@@ -36,11 +36,6 @@ var statesInitTimer = undefined;
 
 var disableSensorChartsOnLoad = true;
 
-var allCommandElementsList = {
-    "can": [],
-    "lora": []
-};
-
 //create observer to check if sensor charts shall be rendered
 var chartTabObserver = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
@@ -383,11 +378,6 @@ function clearCommands()
         "can": [],
         "lora": [],
     };
-
-    allCommandElementsList = {
-        "can": [],
-        "lora": [],
-    };
 }
 
 // creates DOM container for command category, but doesn't duplicate (returns existing container)
@@ -534,6 +524,11 @@ function splitCommandName(commandName)
     return {category, name};
 }
 
+function mergeCommandName(category, name)
+{
+    return category + ":" + name;
+}
+
 async function loadCommands(jsonCommands)
 {
     $("#commandSearch").empty();
@@ -560,8 +555,6 @@ async function loadCommands(jsonCommands)
     }
 
     //console.log("categories:", commandsCache);
-    allCommandElementsList["can"] = $("#command-list").find("div.command");
-    allCommandElementsList["lora"] = $("#command-list-lora").find("div.command");
 }
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------

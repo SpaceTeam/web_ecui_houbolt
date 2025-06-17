@@ -140,6 +140,22 @@ form input {
     background-color: var(--background-secondary) !important; /*this will probably have to be moved to bootstrap override. or maybe not if it's not widely applicable enough?*/
 }
 
+#command-list.search-results > .card {
+    display: none;
+}
+
+.result-category {
+    display: unset !important;
+}
+
+#command-list.search-results > .result-category li.list-group-item {
+    display: none;
+}
+
+.result-command {
+    display: block !important;
+}
+
 .accordion {
     border-style: none;
     background-color: transparent;
