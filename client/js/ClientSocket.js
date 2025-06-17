@@ -22,6 +22,7 @@ var countdownTime = null;
 var countdownIntervalDelegate = null;
 
 var master = false;
+var isSequenceRunning = false;
 
 // flags for one-time loaded calls. we need to filter out second calls
 // because the server just sends these to all clients instead of just
@@ -788,7 +789,7 @@ socket.on('master-change', (flag) => {
 			$('#masterLock').removeAttr('hidden')
 		    $('.client-only').css('visibility', 'hidden');
         	$('.client-only').css('height', '0px');
-            $('.popup').find('input').removeAttr('disabled');
+            updatePNIDInputsEnabled();
             console.log("master on", master);
 	}
 	else {	
@@ -802,7 +803,7 @@ socket.on('master-change', (flag) => {
 			{
 				$('#manualEnableCheck1').click();
 			}
-			$('.popup').find('input').attr('disabled', 'true');
+			updatePNIDInputsEnabled();
             console.log("master off", master);
 	}
 });
@@ -847,6 +848,8 @@ socket.on('llserver-disconnect', function()
 
 socket.on('abort', function(abortMsg) {
     console.log('abort');
+    isSequenceRunning = false;
+    updatePNIDInputsEnabled();
 
     abortSequence(abortMsg);
 
@@ -950,6 +953,13 @@ socket.on('sequence-start', function() {
 
 socket.on('timer-start', function () {
     startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
+    isSequenceRunning = true;
+    updatePNIDInputsEnabled();
+});
+
+socket.on('timer-done', function () {
+    isSequenceRunning = false;
+    updatePNIDInputsEnabled();
 });
 
 function startTimer(timeStart, timeEnd)
