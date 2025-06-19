@@ -967,7 +967,7 @@ function startTimer(timeStart, timeEnd)
     intervalMillis = 100; //hard code timer step to 100 for client
     timeMillis = timeStart * 1000;
     endTime = timeEnd;
-    responsiveVoice.enableEstimationTimeout = true;
+    //responsiveVoice.enableEstimationTimeout = true;
 
     countdownTime = jsonSequence.globals.startTime;
     clearInterval(countdownIntervalDelegate);
