@@ -933,6 +933,8 @@ socket.on('commands-error', function(jsonCommandErrors) {
 
 });
 
+// TODO only one of the sequence-start/stop/sync and timer-start/stop/sync commands should exist
+// but I'm not sure which yet
 socket.on('sequence-start', function() {
     console.log('sequence-start:');
 
@@ -951,16 +953,50 @@ socket.on('sequence-start', function() {
     seqChart.start();
 });
 
+socket.on('sequence-sync', function(time) {
+    if (!isSequenceRunning)
+    {
+        startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
+    }
+    refreshSequenceWatchdog();
+    timeMillis = time * 1000;
+});
+
+socket.on('sequence-done', function() {
+    console.log('sequence-done:');
+    timerStop(endTime);
+});
+
 socket.on('timer-start', function () {
-    startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
-    isSequenceRunning = true;
-    updatePNIDInputsEnabled();
+    console.log('timer-start handler');
+    startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime);
 });
 
 socket.on('timer-done', function () {
-    isSequenceRunning = false;
-    updatePNIDInputsEnabled();
+    console.log('timer-done handler');
+    timerStop(endTime);
 });
+
+let sequenceTimeoutTimer = undefined;
+
+socket.on('timer-sync', function (time) {
+    if (!isSequenceRunning)
+    {
+        startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
+        isSequenceRunning = true;
+        updatePNIDInputsEnabled();
+    }
+    refreshSequenceWatchdog();
+    timeMillis = time;
+});
+
+function refreshSequenceWatchdog()
+{
+    clearTimeout(sequenceTimeoutTimer)
+    sequenceTimeoutTimer = setTimeout(function () {
+        timerStop();
+    }, 3000);
+}
 
 function startTimer(timeStart, timeEnd)
 {
@@ -978,34 +1014,18 @@ function startTimer(timeStart, timeEnd)
     clearInterval(intervalDelegate);
     timerTick();
     intervalDelegate = setInterval(timerTick, intervalMillis);
+
+    refreshSequenceWatchdog();
+
+    isSequenceRunning = true;
+    updatePNIDInputsEnabled();
 }
-
-socket.on('sequence-sync', function(time) {
-    //console.log('sequence-sync:');
-    timeMillis = time * 1000;
-
-    // if (time < 0 && time >= -5)
-    // {
-    //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.4});
-    // }
-    // else if (time === 0)
-    // {
-    //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.4});
-    // }
-    // clearInterval(intervalDelegate);
-    // if (timeMillis < endTime*1000) {
-    //      intervalDelegate = setInterval(timerTick, intervalMillis);
-    // }
-    // timerTick();
-});
-
-socket.on('sequence-done', function() {
-    console.log('sequence-done:');
-    timerStop(endTime);
-});
 
 function timerStop(timeEnd)
 {
+    isSequenceRunning = false;
+    updatePNIDInputsEnabled();
+
     seqChart.stop();
 
     $('.timer').text(timeEnd);
