@@ -149,20 +149,28 @@ module.exports = class PnIDManager {
                     const sensorTag = ":sensor";
                     const sensor = symbol.$property?.find(p => p.key === "Value" && p.value.endsWith(sensorTag))?.value?.slice(0, -sensorTag.length);
                     const content = symbol.$property?.find(p => p.key === "Data_Content")?.value;
-                    const type = symbol.lib_id.substring(symbol.lib_id.indexOf(":")+1);
+                    const actionRef = symbol.$property?.find(p => p.key === "Action_Reference")?.value;
+                    const type = symbol.lib_id.substring(symbol.lib_id.indexOf(":") + 1);
 
                     const typeAttr = `data-pnid-type="${type}"`; //not necessary?
                     const unitAttr = `data-unit="${unit?.trim() ?? ""}"`;
                     const sensorAttr = sensor ? `data-pnid-sensor="${sensor}"` : ""; //not necessary?
                     const contentAttr = `data-content="${content?.trim() ?? ""}"`;
-                    const actionRefAttr = `data-action-reference=""`;
+                    const actionRefAttr = `data-action-reference="${(actionRef ?? "").replaceAll(":", "-")}"`;
                     const valueAttr = `data-value=""`;
                     const actionRefValueAttr = `data-action-reference-value=""`;
 
                     return `${typeAttr} ${unitAttr} ${sensorAttr} ${contentAttr} ${actionRefAttr} ${valueAttr} ${actionRefValueAttr}`;
                 },
                 SYMBOL_ADDITIONAL_ELEMENTS: symbol => {
-                    return `<rect class="rect hitbox" visibility="hidden" pointer-events="all" onclick="clickEventListener('${symbol.$property?.find(p => p.key === "Value").value.replaceAll(":", "-")}')"></rect>`;
+                    let valueReference = symbol.$property?.find(p => p.key === "Value").value.replaceAll(":", "-");
+                    let actionReference = symbol.$property?.find(p => p.key === "Action_Reference")?.value.replaceAll(":", "-").trim();
+                    let eventListenerTarget = valueReference;
+                    if (actionReference)
+                    {
+                        eventListenerTarget = actionReference
+                    }
+                    return `<rect class="rect hitbox" visibility="hidden" pointer-events="all" onclick="clickEventListener('${eventListenerTarget}')"></rect>`;
                 },
                 PROPERTY_ATTRIBUTES: (symbol, property) => {
                     return `visibility="${property.effects["$hide"] ? "hidden" : "visible"}"`;
