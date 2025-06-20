@@ -18,9 +18,6 @@ var timeMillis;
 var intervalMillis;
 var intervalDelegate;
 
-var countdownTime = null;
-var countdownIntervalDelegate = null;
-
 var master = false;
 var isSequenceRunning = false;
 
@@ -34,34 +31,6 @@ var hasLoadedStates = false;
 var statesLoadTimer = undefined;
 var hasInitStates = false;
 var statesInitTimer = undefined;
-
-var disableSensorChartsOnLoad = true;
-
-//create observer to check if sensor charts shall be rendered
-var chartTabObserver = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-        if (mutation.type === "attributes")
-        {
-            if(mutation.target.classList.contains("show"))
-            {
-                console.log("sensor charts d");
-                window.scrollTo(0,document.body.scrollHeight);
-                for (let sensorName in jsonSensors)
-                {
-                    jsonSensors[sensorName].chart.enable();
-                }
-            }
-            else
-            {
-                console.log("sensor charts disabled");
-                for (let sensorName in jsonSensors)
-                {
-                    jsonSensors[sensorName].chart.disable();
-                }
-            }
-        }
-    });
-});
 
 var lastModalTriggeredElement = undefined;
 
@@ -127,10 +96,6 @@ function onModalReject()
 
 }
 
-function onResetSensors() {
-    emptySensorCharts();
-}
-
 // Set colored progress bar in servo slider for visual feedback
 function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
@@ -187,65 +152,16 @@ function tMinusTimerTick()
 
     if (Number.isInteger(time))
     {
-        // if (time < 0 && time >= -5)
-        // {
-        //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.2});
-        // }
-        // else if (time === 0)
-        // {
-        //     ////responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
-        //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-        // }
         $('.timer').append('.0');
     }
 }
 
-//TODO: NOT COMPATIBLE WITH NEW PNID
 function timerTick()
 {
     tMinusTimerTick();
     //console.log(timeMillis);
 
     seqChart.update(timeMillis);
-
-    //update pnid - doesn't work if timestamps overlap (don't try it anyways)
-    //todo: commented out for now, not sure why this exists in the first place I don't think we need it anymore
-    /*let latestAction = undefined;
-    for (let ind in jsonSequence.data)
-    {
-        let currCmd = jsonSequence.data[ind];
-        let currCmdTimestamp = seqChart.getTimestamp(currCmd, jsonSequence.globals.startTime, jsonSequence.globals.startTime);
-        if (currCmdTimestamp <= time)
-        {
-
-            for (let actionInd in currCmd.actions)
-            {
-                let currAction = currCmd.actions[actionInd];
-                if ((currCmdTimestamp + currAction.timestamp) <= time)
-                {
-                    latestAction = currAction;
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-        else
-        {
-            break;
-        }
-
-    }
-
-    for (let key in latestAction)
-    {
-        if (key.includes("Solenoid") || key.includes("igniter"))
-        {
-            updatePNID(key, latestAction[key] !== 0);
-        }
-
-    }*/
 
     timeMillis += intervalMillis;
 }
@@ -278,28 +194,6 @@ function loadSequenceSelect()
             $('#sequenceSelect').append('<option value="' + sequences[seqInd] + '">' + sequences[seqInd] + '</option>');
         }
     }
-}
-
-function emptySensorCharts()
-{
-    for (let sensorName in jsonSensors)
-    {
-        jsonSensors[sensorName].chart.removeContent();
-    }
-}
-
-function countdownTimerTick()
-{
-    if (countdownTime < 0 && countdownTime >= -10)
-    {
-        //responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
-    }
-    else if (countdownTime === 0)
-    {
-        //responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-        clearInterval(countdownIntervalDelegate);
-    }
-    countdownTime += 1;
 }
 
 function exportCommands()
@@ -718,7 +612,6 @@ function onManualControlEnable(checkbox)
 
 function abortSequence(abortMsg, timeEnd = jsonAbortSequence.globals.endTime)
 {
-    clearInterval(countdownIntervalDelegate);
 
     seqChart.stop();
 
@@ -730,12 +623,8 @@ function abortSequence(abortMsg, timeEnd = jsonAbortSequence.globals.endTime)
     sequenceButtonStop();
 
     setTimeout(function () {
-            //responsiveVoice.speak(abortMsg, "US English Female", {rate: 1.0});
-        }, 1000);
-    setTimeout(function () {
-            emptySensorCharts();
-            isContinousTransmission = true;
-        }, timeEnd*1000+500);
+        isContinousTransmission = true;
+    }, timeEnd*1000+500);
 
     $('#toggleSequenceButton').attr("disabled", true);
     setTimeout(function () {
@@ -938,13 +827,9 @@ socket.on('commands-error', function(jsonCommandErrors) {
 socket.on('sequence-start', function() {
     console.log('sequence-start:');
 
-    //empty sensor chart div first
     setTimeout(function () {
-        emptySensorCharts();
         isContinousTransmission = false;
     }, 200);
-
-    //responsiveVoice.speak("starting sequence", "US English Female", {rate: 1});
 
     $('#toggleSequenceButton').text("Abort Sequence");
     $('.timer').css("color", "green");
@@ -1003,12 +888,6 @@ function startTimer(timeStart, timeEnd)
     intervalMillis = 100; //hard code timer step to 100 for client
     timeMillis = timeStart * 1000;
     endTime = timeEnd;
-    //responsiveVoice.enableEstimationTimeout = true;
-
-    countdownTime = jsonSequence.globals.startTime;
-    clearInterval(countdownIntervalDelegate);
-    countdownTimerTick();
-    countdownIntervalDelegate = setInterval(countdownTimerTick, 1000);
 
     $('.timer').css("color", "green");
     clearInterval(intervalDelegate);
@@ -1030,7 +909,6 @@ function timerStop(timeEnd)
 
     $('.timer').text(timeEnd);
     clearInterval(intervalDelegate);
-    //clearInterval(countdownIntervalDelegate);
     if (Number.isInteger(timeEnd))
     {
         $('.timer').append('.0');
@@ -1043,7 +921,6 @@ function timerStop(timeEnd)
 
     $('#toggleSequenceButton').attr("disabled", true);
     setTimeout(function () {
-            emptySensorCharts();
             isContinousTransmission = true;
             $('#toggleSequenceButton').removeAttr("disabled");
         }, 3000);
