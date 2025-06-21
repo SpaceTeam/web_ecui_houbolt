@@ -845,6 +845,7 @@ socket.on('sequence-sync', function(time) {
     }
     refreshSequenceWatchdog();
     timeMillis = time * 1000;
+    console.log('sequence-sync', time);
 });
 
 socket.on('sequence-done', function() {
@@ -873,6 +874,7 @@ socket.on('timer-sync', function (time) {
     }
     refreshSequenceWatchdog();
     timeMillis = time;
+    console.log('sequence-sync', time);
 });
 
 function refreshSequenceWatchdog()
