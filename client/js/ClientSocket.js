@@ -826,6 +826,7 @@ socket.on('commands-error', function(jsonCommandErrors) {
 // but I'm not sure which yet
 socket.on('sequence-start', function() {
     console.log('sequence-start:');
+    startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime);
 
     setTimeout(function () {
         isContinousTransmission = false;
@@ -845,7 +846,6 @@ socket.on('sequence-sync', function(time) {
     }
     refreshSequenceWatchdog();
     timeMillis = time * 1000;
-    console.log('sequence-sync', time);
 });
 
 socket.on('sequence-done', function() {
@@ -853,7 +853,7 @@ socket.on('sequence-done', function() {
     timerStop(endTime);
 });
 
-socket.on('timer-start', function () {
+/*socket.on('timer-start', function () {
     console.log('timer-start handler');
     startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime);
 });
@@ -861,21 +861,18 @@ socket.on('timer-start', function () {
 socket.on('timer-done', function () {
     console.log('timer-done handler');
     timerStop(endTime);
-});
+});*/
 
 let sequenceTimeoutTimer = undefined;
 
-socket.on('timer-sync', function (time) {
+/*socket.on('timer-sync', function (time) {
     if (!isSequenceRunning)
     {
         startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
-        isSequenceRunning = true;
-        updatePNIDInputsEnabled();
     }
     refreshSequenceWatchdog();
     timeMillis = time;
-    console.log('sequence-sync', time);
-});
+});*/
 
 function refreshSequenceWatchdog()
 {
