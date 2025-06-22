@@ -612,6 +612,8 @@ function onManualControlEnable(checkbox)
 
 function abortSequence(abortMsg, timeEnd = jsonAbortSequence.globals.endTime)
 {
+    isSequenceRunning = false;
+    updatePNIDInputsEnabled();
 
     seqChart.stop();
 
@@ -849,9 +851,16 @@ socket.on('sequence-sync', function(time) {
 });
 
 socket.on('sequence-done', function() {
-    console.log('sequence-done:');
+    console.log('sequence-done');
     timerStop(endTime);
 });
+
+socket.on('sequence-abort', function () {
+    console.log('sequence-abort');
+    console.log('was sequence still seen as running?', isSequenceRunning == true);
+    isSequenceRunning = false;
+    updatePNIDInputsEnabled();
+})
 
 /*socket.on('timer-start', function () {
     console.log('timer-start handler');
@@ -878,7 +887,8 @@ function refreshSequenceWatchdog()
 {
     clearTimeout(sequenceTimeoutTimer)
     sequenceTimeoutTimer = setTimeout(function () {
-        timerStop();
+        //timerStop();
+        $('.timer').css("color", "hotpink");
     }, 3000);
 }
 
