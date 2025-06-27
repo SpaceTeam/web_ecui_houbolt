@@ -1,7 +1,6 @@
 const path = require("path");
-const { spawn } = require("child_process");
-
 const fs = require('fs');
+const { Readable } = require('stream');
 
 
 /**
@@ -9,7 +8,13 @@ const fs = require('fs');
  * @property {string} id
  * @property {string} title
  * @property {string} command
- * @property {?[string|{title: string, type: "user-input"}|{type: "tmp-file-path", download: boolean, downloadName: string}]} args
+ * @property {Array<
+ *   string |
+ *   { type: "tmp-file-path", download: boolean } |
+ *   { type: "param", name: string|null, title: string } |
+ *   { type: "flag", name: string, title: string } |
+ *   { type: "multi-param", name: string, title: string }
+ * >} args
  */
 
 module.exports = class ScriptRunner {
@@ -22,10 +27,17 @@ module.exports = class ScriptRunner {
 
     /**
      * 
-     * @param {{id: string, args: [string]}} script 
+     * @param {{id: string, args: [{
+     *  type: "param" | "flag" | "multi-param",
+     *  index: number,
+     *  value?: string,
+     *  values?: string[],
+     *  name?: string,
+     *  title?: string
+     * }]}} script 
      * @param {*} socket 
      */
-    onExecuteScript(script, socket) {
+    async onExecuteScript(script, socket) {
         console.log("Executing script", script);
         const scriptConfig = this.getScriptConfig(script.id);
 
@@ -36,58 +48,86 @@ module.exports = class ScriptRunner {
         }
 
         const args = [];
-        /**
-         * @type {{path: string, downloadName: string}[]}
-         */
-        const filesToDownload = [];
+        let clientArgIndex = 0;
 
-        let userArgIndex = 0;
-        for (const arg of scriptConfig.args ?? []) {
-            if (typeof arg === "string") {
-                args.push(arg);
-                continue;
-            } else if (arg.type === "user-input") {
-                args.push(script.args[userArgIndex++]);
-            } else if (arg.type === "tmp-file-path") {
-                const tmpFilePath = this.getTmpFilePath();
-                args.push(tmpFilePath);
-                if (arg.download) {
-                    filesToDownload.push({path: tmpFilePath, downloadName: arg.downloadName});
+        for (const [index, argConfig] of scriptConfig.args?.entries() ?? []) {
+            if (typeof argConfig === "string") {
+                args.push(argConfig);
+            } else if (argConfig.type === "tmp-file-path") {
+                // tmp-file-path arguments are handled by the script-runner itself, not passed from the client
+                // so we just push the config as is.
+                args.push(argConfig);
+            } else {
+                const clientArg = script.args[clientArgIndex];
+                // For other types, we expect a corresponding argument from the client
+                if (clientArg?.index === index) {
+                    if (clientArg.type === "param") {
+                        if (clientArg.name) {
+                            args.push(`${clientArg.name}`);
+                        }
+                        args.push(clientArg.value);
+                    } else if (clientArg.type === "flag") {
+                        args.push(`${clientArg.name}`);
+                    } else if (clientArg.type === "multi-param") {
+                        if (clientArg.name) {
+                            args.push(`${clientArg.name}`);
+                        }
+                        args.push(...clientArg.values);
+                    }
+                    clientArgIndex++;
                 }
             }
         }
 
         socket.emit("script-feedback", `Executing script "${scriptConfig.title}".\ncommand: "${scriptConfig.command}". args: ${JSON.stringify(args)}`);
 
-        const child = spawn(scriptConfig.command, args);
+        try {
+            const response = await fetch("http://localhost:8000/execute", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    command: scriptConfig.command,
+                    args: args
+                })
+            });
 
-        child.stdout.on("data", (data) => {
-            socket.emit("script-feedback", data.toString());
-        });
-
-        child.stderr.on("data", (data) => {
-            console.error(`stderr: ${data}`);
-            socket.emit("script-feedback", data.toString());
-        });
-
-        child.on("close", (code) => {
-            console.log(`Child process exited with code ${code}`);
-            socket.emit("script-feedback", "Execution complete");
-            for (const file of filesToDownload) {
-                if (!fs.existsSync(file.path)) {
-                    console.error(`Output file not found: ${file.path}`);
-                    socket.emit("script-feedback", `Output file ${file.downloadName} not found`);
-                    continue;
-                }
-
-                socket.emit("script-feedback-file", {path: path.basename(file.path), downloadName: file.downloadName});
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Script execution failed with status ${response.status}: ${errorText}`);
             }
-        });
 
-        child.on("error", (err) => {
+            const decoder = new TextDecoder();
+            let fullResponseText = '';
+            for await (const chunk of response.body) {
+                const textChunk = decoder.decode(chunk, { stream: true });
+                socket.emit("script-feedback", textChunk); // stream chunk to client
+                fullResponseText += textChunk; // buffer chunk
+            }
+
+            const downloadInfoMarker = '\n---DOWNLOAD-INFO---\n';
+            if (fullResponseText.includes(downloadInfoMarker)) {
+                const parts = fullResponseText.split(downloadInfoMarker);
+                const downloadInfoRaw = parts[parts.length - 1];
+                try {
+                    const downloadInfo = JSON.parse(downloadInfoRaw);
+                    for (const file of downloadInfo.temp_files) {
+                        socket.emit("script-feedback-file", {
+                            path: file.download_url,
+                            downloadName: file.download_name
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error parsing download info:", e);
+                }
+            }
+
+            socket.emit("script-feedback", "Execution complete");
+        } catch (err) {
             console.error(`Failed to start script: ${err.message}`);
             socket.emit("script-feedback", "Failed to start script: " + err.message);
-        });
+        }
     }
 
     /**
@@ -106,41 +146,26 @@ module.exports = class ScriptRunner {
         return JSON.parse(scriptsJson);
     }
 
-    getFileOutputDirectory() {
-        const fs = require('fs');
-        const outputDir = path.join(__dirname, '..', 'script_output_files');
+    async downloadOutputFile(fileName, res) {
+        const scriptRunnerUrl = `http://localhost:8000${fileName}`;
 
-        if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir, { recursive: true });
+        try {
+            const response = await fetch(scriptRunnerUrl);
+
+            if (!response.ok) {
+                res.status(response.status).send("File not found on script-runner");
+                return;
+            }
+
+            const contentDisposition = response.headers.get("content-disposition");
+            if (contentDisposition) {
+                res.setHeader("Content-Disposition", contentDisposition);
+            }
+
+            Readable.fromWeb(response.body).pipe(res);
+        } catch (error) {
+            console.error(`Error downloading file from script-runner: ${error.message}`);
+            res.status(500).send("Error downloading file");
         }
-
-        return outputDir;
-    }
-
-    getTmpFilePath() {
-        const crypto = require('crypto');
-
-        const timestamp = Date.now();
-        const randomHash = crypto.randomBytes(8).toString('hex');
-        const filename = `tmp_${timestamp}_${randomHash}.tmp`;
-
-        const outputDir = this.getFileOutputDirectory();
-        const tmpFilePath = path.join(outputDir, filename);
-
-        return tmpFilePath;
-    }
-
-    downloadOutputFile(fileName, res) {
-        const fs = require('fs');
-        const outputDir = this.getFileOutputDirectory();
-        const filePath = path.join(outputDir, path.basename(fileName));
-
-        if (!fs.existsSync(filePath)) {
-            console.error(`Output file not found: ${filePath}`);
-            res.status(404).send("Output file not found");
-            return;
-        }
-
-        res.sendFile(filePath);
     }
 }

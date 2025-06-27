@@ -836,8 +836,8 @@ app.get('/pnid_config/grafana', (req, res) => {
     res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'grafanaPanelConfig.json'));
 });
 
-app.get('/scripts/outputs/:file', (req, res) => {
-    scriptRunner.downloadOutputFile(req.params.file, res);
+app.get('/download/:file', (req, res) => {
+    scriptRunner.downloadOutputFile(req.url, res);
 });
 
 app.post('/pnid', function(req, res){

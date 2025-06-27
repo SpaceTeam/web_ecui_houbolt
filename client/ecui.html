@@ -179,24 +179,45 @@
         <div id="pnidWarningTemp" class="pnid-global-warning warning-bar">
         <div id="server-script-template">
             <li class="list-group-item">
-                <div class="row command">
+                <div class="row command" style="justify-content: space-between;">
                     <label class="input-label col-2 script-title"
                         style="display: flex;align-items: center;">Server Script Title</label>
                         <div class="col"></div>
-                        <div class="parameter-group col-auto">
-
-                            <div class="input-group flex-nowrap" style="width: 18rem;">
-                                <div class="input-group-prepend" >
-                                    <span class="input-group-text parameter-title">Parameter Template</span>
-                                </div>
-                                <input type="text" style="width: 2rem;" class="form-control parameter post-initialized-spinner">
-                            </div>
-                            
-                        </div>
+                        <div class="parameter-container d-flex flex-row flex-wrap"></div>
                     <button class="col-auto float-right btn btn-secondary manual-obj run-script-btn">Execute</button>
                 </div>
 
             </li>
+        </div>
+        <div id="server-script-param-template">
+            <div class="parameter-group col-auto" data-arg-type="param">
+                <div class="input-group flex-nowrap" style="width: 18rem;">
+                    <div class="input-group-prepend" >
+                        <span class="input-group-text parameter-title">Parameter Template</span>
+                    </div>
+                    <input type="text" style="width: 2rem;" class="form-control parameter">
+                </div>
+            </div>
+        </div>
+        <div id="server-script-flag-template">
+            <div class="parameter-group col-auto" data-arg-type="flag" style="display: flex; align-items: center;">
+                <div class="form-check" style="display: flex; align-items: center;">
+                    <input class="form-check-input parameter" type="checkbox" value="" style="margin-top: 0; margin-right: 8px;">
+                    <label class="form-check-label parameter-title" style="margin-bottom: 0; display: flex; align-items: center;">
+                        Flag Template
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div id="server-script-multi-param-template">
+            <div class="parameter-group col-auto" data-arg-type="multi-param">
+                <div class="input-group flex-nowrap" style="width: 18rem;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text parameter-title">Parameter Template</span>
+                    </div>
+                    <input type="text" style="width: 2rem;" class="form-control parameter" placeholder="comma-separated values">
+                </div>
+            </div>
         </div>
 
     </div>
