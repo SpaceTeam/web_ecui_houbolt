@@ -892,7 +892,7 @@ function refreshSequenceWatchdog()
     }, 3000);
 }
 
-function startTimer(timeStart, timeEnd)
+function startTimer(timeStart, timeEnd, lockPnid = true)
 {
     intervalMillis = 100; //hard code timer step to 100 for client
     timeMillis = timeStart * 1000;
@@ -905,8 +905,11 @@ function startTimer(timeStart, timeEnd)
 
     refreshSequenceWatchdog();
 
-    isSequenceRunning = true;
-    updatePNIDInputsEnabled();
+    if (lockPnid)
+    {
+        isSequenceRunning = true;
+        updatePNIDInputsEnabled();
+    }
 }
 
 function timerStop(timeEnd)
