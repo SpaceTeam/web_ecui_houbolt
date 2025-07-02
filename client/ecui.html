@@ -9,12 +9,6 @@
     <script src="lib/charts.js"></script>
     <script src="lib/material.js"></script>
     <script src="lib/animated.js"></script>
-    
-    <!--<link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap" rel="stylesheet">-->
-
-    <!--    <link href="css/styles.css" rel="stylesheet">-->
     <link href="css/styles.css" rel="stylesheet">
     </link>
 
@@ -33,14 +27,13 @@
     <div id="disableAll"></div>
     <div id="templates" hidden>
         <div id="popupTemp" class="container-fluid popup">
-            <div class="row control-row justify-content-end">
-                <button type="button" class="btn btn-light btn-drag">
-                    <i class="bi bi-arrows-move"></i>
-                </button>
+            <div class="row popup-title control-row justify-content-end">
                 <div class="col popup-heading">Temp Name</div>
                 <button type="button" class="btn btn-outline-danger btn-close">
                     <i class="bi bi-x"></i>
-                </button> 
+                </button>
+            </div>
+            <div class="popup-content">
             </div>
         </div>
         <div id="headerTemp" class="row control-row popup-row">
@@ -79,10 +72,12 @@
             </div>
         </div>
         <div id="numberEntryTemp" class="row control-row popup-row">
-            <div style="display: flex; flex-direction: row; justify-content: space-between;">
+            <div style="display: flex; flex-direction: row; justify-content: space-between; width: 100%">
                 <label class="popup-value-out"></label>
-                <input type="number" id="" min="" max="" class="form-control-sm"/>
-                <input type="button" onclick="" value="Set" class="btn btn-primary btn-sm"></input>
+                <div style="display: flex; width: 60%; gap: 0.5em">
+                    <input type="number" id="" min="" max="" class="form-control-sm"/>
+                    <input type="button" onclick="" value="Set" class="btn btn-primary btn-sm"></input>
+                </div>
             </div>
         </div>
         <div id="buttonEntryTemp" class="row control-row popup-row">
@@ -181,6 +176,8 @@
                 
             </div>
         </div>
+        <div id="pnidWarningTemp" class="pnid-global-warning warning-bar">
+        </div>
 
     </div>
 
@@ -246,8 +243,12 @@
         </li>
     </ul>
     <hr>
-    <div id="webStatusBar" class="warning-bar">No Connection to Web Server</div>
-    <div id="llserverStatusBar" class="warning-bar">No Connection to LLServer</div>
+    <div id="statusBars">
+        <div id="webStatusBar" class="warning-bar">No Connection to Web Server</div>
+        <div id="llserverStatusBar" class="warning-bar">No Connection to LLServer</div>
+        <div id="dynamicStatusBars">
+        </div>
+    </div>
 
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade master-only" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
@@ -497,7 +498,6 @@ Notes: Hotfire
     <script src="js/SensorChart.js"></script>
     <script src="js/DataLogger.js"></script>
     <script src="./js/ClientSocket.js"></script>
-    <script src="./lib/responsivevoice.js?key=1KDoRqPO"></script>
     <script src="lib/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
     <script src="lib/bootstrap.min.js"

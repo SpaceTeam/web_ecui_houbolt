@@ -101,135 +101,143 @@ $('#saftlButton').click(function() {
     })
 });
 
+let previousMatchCategories = new Map();
+let previousMatches = new Map();
+
 function updateCommandSearch(commandListName, input)
 {
     let commandList = undefined;
     let typePrefix = undefined
     if (commandListName == "can") 
     {
-        commandList = $("#command-list");
         typePrefix = "can";
+        commandList = commandContainers[typePrefix];
     }
     else if (commandListName == "lora")
     {
-        commandList = $("#command-list-lora");
         typePrefix = "lora";
+        commandList = commandContainers[typePrefix];
     }
+
+    let matches = new Map();
+    let matchCategories = new Map();
+
     if (input.value == "")
     {
-        commandList.find(".collapse").collapse('hide');
-        commandList.find("div.card").each(function (index, element) {
-            if ($(element).is(":hidden"))
-            {
-                $(element).show(200);
-            }
-        });
-        commandList.find("li").each(function (index, element) {
-            if ($(element).is(":hidden"))
-            {
-                $(element).show(200);
-            }
-        });
+        commandList.removeClass("search-results");
     }
     else
     {
         let regex = new RegExp(`.*${input.value}.*`, 'i');
-        let matches = [];
-        let invertedMatches = [];
-        for (let command of allCommandElementsList[typePrefix])
+
+        let matchOverflow = false;
+        for (let category of Object.keys(commandsCache[typePrefix]))
         {
-            if (regex.test($(command).attr("id")))
+            for (let commandName of Object.keys(commandsCache[typePrefix][category]))
             {
-                matches.push(command);
+                let command = commandsCache[typePrefix][category][commandName];
+                let commandId = mergeCommandName(category, commandName);
+
+                if (commandName == "_container")
+                {
+                    continue;
+                }
+
+                if (regex.test(commandId))
+                {
+                    matches.set(commandId, command[0]);
+                    let {category, name} = splitCommandName(commandId);
+                    if (!matchCategories.has(category))
+                    {
+                        matchCategories.set(category, createOrLoadCommandCategoryContainer(typePrefix, category));
+                    }
+                }
+
+                if (matches.size > 2000)
+                {
+                    // technically performance is now easily good enough to remove this limit,
+                    // but realistically what does anyone do with more than 2000 search results
+
+                    matchOverflow = true;
+                    matches.clear();
+                    matchCategories.clear();
+                    break;
+                }
             }
-            else
-            {
-                invertedMatches.push(command);
-            }
+
         }
-        if (invertedMatches.length == allCommandElementsList[typePrefix].length)
+        if (matches.size === 0)
         {
-            //found no matches. unhide entire list and prepend/update indicator that no results were found
+            // found no matches. unhide entire list and prepend/update indicator that no results were found
+            let searchIndicatorText = `No commands containing '${input.value}' found.`;
+            if (matchOverflow)
+            {
+                // found too many matches, could lead to bad performance and high RAM usage
+                searchIndicatorText = `Too many results containing '${input.value}' found. Refine your search more.`;
+            }
+
             if ($("#empty-search-indicator").length == 0)
             {
-                commandList.prepend(`<div id="empty-search-indicator" class="card indicator"><div style="text-align: center; margin: 1.4em; font-size: 16px" disabled>No commands containing '${input.value}' found.</div></div>`);
+                commandList.prepend(`<div id="empty-search-indicator" class="card indicator"><div style="text-align: center; margin: 1.4em; font-size: 16px" disabled>${searchIndicatorText}</div></div>`);
             }
             else
             {
-                $("#empty-search-indicator").children().first().text(`No commands containing '${input.value}' found.`);
+                $("#empty-search-indicator").children().first().text(searchIndicatorText);
             }
-            commandList.find("div.card:not(div.indicator)").each(function (index, element) {
-                if ($(element).is(":visible"))
-                {
-                    $(element).hide(200);
-                }
-            });
-            commandList.find("li").each(function (index, element) {
-                if ($(element).is(":visible"))
-                {
-                    $(element).hide(200);
-                }
-            });
+
+            commandList.removeClass("search-results");
+
+            // TODO consider manually cleaning all result classes here
+            // it should be irrelevant and "unnecessary" extra work, but if the logic for keeping track
+            // of matches breaks down at any point, as simple as it may be, search results won't be
+            // cleared properly leading to the results getting longer and longer with old matches
         }
         else
         {
             //found matches, removing the found no matches indicator
             document.getElementById("empty-search-indicator")?.remove();
-            let showCategory = true;
-            if (invertedMatches.length > 0)
+            commandList.addClass("search-results");
+
+            // show matched elements
+            for (const [matchId, element] of matches)
             {
-                //console.log("command list begin", commandList.children());
-                //for (let {categoryIndex, val} of commandList.children().entries())
-                commandList.children().each(function(categoryIndex, element)
+                element.classList.add("result-command");
+            }
+            for (const [categoryId, category] of matchCategories)
+            {
+                category.addClass("result-category");
+            }
+        }
+
+        // unmark elements from "matched" if they aren't matched anymore
+        if (previousMatches.size > 0)
+        {
+            for (let [prevMatchId, element] of previousMatches)
+            {
+                if (!matches.has(prevMatchId))
                 {
-                    //console.log("val", element, "children", $(element).find("li"), "index", categoryIndex);
-                    let categoryCommands = $(element).find("div.command");
-                    let commandMatches = []
-                    for (let command of categoryCommands)
-                    {
-                        //console.log("command", command);
-                        //check each command group if there's at least one entry in matches
-                        if (matches.some(e => e.id === command.id))
-                        {
-                            //we found an entry in matches from this command group, this means we want to show it
-                            //console.log("found match for category", categoryIndex, command);
-                            if (window.getComputedStyle(element).display === "none")
-                            {
-                                $(element).show(200);
-                            }
-                            if (window.getComputedStyle(command).display === "none")
-                            {
-                                $(command).parent().show(200);
-                            }
-                            commandMatches.push(command);
-                        }
-                    }
-                    if (commandMatches.length == 0)
-                    {
-                        if (window.getComputedStyle(element).display !== "none") {
-                            $(element).hide(100);
-                        }
-                    }
-                });
-                $(invertedMatches).each(function(index, command)
+                    element.classList.remove("result-command");
+                }
+            }
+        }
+
+        // TODO I don't love that the category (both here and when finding matching)
+        // uses the jquery elements to add classes while the individual commands use plain
+        // JS, but oh well.
+        // same for categories
+        if (previousMatchCategories.size > 0)
+        {
+            for (let [prevMatchCategory, category] of previousMatchCategories)
+            {
+                if (!matchCategories.has(prevMatchCategory))
                 {
-                    if (window.getComputedStyle(command).display !== "none")
-                    {
-                        $(command).parent().hide(100);
-                        
-                        
-                    }
-                });
-                /* $(matches).each(function(index, element)
-                {
-                    if ($(element).is(":hidden"))
-                    {
-                        $(element).show(200);
-                    }
-                }); */
+                    category.removeClass("result-category");
+                }
             }
         }
     }
+    previousMatches = new Map(matches);
+    previousMatchCategories = new Map(matchCategories);
 }
 
 function updateCommandList(jsonStates, commandStates)

@@ -18,10 +18,8 @@ var timeMillis;
 var intervalMillis;
 var intervalDelegate;
 
-var countdownTime = null;
-var countdownIntervalDelegate = null;
-
 var master = false;
+var isSequenceRunning = false;
 
 // flags for one-time loaded calls. we need to filter out second calls
 // because the server just sends these to all clients instead of just
@@ -33,39 +31,6 @@ var hasLoadedStates = false;
 var statesLoadTimer = undefined;
 var hasInitStates = false;
 var statesInitTimer = undefined;
-
-var disableSensorChartsOnLoad = true;
-
-var allCommandElementsList = {
-    "can": [],
-    "lora": []
-};
-
-//create observer to check if sensor charts shall be rendered
-var chartTabObserver = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-        if (mutation.type === "attributes")
-        {
-            if(mutation.target.classList.contains("show"))
-            {
-                console.log("sensor charts d");
-                window.scrollTo(0,document.body.scrollHeight);
-                for (let sensorName in jsonSensors)
-                {
-                    jsonSensors[sensorName].chart.enable();
-                }
-            }
-            else
-            {
-                console.log("sensor charts disabled");
-                for (let sensorName in jsonSensors)
-                {
-                    jsonSensors[sensorName].chart.disable();
-                }
-            }
-        }
-    });
-});
 
 var lastModalTriggeredElement = undefined;
 
@@ -131,10 +96,6 @@ function onModalReject()
 
 }
 
-function onResetSensors() {
-    emptySensorCharts();
-}
-
 // Set colored progress bar in servo slider for visual feedback
 function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
@@ -191,65 +152,16 @@ function tMinusTimerTick()
 
     if (Number.isInteger(time))
     {
-        // if (time < 0 && time >= -5)
-        // {
-        //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.2});
-        // }
-        // else if (time === 0)
-        // {
-        //     ////responsiveVoice.speak("Hans, get se Flammenwerfer!", "Deutsch Male", {rate: 1.2});
-        //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-        // }
         $('.timer').append('.0');
     }
 }
 
-//TODO: NOT COMPATIBLE WITH NEW PNID
 function timerTick()
 {
     tMinusTimerTick();
     //console.log(timeMillis);
 
     seqChart.update(timeMillis);
-
-    //update pnid - doesn't work if timestamps overlap (don't try it anyways)
-    //todo: commented out for now, not sure why this exists in the first place I don't think we need it anymore
-    /*let latestAction = undefined;
-    for (let ind in jsonSequence.data)
-    {
-        let currCmd = jsonSequence.data[ind];
-        let currCmdTimestamp = seqChart.getTimestamp(currCmd, jsonSequence.globals.startTime, jsonSequence.globals.startTime);
-        if (currCmdTimestamp <= time)
-        {
-
-            for (let actionInd in currCmd.actions)
-            {
-                let currAction = currCmd.actions[actionInd];
-                if ((currCmdTimestamp + currAction.timestamp) <= time)
-                {
-                    latestAction = currAction;
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-        else
-        {
-            break;
-        }
-
-    }
-
-    for (let key in latestAction)
-    {
-        if (key.includes("Solenoid") || key.includes("igniter"))
-        {
-            updatePNID(key, latestAction[key] !== 0);
-        }
-
-    }*/
 
     timeMillis += intervalMillis;
 }
@@ -284,32 +196,37 @@ function loadSequenceSelect()
     }
 }
 
-function emptySensorCharts()
+function exportCommands()
 {
-    for (let sensorName in jsonSensors)
-    {
-        jsonSensors[sensorName].chart.removeContent();
+    let store = {"commands": []};
+    let elements = document.getElementsByClassName("command");
+    for (let element of elements) {
+        let command = {"commandName": "", "parameterNames": []}
+        command["commandName"] = element.id;
+        if (!element.id) {
+            continue;
+        }
+
+        let parameters = element.getElementsByClassName("parameter-name");
+        for (let parameter of parameters) {
+            if (parameter.innerHTML != "Current Value" || parameter.innerHTML != "Current Sensor Value") {
+                command["parameterNames"].push(parameter.innerHTML);
+            }
+        }
+        store["commands"].push(command);
     }
+    console.log(JSON.stringify(store));
 }
 
-function countdownTimerTick()
+function importCommands(json)
 {
-    if (countdownTime < 0 && countdownTime >= -10)
-    {
-        //responsiveVoice.speak(Math.abs(countdownTime).toString(), "US English Female", {rate: 1.2});
-    }
-    else if (countdownTime === 0)
-    {
-        //responsiveVoice.speak("ignition", "US English Female", {rate: 1.2});
-        clearInterval(countdownIntervalDelegate);
-    }
-    countdownTime += 1;
+    loadCommands(JSON.parse(json)["commands"])
 }
 
 function insertTestCommands()
 {
     loadCommands(JSON.parse(`
-        {"commandList":
+        {"commands":
             [
                 {"commandName":"ox_purge_solenoid:GetDutyCycle","parameterNames":["paramA","paramB"]},
                 {"commandName":"ox_purge_solenoid:GetMeasurement","parameterNames":["paramA","paramB"]},
@@ -325,155 +242,214 @@ function insertTestCommands()
                 {"commandName":"lora:ox_pressurize_solenoid:GetSomething","parameterNames":["param2","param4"]}
             ]
         }`
-    )["commandList"]);
+    )["commands"]);
 }
 
-var commandCategories = {
-    "can": [],
-    "lora": [],
-}; //I dislike that this is global, but I don't see an easy fix for this otherwise. I'd need to read all already created categories and re-parse the category names from them which sucks more than this global variable imo
-//now with hardcoded can vs lora separation I dislike this even more. yay.
+var commandsCache = {
+    "can": {},
+    "lora": {}
+};
+
 var commandStates = {
     "can": [],
-    "lora": [],
-}; 
+    "lora": []
+};
+
+var commandContainers = {
+    "can": $('#command-list'),
+    "lora": $('#command-list-lora')
+}
 
 function clearCommands()
 {
     $("#commandSearch").empty();
     $('#command-list').empty();
 
-    commandCategories = {
-        "can": [],
-        "lora": [],
+    commandsCache = {
+        "can": {},
+        "lora": {},
     }; 
     commandStates = {
         "can": [],
         "lora": [],
     };
-
-    allCommandElementsList = {
-        "can": [],
-        "lora": [],
-    };
 }
 
-var jsonCommandsCache = undefined;
-
-function loadCommands(jsonCommands)
+// creates DOM container for command category, but doesn't duplicate (returns existing container)
+function createOrLoadCommandCategoryContainer(type, category)
 {
-    if (jsonCommandsCache == undefined)
+    let container = undefined
+    try
     {
-        jsonCommandsCache = jsonCommands
+        container = commandsCache[type][category]["_container"]
     }
-    else if (JSON.stringify({"key": jsonCommands}) == jsonCommandsCache)
+    catch (error)
     {
-        // if we receive the same loadCommands we received before, don't continue we already did the work
-        console.log("skipped load commands because duplicate data");
-        return;
+        // could not find category, so create it
+        let commandCategoryHtml = $("#tempCommandCategory").first().clone();
+        let categoryHeader = commandCategoryHtml.find("div.card-header").first();
+        commandCategoryHtml.attr("id", type + "_" + category);
+        categoryHeader.attr("id", "heading_" + type + "_" + category);
+        let headerButton = categoryHeader.find("button");
+        headerButton.attr("data-target", `#collapse_${type}_${category}`).attr("aria-controls", `collapse_${type}_${category}`).html(category);
+        commandCategoryHtml.find("div.collapse").attr("aria-labelledby", "heading_" + type + "_" + category).attr("id", "collapse_" + type + "_" + category);
+        commandContainers[type].append(commandCategoryHtml);
+        commandsCache[type][category] = { "_container": commandCategoryHtml };
+        container = commandCategoryHtml;
     }
-    jsonCommandsCache = JSON.stringify({"key": jsonCommands})
+    if (container)
+    {
+        return container;
+    }
 
+    return undefined;
+}
+
+function createImplicitParameters(commandElement, type, fullName, prevGroup)
+{
+    if (fullName.match(/.*:[GS]et[A-Z0-9].*/))
+    {
+        //console.log("getter setter found: ", fullName);
+        let currValueTemp = $('#tempCommandCurrValue').children().first().clone();
+
+        //TODO: THIS IS DIRTY CODE PLS EXTEND LLSERVER TO TRANSMIT RELATED STATE NAME
+        let splitCommand = fullName.split(':');
+        let relatedStateName = splitCommand[0] + ":" + splitCommand[1].substring(3);
+        //---------------
+        if (!commandStates[type].includes(relatedStateName))
+        {
+            commandStates[type].push(relatedStateName);
+        }
+
+        currValueTemp.find("input").attr("data-command-state-name", relatedStateName);
+        prevGroup.after(currValueTemp);
+    }
+}
+
+function createParameters(commandElement, type, fullName, parameters)
+{
+    let prevGroup = commandElement.find('.parameter-group').eq(0);
+    let parameterGroup = commandElement.find('.parameter-group').eq(0).clone();
+
+    for (let i = 0; i < parameters.length; i++)
+    {
+        if (i % 2 == 0 && i != 0)
+        {
+            // this splits parameters into rows, 2 per row and puts a spacer
+            // of the size of the "Execute" button on the right side on all
+            // but the last row to align things better
+            let buttonSpacerTag = commandElement.find('button').first().clone();
+            // use visibility hidden to keep button width as spacer
+            buttonSpacerTag.attr('disabled', 'true');
+            buttonSpacerTag.css("visibility","hidden");
+            let breakTag = $('<div class="w-100" style="height:1em"></div>');
+            let spacerTag = $('<div class="col"></div>');
+            prevGroup.after(buttonSpacerTag);
+            prevGroup = buttonSpacerTag;
+            prevGroup.after(breakTag);
+            prevGroup = breakTag;
+            prevGroup.after(spacerTag);
+            prevGroup = spacerTag;
+        }
+        parameterGroup.find('.parameter-name').text(parameters[i]);
+        prevGroup.after(parameterGroup);
+        prevGroup = parameterGroup;
+        parameterGroup = prevGroup.clone();
+    }
+
+    createImplicitParameters(commandElement, type, fullName, prevGroup)
+}
+
+// creates command inside a command category, but doesn't duplicate (returns existing command)
+function createOrLoadCommand(type, fullName, category, name, parameters)
+{
+    let commandDOM = undefined;
+    // categoryDOM is only needed when creating a new command, but calling createOrLoad ensures the
+    // category is initialized and cached in case this command is the first from the category all
+    // subsequent calls are out of in-memory cache so should have negligible performance impact
+    let categoryDOM = createOrLoadCommandCategoryContainer(type, category);
+    try
+    {
+        commandDOM = commandsCache[type][category][name];
+        if (commandDOM)
+        {
+            return commandDOM;
+        }
+    }
+    catch (error)
+    {
+        console.error("Failed to access command in cache. This means the category was not properly initialized in cache before trying to access it!");
+    }
+
+    if (!commandDOM)
+    {
+        // command DOM element was not created yet, so do it now
+        commandDOM = $('#tempCommand').children().first().clone();
+        commandDOM.children().first().attr("id", fullName);
+        commandDOM.find('.command-label').eq(0).text(name);
+
+        createParameters(commandDOM, type, fullName, parameters);
+
+        // init parameters
+        commandDOM.find('.parameter-group').eq(0).remove();
+        commandDOM.find('.parameter').inputSpinner();
+
+        //console.log("appending", commandDOM, "to", categoryDOM)
+        categoryDOM.find("div.card-body").first().append(commandDOM);
+        commandsCache[type][category][name] = commandDOM;
+    }
+}
+
+function addCommand(type, command)
+{
+    let fullName = command["commandName"];
+
+    let {category, name} = splitCommandName(fullName);
+
+    let parameters = command["parameterNames"];
+    createOrLoadCommand(type, fullName, category, name, parameters);
+}
+
+function splitCommandName(commandName)
+{
+    let commandNameParts = commandName.split(":");
+    let category = commandNameParts[commandNameParts.length - 2];
+    let name = commandNameParts[commandNameParts.length - 1];
+
+    return {category, name};
+}
+
+function mergeCommandName(category, name)
+{
+    return category + ":" + name;
+}
+
+async function loadCommands(jsonCommands)
+{
     $("#commandSearch").empty();
-    let commandContainerCAN = $('#command-list');
-    let commandContainerLORA = $('#command-list-lora');
 
-    let commandTemplate = $('#tempCommand').children().first().clone();
-
-    jsonCommands.forEach(command => {
+    let chunkSize = 100;
+    let i = 0;
+    for (let jsonCommand of jsonCommands)
+    {
         let typePrefix = "can";
-        if (command["commandName"].startsWith("lora:"))
+        if (jsonCommand["commandName"].startsWith("lora:"))
         {
             typePrefix = "lora";
             //skip lora commands
-            return
+            continue;
         }
+        addCommand(typePrefix, jsonCommand)
 
-        let commandContainer = undefined;
-        if (typePrefix == "lora")
+        if (i % chunkSize === 0)
         {
-            commandContainer = commandContainerLORA;
+            // stagger creation of commands across frames to not get a lag spike
+            await new Promise(res => setTimeout(res, 0)); // wait for next frame
         }
-        else
-        {
-            commandContainer = commandContainerCAN;
-        }
+        i++;
+    }
 
-        let commandNameArray = command["commandName"].split(":");
-        let commandCategory = commandNameArray[commandNameArray.length - 2];
-        let commandName = commandNameArray[commandNameArray.length - 1];
-        let commandCategoryHtml = $("#tempCommandCategory").first().clone();
-        let categoryData = commandCategoryHtml.find("div.card-body").first()
-        if (commandCategories[typePrefix].includes(commandCategory))
-        {
-            categoryData = commandContainer.find(`#${typePrefix}_${commandCategory}`).find("div.card-body").first();
-        }
-        else
-        {
-            let categoryHeader = commandCategoryHtml.find("div.card-header").first();
-            commandCategories[typePrefix].push(commandCategory);
-            commandCategoryHtml.attr("id", typePrefix + "_" + commandCategory);
-            categoryHeader.attr("id", "heading_" + typePrefix + "_" + commandCategory);
-            let headerButton = categoryHeader.find("button");
-            headerButton.attr("data-target", `#collapse_${typePrefix}_${commandCategory}`).attr("aria-controls", `collapse_${typePrefix}_${commandCategory}`).html(commandCategory);
-            commandCategoryHtml.find("div.collapse").attr("aria-labelledby", "heading_" + typePrefix + "_" + commandCategory).attr("id", "collapse_" + typePrefix + "_" + commandCategory);
-            commandContainer.append(commandCategoryHtml);
-        }
-        let commandHtml = commandTemplate.clone();
-        commandHtml.children().first().attr("id",command["commandName"]);
-        commandHtml.find('.command-label').eq(0).text(commandName);
-        var prevGroup = commandHtml.find('.parameter-group').eq(0);
-        var parameterGroup = commandHtml.find('.parameter-group').eq(0).clone();
-        
-        for (let i=0; i<command["parameterNames"].length; i++)
-        {
-            if (i % 2 == 0 && i != 0)
-            {
-                let buttonSpacerTag = commandHtml.find('button').first().clone();
-                //use visibility hidden to keep button width as spacer
-                buttonSpacerTag.attr('disabled', 'true');
-                buttonSpacerTag.css("visibility","hidden");
-                let breakTag = $('<div class="w-100"></div>');
-                let spacerTag = $('<div class="col"></div>');
-                prevGroup.after(buttonSpacerTag);
-                prevGroup = buttonSpacerTag;
-                prevGroup.after(breakTag);
-                prevGroup = breakTag;
-                prevGroup.after(spacerTag);
-                prevGroup = spacerTag;
-            }
-            parameterGroup.find('.parameter-name').text(command["parameterNames"][i]);
-            prevGroup.after(parameterGroup);
-            prevGroup = parameterGroup;
-            parameterGroup = prevGroup.clone();
-        }
-
-        if (command["commandName"].match(/.*:[GS]et[A-Z0-9].*/))
-        {
-            //console.log("getter setter found: ", command["commandName"]);
-            let currValueTemp = $('#tempCommandCurrValue').children().first().clone();
-            
-            //TODO: THIS IS DIRTY CODE PLS EXTEND LLSERVER TO TRANSMIT RELATED STATE NAME
-            let splitCommand = command["commandName"].split(':');
-            let relatedStateName = splitCommand[0]+":"+splitCommand[1].substring(3);
-            //---------------
-            if (!commandStates[typePrefix].includes(relatedStateName))
-            {
-                commandStates[typePrefix].push(relatedStateName);
-            }
-            
-            currValueTemp.find("input").attr("data-command-state-name", relatedStateName);
-            prevGroup.after(currValueTemp);
-        }
-        commandHtml.find('.parameter-group').eq(0).remove();
-        commandHtml.find('.parameter').inputSpinner();
-
-        //console.log("appending", commandHtml, "to", categoryData)
-        categoryData.append(commandHtml);
-    }); 
-    //console.log("categories:", commandCategories);
-    allCommandElementsList["can"] = $("#command-list").find("div.command");
-    allCommandElementsList["lora"] = $("#command-list-lora").find("div.command");
+    //console.log("categories:", commandsCache);
 }
 
 //-------------------------------------Controls on sending Socket Messages---------------------------------
@@ -636,7 +612,8 @@ function onManualControlEnable(checkbox)
 
 function abortSequence(abortMsg, timeEnd = jsonAbortSequence.globals.endTime)
 {
-    clearInterval(countdownIntervalDelegate);
+    isSequenceRunning = false;
+    updatePNIDInputsEnabled();
 
     seqChart.stop();
 
@@ -648,12 +625,8 @@ function abortSequence(abortMsg, timeEnd = jsonAbortSequence.globals.endTime)
     sequenceButtonStop();
 
     setTimeout(function () {
-            //responsiveVoice.speak(abortMsg, "US English Female", {rate: 1.0});
-        }, 1000);
-    setTimeout(function () {
-            emptySensorCharts();
-            isContinousTransmission = true;
-        }, timeEnd*1000+500);
+        isContinousTransmission = true;
+    }, timeEnd*1000+500);
 
     $('#toggleSequenceButton').attr("disabled", true);
     setTimeout(function () {
@@ -707,7 +680,7 @@ socket.on('master-change', (flag) => {
 			$('#masterLock').removeAttr('hidden')
 		    $('.client-only').css('visibility', 'hidden');
         	$('.client-only').css('height', '0px');
-            $('.popup').find('input').removeAttr('disabled');
+            updatePNIDInputsEnabled();
             console.log("master on", master);
 	}
 	else {	
@@ -721,7 +694,7 @@ socket.on('master-change', (flag) => {
 			{
 				$('#manualEnableCheck1').click();
 			}
-			$('.popup').find('input').attr('disabled', 'true');
+			updatePNIDInputsEnabled();
             console.log("master off", master);
 	}
 });
@@ -766,6 +739,8 @@ socket.on('llserver-disconnect', function()
 
 socket.on('abort', function(abortMsg) {
     console.log('abort');
+    isSequenceRunning = false;
+    updatePNIDInputsEnabled();
 
     abortSequence(abortMsg);
 
@@ -849,16 +824,15 @@ socket.on('commands-error', function(jsonCommandErrors) {
 
 });
 
+// TODO only one of the sequence-start/stop/sync and timer-start/stop/sync commands should exist
+// but I'm not sure which yet
 socket.on('sequence-start', function() {
     console.log('sequence-start:');
+    startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime);
 
-    //empty sensor chart div first
     setTimeout(function () {
-        emptySensorCharts();
         isContinousTransmission = false;
     }, 200);
-
-    //responsiveVoice.speak("starting sequence", "US English Female", {rate: 1});
 
     $('#toggleSequenceButton').text("Abort Sequence");
     $('.timer').css("color", "green");
@@ -867,59 +841,85 @@ socket.on('sequence-start', function() {
     seqChart.start();
 });
 
-socket.on('timer-start', function () {
-    startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
+socket.on('sequence-sync', function(time) {
+    if (!isSequenceRunning)
+    {
+        startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
+    }
+    refreshSequenceWatchdog();
+    timeMillis = time * 1000;
 });
 
-function startTimer(timeStart, timeEnd)
+socket.on('sequence-done', function() {
+    console.log('sequence-done');
+    timerStop(endTime);
+});
+
+socket.on('sequence-abort', function () {
+    console.log('sequence-abort');
+    console.log('was sequence still seen as running?', isSequenceRunning == true);
+    isSequenceRunning = false;
+    updatePNIDInputsEnabled();
+})
+
+/*socket.on('timer-start', function () {
+    console.log('timer-start handler');
+    startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime);
+});
+
+socket.on('timer-done', function () {
+    console.log('timer-done handler');
+    timerStop(endTime);
+});*/
+
+let sequenceTimeoutTimer = undefined;
+
+/*socket.on('timer-sync', function (time) {
+    if (!isSequenceRunning)
+    {
+        startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
+    }
+    refreshSequenceWatchdog();
+    timeMillis = time;
+});*/
+
+function refreshSequenceWatchdog()
+{
+    clearTimeout(sequenceTimeoutTimer)
+    sequenceTimeoutTimer = setTimeout(function () {
+        timerStop();
+        //$('.timer').css("color", "hotpink");
+    }, 3000);
+}
+
+function startTimer(timeStart, timeEnd, lockPnid = true)
 {
     intervalMillis = 100; //hard code timer step to 100 for client
     timeMillis = timeStart * 1000;
     endTime = timeEnd;
-    responsiveVoice.enableEstimationTimeout = true;
-
-    countdownTime = jsonSequence.globals.startTime;
-    clearInterval(countdownIntervalDelegate);
-    countdownTimerTick();
-    countdownIntervalDelegate = setInterval(countdownTimerTick, 1000);
 
     $('.timer').css("color", "green");
     clearInterval(intervalDelegate);
     timerTick();
     intervalDelegate = setInterval(timerTick, intervalMillis);
+
+    if (lockPnid)
+    {
+        refreshSequenceWatchdog();
+        isSequenceRunning = true;
+        updatePNIDInputsEnabled();
+    }
 }
-
-socket.on('sequence-sync', function(time) {
-    //console.log('sequence-sync:');
-    timeMillis = time * 1000;
-
-    // if (time < 0 && time >= -5)
-    // {
-    //     responsiveVoice.speak(Math.abs(time).toString(), "US English Female", {rate: 1.4});
-    // }
-    // else if (time === 0)
-    // {
-    //     responsiveVoice.speak("ignition", "US English Female", {rate: 1.4});
-    // }
-    // clearInterval(intervalDelegate);
-    // if (timeMillis < endTime*1000) {
-    //      intervalDelegate = setInterval(timerTick, intervalMillis);
-    // }
-    // timerTick();
-});
-
-socket.on('sequence-done', function() {
-    console.log('sequence-done:');
-    timerStop(endTime);
-});
 
 function timerStop(timeEnd)
 {
+    isSequenceRunning = false;
+    updatePNIDInputsEnabled();
+
     seqChart.stop();
 
     $('.timer').text(timeEnd);
     clearInterval(intervalDelegate);
-    //clearInterval(countdownIntervalDelegate);
     if (Number.isInteger(timeEnd))
     {
         $('.timer').append('.0');
@@ -932,7 +932,6 @@ function timerStop(timeEnd)
 
     $('#toggleSequenceButton').attr("disabled", true);
     setTimeout(function () {
-            emptySensorCharts();
             isContinousTransmission = true;
             $('#toggleSequenceButton').removeAttr("disabled");
         }, 3000);

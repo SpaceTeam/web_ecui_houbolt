@@ -751,7 +751,7 @@ function processLLServerMessage(data) {
                     break;
                 case "abort":
                     console.log("abort from llserver");
-                    eventEmitter.emit('onAbortAll', ioClient, jsonData.content);
+                    eventEmitter.emit('sequence-abort', ioClient, jsonData.content);
                     break;
                 case "auto-abort-change":
                     console.log("auto abort change from llserver", jsonData.content);
