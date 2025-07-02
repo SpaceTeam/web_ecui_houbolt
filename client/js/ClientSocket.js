@@ -437,7 +437,7 @@ async function loadCommands(jsonCommands)
         {
             typePrefix = "lora";
             //skip lora commands
-            return
+            continue;
         }
         addCommand(typePrefix, jsonCommand)
 
@@ -903,10 +903,9 @@ function startTimer(timeStart, timeEnd, lockPnid = true)
     timerTick();
     intervalDelegate = setInterval(timerTick, intervalMillis);
 
-    refreshSequenceWatchdog();
-
     if (lockPnid)
     {
+        refreshSequenceWatchdog();
         isSequenceRunning = true;
         updatePNIDInputsEnabled();
     }
