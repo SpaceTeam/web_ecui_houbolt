@@ -887,8 +887,8 @@ function refreshSequenceWatchdog()
 {
     clearTimeout(sequenceTimeoutTimer)
     sequenceTimeoutTimer = setTimeout(function () {
-        //timerStop();
-        $('.timer').css("color", "hotpink");
+        timerStop();
+        //$('.timer').css("color", "hotpink");
     }, 3000);
 }
 
