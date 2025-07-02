@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require('fs');
-const { Readable } = require('stream');
+const fetch = require('node-fetch');
 
 
 /**
@@ -162,7 +162,7 @@ module.exports = class ScriptRunner {
                 res.setHeader("Content-Disposition", contentDisposition);
             }
 
-            Readable.fromWeb(response.body).pipe(res);
+            response.body.pipe(res);
         } catch (error) {
             console.error(`Error downloading file from script-runner: ${error.message}`);
             res.status(500).send("Error downloading file");
