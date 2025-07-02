@@ -19,10 +19,21 @@ const fetch = require('node-fetch');
 
 module.exports = class ScriptRunner {
     #configPath;
+    #scriptRunnerIp;
+    #scriptRunnerPort;
 
     constructor(configPath) {
         this.#configPath = path.join(configPath, "web", "server_scripts.json");
-
+        // Load config file and extract SCRIPT_RUNNER/ip and /port
+        const configFilePath = path.join(configPath, "config.json");
+        let config = {};
+        try {
+            config = JSON.parse(fs.readFileSync(configFilePath, "utf-8"));
+        } catch (e) {
+            console.error("Failed to read config.json:", e);
+        }
+        this.#scriptRunnerIp = config?.SCRIPT_RUNNER?.ip || "localhost";
+        this.#scriptRunnerPort = config?.SCRIPT_RUNNER?.port || 8000;
     }
 
     /**
@@ -82,16 +93,19 @@ module.exports = class ScriptRunner {
         socket.emit("script-feedback", `Executing script "${scriptConfig.title}".\ncommand: "${scriptConfig.command}". args: ${JSON.stringify(args)}`);
 
         try {
-            const response = await fetch("http://localhost:8000/execute", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    command: scriptConfig.command,
-                    args: args
-                })
-            });
+            const response = await fetch(
+                `http://${this.#scriptRunnerIp}:${this.#scriptRunnerPort}/execute`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        command: scriptConfig.command,
+                        args: args
+                    })
+                }
+            );
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -147,7 +161,7 @@ module.exports = class ScriptRunner {
     }
 
     async downloadOutputFile(fileName, res) {
-        const scriptRunnerUrl = `http://localhost:8000${fileName}`;
+        const scriptRunnerUrl = `http://${this.#scriptRunnerIp}:${this.#scriptRunnerPort}${fileName}`;
 
         try {
             const response = await fetch(scriptRunnerUrl);
