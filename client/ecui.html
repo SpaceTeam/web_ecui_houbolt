@@ -456,11 +456,11 @@ Notes: Hotfire
             <ul style="margin-top: 2em" class="nav nav-pills justify-content-center" id="myCommandTab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link tab-button active" id="server-scripts-tab-button" data-toggle="tab" href="#server-scripts-tab"
-                        role="tab" aria-controls="server-scripts-tab" aria-selected="true">Server Scripts</a>
+                        role="tab" aria-controls="server-scripts-tab" aria-selected="false">Server Scripts</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link tab-button" id="can-command-tab-button" data-toggle="tab" href="#can-command-tab"
-                        role="tab" aria-controls="can-command-tab" aria-selected="false">CAN Commands</a>
+                        role="tab" aria-controls="can-command-tab" aria-selected="true">CAN Commands</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link tab-button" id="lora-command-tab-button" data-toggle="tab" href="#lora-command-tab" role="tab"
@@ -468,12 +468,12 @@ Notes: Hotfire
                 </li>
             </ul>
             <div id="command-container" class="tab-content">
-                <div class="tab-pane fade show active" id="server-scripts-tab" role="tabpanel" aria-labelledby="server-scripts-tab-button">
+                <div class="tab-pane fade show" id="server-scripts-tab" role="tabpanel" aria-labelledby="server-scripts-tab-button">
                     <div id="server-scripts-list" class="accordion" style="max-height: 500px; overflow: scroll; margin-bottom: 20px"></div>
                     Script outputs:
                     <div id="server-scripts-feedback" style="max-height: 500px; overflow: scroll; white-space: pre;"></div>
                 </div>
-                <div class="tab-pane fade" id="can-command-tab" role="tabpanel" aria-labelledby="can-command-tab-button">
+                <div class="tab-pane fade active" id="can-command-tab" role="tabpanel" aria-labelledby="can-command-tab-button">
                     <div class="form-outline">
                         <input type="search" id="commandSearch" style="height: auto !important;" class="form-control" placeholder="Search for Command" aria-label="Search" oninput="updateCommandSearch('can', this)"/>
                     </div>
