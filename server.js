@@ -1,4 +1,5 @@
 const express = require('express');
+const pathModule = require('path');
 const path = __dirname + '/client/';
 
 const fs = require('fs');
@@ -191,6 +192,7 @@ var onSequenceStart = function (ioClient, socket, msg) {
         //     function(){onSequenceDone(ioClient,socket);}
         //     );
 
+        const sequenceName = pathModule.parse(sequenceManMod._sequencePath).name;
         let jsonSeq = sequenceManMod.loadSequence();
         let jsonAbortSeq = sequenceManMod.loadAbortSequence();
         if (jsonSeq === undefined || jsonAbortSeq === undefined)
@@ -200,7 +202,7 @@ var onSequenceStart = function (ioClient, socket, msg) {
             return;
         }
 
-        llServerMod.sendMessage(llServer, 'sequence-start', [jsonSeq, jsonAbortSeq, msg]);
+        llServerMod.sendMessage(llServer, 'sequence-start', [jsonSeq, jsonAbortSeq, msg, sequenceName]);
     }
     else
     {
