@@ -85,7 +85,7 @@ function onServerScriptExecute(script, serverScriptHtml) {
 
 function onServerScriptFeedback(message) {
     const elem = $("#server-scripts-feedback");
-    elem.text(elem.text() + "\n" + message);
+    elem.text(elem.text() + message);
 }
 /**
  * 

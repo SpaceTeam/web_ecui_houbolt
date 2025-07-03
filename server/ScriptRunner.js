@@ -54,7 +54,7 @@ module.exports = class ScriptRunner {
 
         if (!scriptConfig) {
             console.error(`Script with ID ${script.id} not found.`);
-            socket.emit("script-feedback", "Script not found");
+            socket.emit("script-feedback", "Script not found" + script.id + "\n");
             return;
         }
 
@@ -90,7 +90,7 @@ module.exports = class ScriptRunner {
             }
         }
 
-        socket.emit("script-feedback", `Executing script "${scriptConfig.title}".\ncommand: "${scriptConfig.command}". args: ${JSON.stringify(args)}`);
+        socket.emit("script-feedback", `Executing script "${scriptConfig.title}".\ncommand: "${scriptConfig.command}". args: ${JSON.stringify(args)}\n`);
 
         try {
             const response = await fetch(
@@ -137,10 +137,10 @@ module.exports = class ScriptRunner {
                 }
             }
 
-            socket.emit("script-feedback", "Execution complete");
+            socket.emit("script-feedback", "Execution complete\n");
         } catch (err) {
             console.error(`Failed to start script: ${err.message}`);
-            socket.emit("script-feedback", "Failed to start script: " + err.message);
+            socket.emit("script-feedback", "Failed to start script: " + err.message + "\n");
         }
     }
 
