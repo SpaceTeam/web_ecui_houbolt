@@ -148,7 +148,7 @@ function onLLServerDisconnect()
 function tMinusTimerTick()
 {
     let time = timeMillis/1000;
-    $('.timer').text(time);
+    $('.timer').text(time.toFixed(1));
 
     if (Number.isInteger(time))
     {
