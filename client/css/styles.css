@@ -430,6 +430,9 @@ hr {
     font-size: 3em;
 
     user-select: none;
+
+    width: 2.5em; /* needs fixed size to not make UI jump around on changing text */
+    text-align: right;
 }
 
 #versionLabel {

@@ -10,6 +10,7 @@
     <script src="lib/material.js"></script>
     <script src="lib/animated.js"></script>
     <link href="css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/sequenceSlider.css">
     </link>
 
     <link id="theme" rel="stylesheet" type="text/css" href="">
@@ -219,7 +220,21 @@
                 </div>
             </div>
         </div>
-
+        <div id="sequenceSliderNodeTemp">
+            <span class="sequence-node">
+                <label class="sequence-node-name top-label">
+                </label>
+                <div class="sequence-arrow-container top-label">
+                    <svg width="15px" height="10px" class="sequence-node-label-arrow"><!--<polyline points="0,0.5 5,0.5 7.5,4 10,0.5 15,0.5"/>--><line x1="7.5" y1="2" x2="7.5" y2="10"/></svg>
+                </div>
+                <!--<input type="button" class="sequence-node-button"></input>-->
+                <div class="sequence-arrow-container bottom-label">
+                    <svg width="15px" height="10px" class="sequence-node-label-arrow"><!--<polyline points="0,9.5 5,9.5 7.5,6 10,9.5 15,9.5"/>--><line x1="7.5" y1="0" x2="7.5" y2="8"/></svg>
+                </div>
+                <label class="sequence-node-name bottom-label">
+                </label>
+            </span>
+        </div>
     </div>
 
     <div id="titleBar">
@@ -552,7 +567,11 @@ Notes: Hotfire
     <script src="js/SensorChart.js"></script>
     <script src="js/DataLogger.js"></script>
     <script src="./js/ClientSocket.js"></script>
+<<<<<<< HEAD
     <script src="js/ServerScripts.js"></script>
+=======
+    <script src="./js/SequenceSlider.js"></script>
+>>>>>>> 45ba4c4 (add sequence slider prototype)
     <script src="lib/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
     <script src="lib/bootstrap.min.js"
