@@ -757,6 +757,7 @@ socket.on('sequence-load', function(jsonSeqsInfo) {
     jsonAbortSequence = jsonSeqsInfo[3];
 
     seqChart = new SequenceChart("sequenceChart", sequences[0]);
+    createSequenceSlider(jsonSequence, false);
 
     $('.timer').text(jsonSequence.globals.startTime);
     if (Number.isInteger(jsonSequence.globals.startTime))
@@ -835,6 +836,7 @@ socket.on('sequence-start', function() {
     $('.titleBarButton').prop('disabled', true);
 
     seqChart.start();
+    startSequenceSlider();
 });
 
 socket.on('sequence-sync', function(time) {
@@ -843,12 +845,14 @@ socket.on('sequence-sync', function(time) {
         startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
     }
     refreshSequenceWatchdog();
+    syncSequenceSliderTime(time);
     timeMillis = time * 1000;
 });
 
 socket.on('sequence-done', function() {
     console.log('sequence-done');
     timerStop(endTime);
+    stopSequenceSlider();
 });
 
 socket.on('sequence-abort', function () {
@@ -884,6 +888,7 @@ function refreshSequenceWatchdog()
     clearTimeout(sequenceTimeoutTimer)
     sequenceTimeoutTimer = setTimeout(function () {
         timerStop();
+        stopSequenceSlider();
         //$('.timer').css("color", "hotpink");
     }, 3000);
 }
