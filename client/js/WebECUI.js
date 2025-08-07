@@ -38,4 +38,21 @@ function logoThemeHandler(event)
     }
 }
 
+let commandsPopupOpen = false;
+function toggleEcuiCommandsPopup(button)
+{
+    let popup = document.getElementById("ecui-commands-popup");
+    if (commandsPopupOpen) {
+        button.classList.remove("active");
+        popup.style.display = "none";
+        commandsPopupOpen = false;
+    }
+    else {
+        button.classList.add("active");
+        popup.style.removeProperty("display");
+        popup.style.transform = `translate(${(popup.offsetWidth - button.offsetWidth) / 2}px, ${popup.offsetHeight - button.offsetHeight}px)`
+        commandsPopupOpen = true;
+    }
+}
+
 initWebECUI();

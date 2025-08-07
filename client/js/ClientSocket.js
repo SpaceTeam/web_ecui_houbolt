@@ -675,27 +675,23 @@ socket.on('master-change', (flag) => {
         }
         socket.emit('pythonScript-start', '/home/config_ecui/python/water_cycle_control.py');
 		master = true;
-        	$('.master-only').css('visibility', 'visible');
-        	$('.master-only').css('height', 'auto');
-			$('#masterLock').removeAttr('hidden')
-		    $('.client-only').css('visibility', 'hidden');
-        	$('.client-only').css('height', '0px');
-            updatePNIDInputsEnabled();
-            console.log("master on", master);
+        $('.master-only').css('display', 'block');
+        $('#masterLock').removeAttr('hidden')
+        $('.client-only').css('display', 'none');
+        updatePNIDInputsEnabled();
+        console.log("master on", master);
 	}
 	else {	
 		master = false;
-        	$('.master-only').css('visibility', 'hidden');
-        	$('.master-only').css('height', '0px');
-			$('#masterLock').attr('hidden', '')
-		    $('.client-only').css('visibility', 'visible');
-        	$('.client-only').css('height', 'auto');
-			if ($('.manualEnableCheck').prop('checked'))
-			{
-				$('#manualEnableCheck1').click();
-			}
-			updatePNIDInputsEnabled();
-            console.log("master off", master);
+        $('.master-only').css('display', 'none');
+        $('#masterLock').attr('hidden', '')
+        $('.client-only').css('display', 'block');
+        if ($('.manualEnableCheck').prop('checked'))
+        {
+            $('#manualEnableCheck1').click();
+        }
+        updatePNIDInputsEnabled();
+        console.log("master off", master);
 	}
 });
 

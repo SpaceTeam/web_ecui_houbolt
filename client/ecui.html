@@ -222,33 +222,37 @@
 
     </div>
 
+    <div id="titleBar">
+        <img id="icon" src="img/Space_Team_Logo_black.png" alt="ST Logo" style="width:7rem;">
+        <div id="title-container">
+            <p id="title">ECUI</p>
+            <p id="subtitle"></p>
+        </div>
+        <div class="flex-spacer"></div>
+        <span id="timer" class="timer">0.0</span>
+        <div id="sequence-slider-container">
+            <div id="sequence-slider-track" class="">
+            </div>
+            <div id="sequence-slider-now-marker">
+            </div>
+        </div>
+        <div class="flex-spacer"></div>
+        <div>
+            <button class="btn btn-secondary m-auto titleBarButton" onclick="toggleEcuiCommandsPopup(this)">Commands</button>
+            <div style="display: none" id="ecui-commands-popup">
+                <div>
+                    <button class="btn btn-secondary m-auto titleBarButton" onclick="onPNIDInput('gui:FlushDatabase', 1, Date.now()*1000);">Flush Database</button>
+                </div>
+                <div>
+                    <button class="btn btn-secondary m-auto titleBarButton" onclick="onInitValues(this);">Init Values</button>
+                </div>
+                <div>
+                    <button class="btn btn-secondary m-auto titleBarButton" onclick="onLLRestart(this);">Restart LL</button>
+                </div>
+            </div>
+        </div>
 
-    <div id="titleBar" style="margin-bottom: -2rem;">
-        <img id="icon" src="img/Space_Team_Logo_black.png" alt="ST Logo" style="width:7rem;margin-left: 1rem;">
-        <p id="title">ECUI</p>
-        <p id="subtitle"></p>
-        <div class="navbarRightAlign">
-            <span id="timer" class="timer">0.0</span>
-        </div>
-        <div style="margin-left: 1em" class="navbarRightAlign">
-            <button class="btn btn-secondary m-auto titleBarButton" onclick="onPNIDInput('gui:FlushDatabase', 1, Date.now()*1000);">Flush Database</button>
-        </div>
-        <div style="margin-left: 1em" class="navbarRightAlign">
-            <button class="btn btn-secondary m-auto titleBarButton" onclick="onInitValues(this);">Init Values</button>
-        </div>
-	<!-- <div style="margin-left: 1em" class="navbarRightAlign">
-            <button class="btn btn-secondary m-auto titleBarButton" onclick="onRpiHalt(this);">Halt RPi</button>
-        </div> -->
-	<div style="margin-left: 1em" class="navbarRightAlign">
-            <button class="btn btn-secondary m-auto titleBarButton" onclick="onLLRestart(this);">Restart LL</button>
-        </div>
-        <!-- <div style="margin-left: 1em" class="navbarRightAlign">
-            <label class="switch">
-                <input type="checkbox titleBarButton" onclick="onPopupToggle(this);">
-                <span class="slider round btn btn-secondary"></span>
-            </label>
-        </div> -->
-        <div class="">
+        <div>
             <div class="master-only" style="text-align: right;">
                 <input type="checkbox" id="autoAbortCbox" onclick="onAutoAbortChange(this);">
                 Auto Abort
@@ -292,7 +296,7 @@
     </div>
 
     <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade master-only" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
+        <div class="tab-pane fade" id="sequence-tab" role="tabpanel" aria-labelledby="monitor-tab-button">
             <div class="container-fluid sequence-fluid">
                 <div class="row header justify-content-start">
                     <div class="col col-2">
@@ -354,7 +358,7 @@ Notes: Hotfire
             </div>
 
         </div>
-        <div class="tab-pane fade master-only" id="calibration-tab" role="tabpanel" aria-labelledby="calibration-tab-button">
+        <div class="tab-pane fade" id="calibration-tab" role="tabpanel" aria-labelledby="calibration-tab-button">
             <div id="calibration-container" class="container-fluid">
                 <div class="servo-enable-container row control-row">
                     <div class="form-control-lg custom-control custom-checkbox col">
@@ -452,7 +456,7 @@ Notes: Hotfire
             </div>
 
         </div>
-        <div class="tab-pane fade master-only" id="commands-tab" role="tabpanel" aria-labelledby="commands-tab-button">
+        <div class="tab-pane fade" id="commands-tab" role="tabpanel" aria-labelledby="commands-tab-button">
             <ul style="margin-top: 2em" class="nav nav-pills justify-content-center" id="myCommandTab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link tab-button" id="server-scripts-tab-button" data-toggle="tab" href="#server-scripts-tab"
