@@ -1,0 +1,277 @@
+#sequence-slider-container {
+    position: relative;
+    max-width: 25%;
+    overflow-x: clip;
+
+    align-self: start;
+    margin-top: 2rem;
+}
+
+#sequence-slider-container::before {
+    content: '';
+    width: 100%;
+    height: 4.5em;
+    position: absolute;
+    pointer-events: none;
+    left: 0;
+    bottom: -2em;
+    background: linear-gradient(to right, var(--background-primary) 0%, transparent 10%, transparent 90%, var(--background-primary) 100%);
+    z-index: 2;
+}
+
+#sequence-slider-now-marker {
+    position: absolute;
+    width: 1px;
+    height: 1em;
+
+    background: linear-gradient(to bottom, var(--content-primary) 0%, var(--content-primary) 10%, transparent 100%);
+}
+
+#sequence-slider-track {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    cursor: grab;
+
+    font-size: 0.7em; /* this controls the size of the nodes */
+}
+
+#sequence-slider-track.grabbed {
+    cursor: move;
+}
+
+#sequence-slider-track.active {
+    cursor: default;
+    animation: move-track 5s linear;
+}
+
+#sequence-slider-track svg {
+    position: absolute;
+    top: 0;
+}
+
+.sequence-node {
+    position: absolute;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    user-select: none;
+}
+
+.sequence-node.top-label {
+    justify-content: end;
+}
+
+.sequence-node.bottom-label {
+    justify-content: start;
+}
+
+.sequence-node-label-arrow polyline, line {
+    fill: none;
+    stroke: var(--content-primary);
+    stroke-width: 1;
+    stroke-linejoin: miter;
+}
+
+.sequence-arrow-container.top-label {
+}
+
+.sequence-arrow-container.bottom-label {
+}
+
+.sequence-arrow-container {
+    position: absolute;
+
+    display: flex;
+    justify-content: center;
+
+    width: 0;
+    height: 10px;
+}
+
+.sequence-node input {
+    padding: 0;
+    border: 1px solid var(--content-primary);
+    border-radius: 50%;
+
+    background-color: transparent;
+
+    z-index: 5;
+}
+
+.sequence-node-name.top-label {
+    bottom: 0.7rem;
+}
+
+.sequence-node-name.bottom-label {
+    top: 0.7rem;
+}
+
+.sequence-node-name {
+    margin: 0;
+    position: absolute;
+
+    display: flex;
+    justify-content: center;
+
+    font-size: 0.8rem;
+    text-wrap: nowrap;
+
+    cursor: pointer;
+}
+
+.sequence-node-name:hover {
+    color: var(--accented-text);
+    transition: 0.1s ease-in-out;
+}
+
+.sequence-node-name.active {
+    font-size: 1rem;
+    transition: 0.2s ease-in-out;
+}
+
+.sequence-node-left {
+    align-self: end;
+    transform: translateX(2px);
+}
+
+.sequence-node-right {
+    align-self: start;
+    transform: translateX(-2px);
+}
+.sequence-node-left {
+    align-self: end;
+}
+
+
+/* popup styles */
+
+.sequence-node-popup {
+    visibility: hidden;
+    position: absolute;
+    font-size: 0.9rem;
+    background-color: var(--background-primary);
+
+    border-radius: 0.2rem;
+    border-style: solid;
+    border-color: var(--background-tertiary);
+    border-width: 1px;
+    box-shadow: 0px 0px 15px black;
+
+    overflow: hidden;
+    z-index: 4;
+
+    min-width: 12vw;
+    max-height: 40vw;
+
+    cursor: default;
+
+    display: flex;
+    flex-direction: column;
+
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.sequence-node-popup.active {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.sequence-node-popup label {
+    margin: 0;
+}
+
+.sequence-node-popup.below {
+    top: 37px;
+}
+
+.sequence-node-popup.above {
+    bottom: 37px;
+}
+
+.sequence-popup-heading {
+    background-color: var(--background-secondary);
+    margin: auto;
+    text-align: center;
+    font-style: bold;
+}
+
+.sequence-node-popup > div {
+    padding: 0.4em;
+}
+
+.sequence-popup-description {
+    font-size: 0.8em;
+    font-style: italic;
+    text-align: center;
+}
+
+.sequence-popup-tab-content {
+    display: flex;
+}
+
+/* this is really stupid: I need it visibilty hidden so I can query scrollHeight
+ * from JS, but that makes it take up space and shove around other popup content
+ * so we position it absolute and make the pointer not interact with it */
+.sequence-popup-content[inactive] {
+    visibility: hidden;
+    position: absolute;
+    pointer-events: none;
+}
+
+.sequence-popup-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    overflow: hidden auto;
+
+    scrollbar-color: var(--background-tertiary) var(--background-primary);
+
+    flex-grow: 1;
+}
+
+.sequence-popup-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+.sequence-popup-tabber {
+    border-top: 1px solid var(--background-tertiary);
+}
+
+.sequence-popup-tabber > button {
+    padding: 0 0.3em;
+}
+
+.sequence-popup-tabber > label {
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.action-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.sequence-action-label {
+}
+
+.sequence-action-label.secondary {
+    font-size: 0.8em;
+    color: var(--content-secondary);
+    padding-left: 0.6em;
+}
+
+@keyframes move-track {
+}
