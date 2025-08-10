@@ -4,12 +4,10 @@ let sequenceDuration = 0;
 let sequenceStartTime = 0;
 let sequenceEndTime = 0;
 
-function createNode(name, index, offset, normalNodeSize, size) {
+function createNode(name, index, offset) {
     let element = document.getElementById("sequenceSliderNodeTemp").cloneNode(true).children[0];
     element.id = "";
     element.style.left = `${offset}px`;
-    element.style.height = `${normalNodeSize}px`;
-    //element.style.paddingTop = `${Math.max(0, (normalNodeSize - size) / 2)}px`;
     element.style.paddingBottom = element.style.paddingTop;
 
     let topLabel = element.getElementsByClassName("sequence-node-name")[0];
@@ -82,16 +80,16 @@ function createSequenceSlider(sequence, isSpectator, pixelsPerSecond = 25) {
     labelPositionOffset = 0;
     let track = document.getElementById("sequence-slider-track");
     track.replaceChildren();
-    let nodeSize = parseFloat(getComputedStyle(track).fontSize);
     let nowMarker = document.getElementById("sequence-slider-now-marker");
 
     let nowOffset = 75;
     track.style.left = `${nowOffset}px`;
-    track.style.height = `${nodeSize}px`;
+    track.style.height = `${10}px`;
     nowMarker.style.left = `${nowOffset}px`;
 
-    let oldOffset = undefined;
-    let oldDelta = undefined;
+    moveSequenceSlider(0);
+
+    let lastOffset = undefined;
     let startTime = sequence["globals"]["startTime"];
     let endTime = sequence["globals"]["endTime"];
     let sequenceData = sequence["data"];
@@ -104,34 +102,22 @@ function createSequenceSlider(sequence, isSpectator, pixelsPerSecond = 25) {
         let timestamp = sequenceData[i]["timestamp"];
         timestamp = sanitizeTimestamp(timestamp, startTime, endTime);
 
-        let nextTimestamp = undefined;
-        if (i + 1 < sequenceData.length && sequenceData[i + 1]["hiddenFromSpectator"] != true) {
-            nextTimestamp = sanitizeTimestamp(sequenceData[i + 1]["timestamp"]);
-        }
-        else {
-            nextTimestamp = Number.MAX_SAFE_INTEGER;
-        }
-
-        let nextDelta = nextTimestamp - timestamp;
-        let finalNodeSize = calcFinalNodeSize(nodeSize, nextDelta, oldDelta, pixelsPerSecond);
-
         let offset = (timestamp - startTime) * pixelsPerSecond;
         let node = undefined;
         if (!isHidden) {
-            node = createNode(name, i, offset, nodeSize, finalNodeSize);
+            node = createNode(name, i, offset);
         }
         else {
             labelPositionOffset++;
         }
-        oldOffset = offset;
-        oldDelta = nextDelta;
+        lastOffset = offset;
 
         if (node != undefined) {
             track.appendChild(node);
         }
     }
     track.appendChild(createFullLine(endTime - startTime, pixelsPerSecond));
-    track.style.width = `${oldOffset + nodeSize}px`;
+    track.style.width = `${lastOffset}px`;
 
     sequenceDuration = endTime - startTime;
     sequenceStartTime = startTime;

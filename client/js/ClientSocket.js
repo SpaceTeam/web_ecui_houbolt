@@ -862,26 +862,7 @@ socket.on('sequence-abort', function () {
     updatePNIDInputsEnabled();
 })
 
-/*socket.on('timer-start', function () {
-    console.log('timer-start handler');
-    startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime);
-});
-
-socket.on('timer-done', function () {
-    console.log('timer-done handler');
-    timerStop(endTime);
-});*/
-
 let sequenceTimeoutTimer = undefined;
-
-/*socket.on('timer-sync', function (time) {
-    if (!isSequenceRunning)
-    {
-        startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
-    }
-    refreshSequenceWatchdog();
-    timeMillis = time;
-});*/
 
 function refreshSequenceWatchdog()
 {
@@ -889,7 +870,6 @@ function refreshSequenceWatchdog()
     sequenceTimeoutTimer = setTimeout(function () {
         timerStop();
         stopSequenceSlider();
-        //$('.timer').css("color", "hotpink");
     }, 3000);
 }
 

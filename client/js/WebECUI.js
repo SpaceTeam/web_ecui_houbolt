@@ -50,7 +50,7 @@ function toggleEcuiCommandsPopup(button)
     else {
         button.classList.add("active");
         popup.style.removeProperty("display");
-        popup.style.transform = `translate(${(popup.offsetWidth - button.offsetWidth) / 2}px, ${popup.offsetHeight - button.offsetHeight}px)`
+        popup.style.transform = `translate(-${(popup.offsetWidth - button.offsetWidth) / 2}px, 5px)`
         commandsPopupOpen = true;
     }
 }
