@@ -76,7 +76,7 @@ const ScriptRunner = require('./server/ScriptRunner');
 
 var sequenceMan = new sequenceManMod(configPath);
 var pnidMan = new pnidManMod(__dirname, configPath);
-var checklistMan = new checklistManMod(configPath);
+var checklistMan = new checklistManMod();
 const scriptRunner = new ScriptRunner(configPath);
 
 var sequenceRunning = false;
