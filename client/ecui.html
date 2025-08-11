@@ -176,7 +176,48 @@
                 
             </div>
         </div>
-        <div id="pnidWarningTemp" class="pnid-global-warning warning-bar">
+        <div id="pnidWarningTemp" class="pnid-global-warning warning-bar"></div>
+        <div id="server-script-template">
+            <li class="list-group-item">
+                <div class="row command" style="justify-content: space-between;">
+                    <label class="input-label col-2 script-title"
+                        style="display: flex;align-items: center;">Server Script Title</label>
+                        <div class="col"></div>
+                        <div class="parameter-container d-flex flex-row flex-wrap"></div>
+                    <button class="col-auto float-right btn btn-secondary manual-obj run-script-btn">Execute</button>
+                </div>
+
+            </li>
+        </div>
+        <div id="server-script-param-template">
+            <div class="parameter-group col-auto" data-arg-type="param">
+                <div class="input-group flex-nowrap" style="width: 18rem;">
+                    <div class="input-group-prepend" >
+                        <span class="input-group-text parameter-title">Parameter Template</span>
+                    </div>
+                    <input type="text" style="width: 2rem;" class="form-control parameter">
+                </div>
+            </div>
+        </div>
+        <div id="server-script-flag-template">
+            <div class="parameter-group col-auto" data-arg-type="flag" style="display: flex; align-items: center;">
+                <div class="form-check" style="display: flex; align-items: center;">
+                    <input class="form-check-input parameter" type="checkbox" value="" style="margin-top: 0; margin-right: 8px;">
+                    <label class="form-check-label parameter-title" style="margin-bottom: 0; display: flex; align-items: center;">
+                        Flag Template
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div id="server-script-multi-param-template">
+            <div class="parameter-group col-auto" data-arg-type="multi-param">
+                <div class="input-group flex-nowrap" style="width: 18rem;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text parameter-title">Parameter Template</span>
+                    </div>
+                    <input type="text" style="width: 2rem;" class="form-control parameter" placeholder="comma-separated values">
+                </div>
+            </div>
         </div>
 
     </div>
@@ -414,6 +455,10 @@ Notes: Hotfire
         <div class="tab-pane fade master-only" id="commands-tab" role="tabpanel" aria-labelledby="commands-tab-button">
             <ul style="margin-top: 2em" class="nav nav-pills justify-content-center" id="myCommandTab" role="tablist">
                 <li class="nav-item">
+                    <a class="nav-link tab-button" id="server-scripts-tab-button" data-toggle="tab" href="#server-scripts-tab"
+                        role="tab" aria-controls="server-scripts-tab" aria-selected="false">Server Scripts</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link tab-button active" id="can-command-tab-button" data-toggle="tab" href="#can-command-tab"
                         role="tab" aria-controls="can-command-tab" aria-selected="true">CAN Commands</a>
                 </li>
@@ -423,6 +468,11 @@ Notes: Hotfire
                 </li>
             </ul>
             <div id="command-container" class="tab-content">
+                <div class="tab-pane fade" id="server-scripts-tab" role="tabpanel" aria-labelledby="server-scripts-tab-button">
+                    <div id="server-scripts-list" class="accordion" style="max-height: 500px; overflow: scroll; margin-bottom: 20px"></div>
+                    Script outputs:
+                    <div id="server-scripts-feedback" style="max-height: 500px; overflow: scroll; white-space: pre; font-family: monospace;"></div>
+                </div>
                 <div class="tab-pane fade show active" id="can-command-tab" role="tabpanel" aria-labelledby="can-command-tab-button">
                     <div class="form-outline">
                         <input type="search" id="commandSearch" style="height: auto !important;" class="form-control" placeholder="Search for Command" aria-label="Search" oninput="updateCommandSearch('can', this)"/>
@@ -498,6 +548,7 @@ Notes: Hotfire
     <script src="js/SensorChart.js"></script>
     <script src="js/DataLogger.js"></script>
     <script src="./js/ClientSocket.js"></script>
+    <script src="js/ServerScripts.js"></script>
     <script src="lib/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
     <script src="lib/bootstrap.min.js"

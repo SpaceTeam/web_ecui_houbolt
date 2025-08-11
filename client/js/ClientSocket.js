@@ -1014,3 +1014,11 @@ socket.on('states-init', function(jsonStates) {
         console.log('states-init skipped because already initialized once');
     }
 });
+
+socket.on('script-feedback', function (feedback) {
+    onServerScriptFeedback(feedback);
+});
+
+socket.on('script-feedback-file', function (feedback) {
+    onServerScriptFileFeedback(feedback);
+});

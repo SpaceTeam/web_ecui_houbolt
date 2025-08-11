@@ -72,9 +72,12 @@ var sequenceManMod = require('./server/SequenceManager');
 var pnidManMod = require('./server/PnIDManager');
 var checklistManMod = require('./server/ChecklistManager');
 
+const ScriptRunner = require('./server/ScriptRunner');
+
 var sequenceMan = new sequenceManMod(configPath);
 var pnidMan = new pnidManMod(__dirname, configPath);
 var checklistMan = new checklistManMod();
+const scriptRunner = new ScriptRunner(configPath);
 
 var sequenceRunning = false;
 var llServerConnected = false;
@@ -675,6 +678,10 @@ ioClient.on('connection', function(socket){
                 llServerMod.sendMessage(llServer, 'states-stop');
             }
         });
+
+        socket.on('execute-script', function(script, ...args){
+            scriptRunner.onExecuteScript(script, socket);
+        });
     }
     else {
         socket.emit('connect_error', 'A sequence is currently being executed');
@@ -805,6 +812,11 @@ app.get('/web_config/main', (req, res) => {
 	res.sendFile(pathMod.join(configPath, webConfigSubPath, 'ecui_config.json'))
 });
 
+app.get('/web_config/scripts', (req, res) => {
+    console.log("requested scripts config");
+	res.sendFile(pathMod.join(configPath, webConfigSubPath, 'server_scripts.json'))
+});
+
 app.get('/pnid_config/custom', (req, res) => {
     console.log("requested config");
 	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'config.json'))
@@ -822,6 +834,10 @@ app.get('/pnid_config/thresholds', (req, res) => {
 
 app.get('/pnid_config/grafana', (req, res) => {
     res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'grafanaPanelConfig.json'));
+});
+
+app.get('/download/:file', (req, res) => {
+    scriptRunner.downloadOutputFile(req.url, res);
 });
 
 app.post('/pnid', function(req, res){
