@@ -148,6 +148,8 @@
     text-wrap: nowrap;
 
     cursor: pointer;
+
+    transition: font-size 0.1s ease-in-out;
 }
 
 .sequence-node-name.non-interactible {
@@ -156,7 +158,7 @@
 
 .sequence-node-name.active {
     font-size: 1rem;
-    transition: 0.2s ease-in-out;
+    transition: font-size 0.2s ease-in-out;
 }
 
 .sequence-node-left {
@@ -199,7 +201,7 @@
     z-index: 4;
 
     min-width: 12vw;
-    max-height: 40vw;
+    max-height: 40vh;
 
     cursor: default;
 
