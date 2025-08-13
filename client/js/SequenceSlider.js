@@ -550,8 +550,8 @@ function moveSequenceSlider(position) {
 
 // TODO
 // - swap out with abort sequence
-// - chaining of sequences (llserver sequence, internal sequence) + nice visual on the "connection point"
-// - animation of internal sequence (unknown duration between steps) -> maybe "timed sequence" vs "stepped sequence" with
-//   stepped having similar style but: all shown at once (or at least only moved over once closing in on the end) and "empty node"
-//   "current node" and "past node" styles (transparent, green, grey?)
 // - a seconds marker in/on the timeline (overlapping + gradient background)
+// - scroll events for scrubbing through sequences (maybe scroll to go index by index for step sequences)
+// - custom state list
+//   - sequence entries have "safe", "failure" or something like that and show that in sequence slider
+// - spectator mode
