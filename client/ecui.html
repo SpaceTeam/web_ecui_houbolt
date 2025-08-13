@@ -220,19 +220,38 @@
                 </div>
             </div>
         </div>
+        <div id="sequencePopupActionTemp" class="sequence-popup-row">
+            <div class="action-column">
+                <label class="sequence-action-label"></label>
+                <label class="sequence-action-label secondary"></label>
+            </div>
+            <label class="spacer"></label>
+            <label class="sequence-action-value"></label>
+        </div>
+        <div id="sequencePopupContentTemp" class="sequence-popup-content">
+        </div>
+        <div id="sequenceSecondsMarkerTemp" class="sequence-seconds-marker"></div>
         <div id="sequenceSliderNodeTemp">
             <span class="sequence-node">
                 <label class="sequence-node-name top-label">
                 </label>
                 <div class="sequence-arrow-container top-label">
-                    <svg width="15px" height="10px" class="sequence-node-label-arrow"><!--<polyline points="0,0.5 5,0.5 7.5,4 10,0.5 15,0.5"/>--><line x1="7.5" y1="2" x2="7.5" y2="10"/></svg>
+                    <svg width="5px" height="10px" class="sequence-node-label-arrow"><line x1="2.5" y1="1" x2="2.5" y2="10"/></svg>
                 </div>
-                <!--<input type="button" class="sequence-node-button"></input>-->
                 <div class="sequence-arrow-container bottom-label">
-                    <svg width="15px" height="10px" class="sequence-node-label-arrow"><!--<polyline points="0,9.5 5,9.5 7.5,6 10,9.5 15,9.5"/>--><line x1="7.5" y1="0" x2="7.5" y2="8"/></svg>
+                    <svg width="5px" height="10px" class="sequence-node-label-arrow"><line x1="2.5" y1="0" x2="2.5" y2="9"/></svg>
                 </div>
                 <label class="sequence-node-name bottom-label">
                 </label>
+                <div class="sequence-node-popup">
+                    <div class="sequence-popup-heading">Temp Name</div>
+                    <div class="sequence-popup-description"></div>
+                    <div class="sequence-popup-tabber sequence-popup-row">
+                        <button class="btn btn-primary sequence-popup-tab-prev"><i class="bi bi-arrow-left"></i></button>
+                        <label class="sequence-popup-tab-label spacer"></label>
+                        <button class="btn btn-primary sequence-popup-tab-next"><i class="bi bi-arrow-right"></i></button>
+                    </div>
+                </div>
             </span>
         </div>
     </div>
@@ -245,14 +264,14 @@
         </div>
         <div class="flex-spacer"></div>
         <span id="timer" class="timer">0.0</span>
-        <div id="sequence-slider-container">
+        <div id="sequence-slider-container" class="navbarInteractible">
             <div id="sequence-slider-track" class="">
             </div>
             <div id="sequence-slider-now-marker">
             </div>
         </div>
         <div class="flex-spacer"></div>
-        <div>
+        <div class="navbarInteractible">
             <button class="btn btn-secondary m-auto titleBarButton" onclick="toggleEcuiCommandsPopup(this)">Shortcuts</button>
             <div style="display: none" id="ecui-commands-popup">
                 <div>
@@ -267,7 +286,7 @@
             </div>
         </div>
 
-        <div>
+        <div class="navbarInteractible">
             <div class="master-only" style="text-align: right;">
                 <input type="checkbox" id="autoAbortCbox" onclick="onAutoAbortChange(this);">
                 Auto Abort
@@ -280,7 +299,7 @@
                 <button class="btn btn-secondary titleBarButton" id="masterRequest" onclick="onMasterRequestPressed(this);">Request Master</button>
             </div>
             
-            <p id="versionLabel">v<span id="version">1.0.0</span></p>
+            <p id="versionLabel">v<span id="version">0.0.0</span></p>
         </div>
     </div>
 
