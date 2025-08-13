@@ -254,6 +254,11 @@
                 </div>
             </span>
         </div>
+        <div id="sequenceSliderTrackTemp" class="slider-track stepped">
+            <button class="reset-button">
+                <i class="bi bi-arrow-clockwise h5"></i>
+            </button>
+        </div>
     </div>
 
     <div id="titleBar">
@@ -265,14 +270,18 @@
         <div class="flex-spacer"></div>
         <span id="timer" class="timer">0.0</span>
         <div id="sequence-slider-container" class="navbarInteractible">
-            <div id="sequence-slider-track" class="">
+            <div id="sequence-slider-track" class="slider-track">
             </div>
-            <div id="sequence-slider-now-marker">
+            <div id="sequence-slider-now-marker" class="now-marker">
+            </div>
+        </div>
+        <div id="custom-sequence-slider-container" class="navbarInteractible">
+            <div class="now-marker">
             </div>
         </div>
         <div class="flex-spacer"></div>
         <div class="navbarInteractible">
-            <button class="btn btn-secondary m-auto titleBarButton" onclick="toggleEcuiCommandsPopup(this)">Shortcuts</button>
+            <button class="btn btn-secondary m-auto titleBarButton" onclick="toggleEcuiCommandsPopup(this)"><i class="bi bi-list"></i></button>
             <div style="display: none" id="ecui-commands-popup">
                 <div>
                     <button class="btn btn-secondary m-auto titleBarButton" onclick="onPNIDInput('gui:FlushDatabase', 1, Date.now()*1000);">Flush Database</button>
@@ -590,7 +599,11 @@ Notes: Hotfire
     <script src="js/ServerScripts.js"></script>
 =======
     <script src="./js/SequenceSlider.js"></script>
+<<<<<<< HEAD
 >>>>>>> 45ba4c4 (add sequence slider prototype)
+=======
+    <script src="./js/StepSequenceSlider.js"></script>
+>>>>>>> e2d68b8 (implementation of step sequences)
     <script src="lib/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
     <script src="lib/bootstrap.min.js"
