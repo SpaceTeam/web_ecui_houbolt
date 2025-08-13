@@ -175,6 +175,10 @@ function createNode(data, index, offset, popupAbove, pixelsPerSecond) {
     initializeSequencePopup(popup, data, name, popupAbove, pixelsPerSecond);
 
     label.addEventListener("click", function (event) {
+        if (isSequenceRunning) {
+            return;
+        }
+
         if (currentlyActiveSequenceNodeLabel != undefined &&
             currentlyActiveSequenceNodeLabel != label
         ) {
@@ -400,13 +404,13 @@ function syncSequenceSliderTime(time)
     let currentPercentage = getCurrentSequencePercentage();
     let delta = percentage - currentPercentage;
     if (Math.abs(delta) < 0.02) {
-        console.log("delta not big enough")
+        console.log("animation sync ignored because delta not big enough")
         // don't update slider position if delta is small enough
         return;
     }
 
     let remainingDuration = (1 - percentage) * sequenceDuration;
-    animationRule.style.animationDuration = remainingDuration;
+    animationRule.style.animationDuration = `${remainingDuration}s`;
 
     let newStartPosition = sequenceTrackLength * percentage;
     moveSequenceSlider(newStartPosition);
@@ -423,7 +427,7 @@ function syncSequenceSliderTime(time)
 function startSequenceSlider()
 {
     sequenceSliderTrack.style.transform = '';
-    currentlyActiveSequenceNodeLabel.click();
+    currentlyActiveSequenceNodeLabel?.click();
     updateCurrentlyActivePopup(undefined);
 
     let stylesheets = document.styleSheets;
@@ -475,7 +479,7 @@ function initSequenceSliderTrack() {
 
     sequenceSliderTrack.addEventListener("mousedown", function(e) {
         let svgLine = sequenceSliderTrack.getElementsByClassName("sequence-line")[0];
-        if (!(e.target == svgLine || svgLine.contains(e.target))) {
+        if (!(e.target == svgLine || svgLine.contains(e.target)) || isSequenceRunning) {
             return;
         }
         sequenceSliderTrack.classList.add("grabbed");
