@@ -1,5 +1,6 @@
-#sequence-slider-container {
+#sequence-slider-container, #custom-sequence-slider-container {
     position: relative;
+    min-width: 10%;
     max-width: 25%;
     overflow-x: clip;
 
@@ -7,7 +8,7 @@
     margin-top: 2rem;
 }
 
-#sequence-slider-container::before {
+#sequence-slider-container::before, #custom-sequence-slider-container::before {
     content: '';
     width: 100%;
     height: 4.5em;
@@ -19,34 +20,60 @@
     z-index: 2;
 }
 
-#sequence-slider-now-marker {
-    position: absolute;
-    width: 1px;
-    height: 1em;
-
-    background: linear-gradient(to bottom, var(--content-primary) 0%, var(--content-primary) 10%, transparent 100%);
+#custom-sequence-slider-container:has(div) {
+    border-left: 1px solid var(--content-disabled);
 }
 
-#sequence-slider-track {
+.now-marker {
+    position: absolute;
+    width: 1px;
+    height: 2em;
+    top: calc(-1em + 5px); /* half of height + half of track height */
+
+    background: linear-gradient(to bottom, transparent 0%, var(--content-primary) 30%, var(--content-primary) 35%, transparent 36%, transparent 64%, var(--content-primary) 65%, var(--content-primary) 70%, transparent 100%);
+}
+
+.reset-button:hover {
+    outline: 1px solid var(--content-primary) !important;
+    transition: outline 0.2s ease-in-out;
+}
+
+.reset-button {
+    position: absolute;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    outline: 1px solid transparent !important;
+    transition: outline 0.1s ease-in-out;
+
+    color: var(--content-primary);
+
+    width: 2.5em;
+    height: 2.5em;
+}
+
+.slider-track {
     position: relative;
     display: flex;
     align-items: center;
 
     cursor: grab;
-
-    font-size: 0.7em; /* this controls the size of the nodes */
 }
 
-#sequence-slider-track.grabbed {
+.slider-track.stepped {
+    transition: transform 0.1s ease-in-out;
+}
+
+.slider-track.grabbed {
     cursor: move;
 }
 
-#sequence-slider-track.active {
+.slider-track.active {
     cursor: default;
     animation: move-track 5s linear;
 }
 
-#sequence-slider-track svg {
+.slider-track svg {
     position: absolute;
     top: 0;
 }
@@ -123,9 +150,8 @@
     cursor: pointer;
 }
 
-.sequence-node-name:hover {
-    color: var(--accented-text);
-    transition: 0.1s ease-in-out;
+.sequence-node-name.non-interactible {
+    cursor: default;
 }
 
 .sequence-node-name.active {
@@ -146,6 +172,14 @@
     align-self: end;
 }
 
+.sequence-node.active .sequence-node-name {
+    color: var(--warning-color);
+    font-weight: bold;
+}
+
+.sequence-node.visited .sequence-node-name {
+    color: var(--success-color);
+}
 
 /* popup styles */
 

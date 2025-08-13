@@ -49,7 +49,11 @@ function tabberButtonHandler(current, shouldIncrement, subTimestamps, popup, tim
     return current;
 }
 
-function initializeSequencePopup(popup, data, name, above, pixelsPerSecond) {
+function initializeSequencePopup(popup, data, name, above) {
+    if (data["timestamp"] == undefined && data["desc"] == undefined && data.actions == undefined ) {
+        popup.remove();
+        return false;
+    }
     popup.style.width = "auto";
     popup.style.height = "auto";
     popup.classList.add(above ? "above" : "below");
@@ -117,6 +121,8 @@ function initializeSequencePopup(popup, data, name, above, pixelsPerSecond) {
 
     showSubTimestamp(popup, sanitizeTimestamp(timestamp), subTimestamps[0]);
     sequencePopups.push(popup);
+
+    return true;
 }
 
 function showSubTimestamp(popup, timestamp, newData, previousData = undefined) {
@@ -172,31 +178,36 @@ function createNode(data, index, offset, popupAbove, pixelsPerSecond) {
     label.innerText = name;
 
     let popup = element.getElementsByClassName("sequence-node-popup")[0];
-    initializeSequencePopup(popup, data, name, popupAbove, pixelsPerSecond);
+    let hasCreatedPopup = initializeSequencePopup(popup, data, name, popupAbove, pixelsPerSecond);
 
-    label.addEventListener("click", function (event) {
-        if (isSequenceRunning) {
-            return;
-        }
+    if (hasCreatedPopup) {
+        label.addEventListener("click", function (event) {
+            if (isSequenceRunning) {
+                return;
+            }
 
-        if (currentlyActiveSequenceNodeLabel != undefined &&
-            currentlyActiveSequenceNodeLabel != label
-        ) {
-            currentlyActiveSequenceNodeLabel.click();
-        }
+            if (currentlyActiveSequenceNodeLabel != undefined &&
+                currentlyActiveSequenceNodeLabel != label
+            ) {
+                currentlyActiveSequenceNodeLabel.click();
+            }
 
-        if (!popup.classList.contains("active")) {
-            popup.classList.add("active");
-            label.classList.add("active");
-            updateCurrentlyActivePopup(label, popup);
-        }
-        else {
-            popup.classList.remove("active");
-            label.classList.remove("active");
-            updateCurrentlyActivePopup(undefined);
-        }
-        event.stopPropagation();
-    });
+            if (!popup.classList.contains("active")) {
+                popup.classList.add("active");
+                label.classList.add("active");
+                updateCurrentlyActivePopup(label, popup);
+            }
+            else {
+                popup.classList.remove("active");
+                label.classList.remove("active");
+                updateCurrentlyActivePopup(undefined);
+            }
+            event.stopPropagation();
+        });
+    }
+    else {
+        label.classList.add("non-interactible");
+    }
 
     return element;
 }
@@ -288,7 +299,7 @@ function createSequenceSlider(sequence, isSpectator, pixelsPerSecond = 25) {
 function fixLabelCollisions() {
     let elements = [];
 
-    let domElements = document.getElementsByClassName("sequence-node-name");
+    let domElements = sequenceSliderTrack.getElementsByClassName("sequence-node-name");
     for (let sliderEntry of domElements)
     {
         let currentRect = sliderEntry.getBoundingClientRect();
@@ -470,58 +481,74 @@ function startSequenceSlider()
     sequenceSliderTrack.classList.add("active");
 }
 
-let sequenceSliderTrack = undefined;
+let sequenceSliderTrack = document.getElementById("sequence-slider-track");
+let activeStepTrack = undefined;
 let trackIsDown = false;
 let previousMousePos = {};
 let currentTrackPos = 0;
-function initSequenceSliderTrack() {
-    sequenceSliderTrack = document.getElementById("sequence-slider-track");
-
-    sequenceSliderTrack.addEventListener("mousedown", function(e) {
-        let svgLine = sequenceSliderTrack.getElementsByClassName("sequence-line")[0];
+function initSequenceSliderTrack(track, isMainSequence = true) {
+    console.log("track", track)
+    track.addEventListener("mousedown", function(e) {
+        let svgLine = track.getElementsByClassName("sequence-line")[0];
         if (!(e.target == svgLine || svgLine.contains(e.target)) || isSequenceRunning) {
             return;
         }
-        sequenceSliderTrack.classList.add("grabbed");
-		trackIsDown = true;
-		mouseMoveStart = [
-			e.clientX,
+        track.classList.add("grabbed");
+        if (isMainSequence) {
+            trackIsDown = true;
+            activeStepTrack = undefined;
+        }
+        else {
+            activeStepTrack = track;
+            trackIsDown = false;
+        }
+        mouseMoveStart = [
+            e.clientX,
             e.clientY
-		];
+        ];
         previousMousePos = {
             x: e.clientX,
             y: e.clientY
         }
         e.preventDefault();
-	});
+    });
 }
 
-initSequenceSliderTrack();
+document.addEventListener('mousemove', function(event) {
+    if (trackIsDown || activeStepTrack != undefined) {
+        let delta = event.clientX - previousMousePos.x;
+        previousMousePos.x = event.clientX;
+        previousMousePos.y = event.clientY;
+
+        if (trackIsDown) {
+            moveSequenceSlider(currentTrackPos -= delta);
+        }
+        else if (activeStepTrack != undefined) {
+            moveStepSequenceSlider(activeStepTrack, currentStepSequencePos -= delta);
+        }
+    }
+}, true);
+
+document.addEventListener('mouseup', function() {
+    if (trackIsDown) {
+        sequenceSliderTrack.classList.remove("grabbed");
+        trackIsDown = false;
+    }
+    else if (activeStepTrack != undefined) {
+        activeStepTrack.classList.remove("grabbed");
+        activeStepTrack = undefined;
+    }
+});
+
+initSequenceSliderTrack(sequenceSliderTrack);
 
 function moveSequenceSlider(position) {
     currentTrackPos = Math.min(sequenceTrackLength, Math.max(0, position));
     sequenceSliderTrack.style.transform = `translateX(-${currentTrackPos}px)`;
 }
 
-document.addEventListener('mousemove', function(event) {
-    if (trackIsDown) {
-        let delta = event.clientX - previousMousePos.x;
-        previousMousePos.x = event.clientX;
-        previousMousePos.y = event.clientY;
-
-        moveSequenceSlider(currentTrackPos -= delta);
-    }
-}, true);
-
-document.addEventListener('mouseup', function(e) {
-    if (trackIsDown) {
-        sequenceSliderTrack.classList.remove("grabbed");
-        trackIsDown = false;
-    }
-});
 
 // TODO
-// - syncing still seems to result in different speeds sometimes
 // - swap out with abort sequence
 // - chaining of sequences (llserver sequence, internal sequence) + nice visual on the "connection point"
 // - animation of internal sequence (unknown duration between steps) -> maybe "timed sequence" vs "stepped sequence" with
