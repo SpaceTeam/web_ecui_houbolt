@@ -238,8 +238,11 @@ function createSecondsMarkers(track, pixelsPerSecond, minorInterval = 1, majorIn
         timeSinceLastMajor = (Math.floor(Math.abs(sequenceStartTime / majorInterval)) + 1) * majorInterval * Math.sign(sequenceStartTime);
     }
 
-    for (let time = sequenceStartTime; time <= sequenceEndTime; time = time + minorInterval)
+    for (let time = Math.floor(sequenceStartTime); time <= sequenceEndTime; time = time + minorInterval)
     {
+        if (time < sequenceStartTime) {
+            continue;
+        }
         let marker = document.getElementById("sequenceSecondsMarkerTemp").cloneNode(true);
         if (timeSinceLastMajor + majorInterval <= time) {
             console.log("major", timeSinceLastMajor, time)
