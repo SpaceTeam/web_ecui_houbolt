@@ -834,6 +834,7 @@ socket.on('sequence-sync', function(time) {
     if (!isSequenceRunning)
     {
         startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
+        startSequenceSlider();
     }
     refreshSequenceWatchdog();
     syncSequenceSliderTime(time);
@@ -851,6 +852,7 @@ socket.on('sequence-abort', function () {
     console.log('was sequence still seen as running?', isSequenceRunning == true);
     isSequenceRunning = false;
     updatePNIDInputsEnabled();
+    stopSequenceSlider();
 })
 
 let sequenceTimeoutTimer = undefined;
