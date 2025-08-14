@@ -233,12 +233,17 @@
     transform: translateX(2px);
 }
 
+.sequence-node-left:before {
+    background: linear-gradient(to right, var(--background-primary) 0%, transparent 50%, transparent 95%, var(--background-primary) 100%);
+}
+
 .sequence-node-right {
     align-self: start;
     transform: translateX(-2px);
 }
-.sequence-node-left {
-    align-self: end;
+
+.sequence-node-right:before {
+    background: linear-gradient(to right, var(--background-primary) 0%, transparent 5%, transparent 50%, var(--background-primary) 100%);
 }
 
 .sequence-node.active .sequence-node-name {
