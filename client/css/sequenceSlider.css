@@ -28,9 +28,9 @@
     position: absolute;
     width: 1px;
     height: 2em;
-    top: calc(-1em + 5px); /* half of height + half of track height */
+    top: calc(-1em + 4.5px); /* half of height + half of track height */
 
-    background: linear-gradient(to bottom, transparent 0%, var(--content-primary) 30%, var(--content-primary) 35%, transparent 36%, transparent 64%, var(--content-primary) 65%, var(--content-primary) 70%, transparent 100%);
+    background: linear-gradient(to bottom, transparent 0%, var(--content-primary) 25%, var(--content-primary) 30%, transparent 31%, transparent 69%, var(--content-primary) 70%, var(--content-primary) 75%, transparent 100%);
 }
 
 .reset-button:hover {
@@ -78,6 +78,30 @@
     top: 0;
 }
 
+.sequence-seconds-marker {
+    position: absolute;
+    height: 50%;
+    border-left: 1px solid var(--content-secondary);
+    top: calc(25% - 1px); /* offset probably because track isn't 100% centered to not be between 2 pixels */
+
+    pointer-events: none;
+}
+
+.sequence-seconds-marker.major {
+    top: unset;
+    height: fit-content;
+    border-color: var(--content-primary);
+
+    border: none;
+    background: radial-gradient(circle, var(--background-primary) 0%, var(--background-primary) 50%, transparent 100%);
+    font-size: 0.7em;
+    text-align: center;
+    font-weight: bold;
+    transform: translate(-50%, -1px);
+
+    padding: 0.2em;
+}
+
 .sequence-node {
     position: absolute;
 
@@ -103,10 +127,20 @@
     stroke-linejoin: miter;
 }
 
-.sequence-arrow-container.top-label {
+.sequence-node.safe .sequence-node-name {
+    border-color: var(--success-color);
 }
 
-.sequence-arrow-container.bottom-label {
+.sequence-node.fail .sequence-node-name {
+    border-color: var(--error-color);
+}
+
+.sequence-node.safe .sequence-node-label-arrow line {
+    stroke: var(--success-color);
+}
+
+.sequence-node.fail .sequence-node-label-arrow line {
+    stroke: var(--error-color);
 }
 
 .sequence-arrow-container {
@@ -130,11 +164,31 @@
 }
 
 .sequence-node-name.top-label {
-    bottom: 0.7rem;
+    bottom: 0.8rem;
+    border-bottom: 1px solid var(--content-primary);
 }
 
 .sequence-node-name.bottom-label {
-    top: 0.7rem;
+    top: 0.8rem;
+    border-top: 1px solid var(--content-primary);
+}
+
+.sequence-node-name:before {
+    content: '';
+    width: 100%;
+    height: 1px;
+    position: absolute;
+    pointer-events: none;
+    left: 0;
+    background: linear-gradient(to right, var(--background-primary) 0%, transparent 40%, transparent 60%, var(--background-primary) 100%);
+}
+
+.sequence-node-name.top-label:before {
+    bottom: -1px;
+}
+
+.sequence-node-name.bottom-label:before {
+    top: -1px;
 }
 
 .sequence-node-name {
@@ -150,6 +204,7 @@
     cursor: pointer;
 
     transition: font-size 0.1s ease-in-out;
+    padding: 0.1em;
 }
 
 .sequence-node-name.non-interactible {
