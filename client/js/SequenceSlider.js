@@ -142,10 +142,12 @@ function createNode(data, index, offset, popupAbove, pixelsPerSecond) {
     if (name != "") {
         name = name.charAt(0).toUpperCase() + name.slice(1);
     }
+    let type = data["type"] ?? "normal";
     let element = document.getElementById("sequenceSliderNodeTemp").cloneNode(true).children[0];
     element.id = "";
     element.style.left = `${offset}px`;
     element.style.paddingBottom = element.style.paddingTop;
+    element.classList.add(type);
 
     let topLabel = element.getElementsByClassName("sequence-node-name")[0];
     let topArrow = element.getElementsByClassName("sequence-arrow-container")[0];
@@ -215,19 +217,39 @@ function createNode(data, index, offset, popupAbove, pixelsPerSecond) {
 function createFullLine(duration, pixelsPerSecond) {
     let svgURI = "http://www.w3.org/2000/svg";
     let svg = document.createElementNS(svgURI, "svg");
-    svg.setAttribute("width", `${duration * pixelsPerSecond}px`);
+    svg.setAttribute("width", `${duration * pixelsPerSecond + 1}px`);
     svg.setAttribute("height", "10px");
     svg.classList.add("sequence-line")
 
     let line = document.createElementNS(svgURI, "line");
     line.setAttribute("x1", "0");
     line.setAttribute("y1", "4.5");
-    line.setAttribute("x2", duration * pixelsPerSecond);
+    line.setAttribute("x2", duration * pixelsPerSecond + 1);
     line.setAttribute("y2", "4.5");
     line.setAttribute("stroke", "var(--content-primary)");
 
     svg.appendChild(line);
     return svg;
+}
+
+function createSecondsMarkers(track, pixelsPerSecond, minorInterval = 1, majorInterval = 5, alignToZero = true) {
+    let timeSinceLastMajor = Number.MIN_SAFE_INTEGER;
+    for (let time = sequenceStartTime; time <= sequenceEndTime; time = time + minorInterval)
+    {
+        let marker = document.getElementById("sequenceSecondsMarkerTemp").cloneNode(true);
+        if (timeSinceLastMajor + majorInterval <= time) {
+            console.log("major", timeSinceLastMajor, time)
+            marker.classList.add("major");
+            marker.innerText = time;
+            timeSinceLastMajor = time;
+        }
+        else {
+            marker.classList.add("minor");
+        }
+        marker.id = "";
+        marker.style.left = `${(time - sequenceStartTime) * pixelsPerSecond}px`;
+        track.appendChild(marker);
+    }
 }
 
 function sanitizeTimestamp(timestamp) {
@@ -283,6 +305,7 @@ function createSequenceSlider(sequence, isSpectator, pixelsPerSecond = 25) {
         }
     }
     track.appendChild(createFullLine(sequenceDuration, pixelsPerSecond));
+    createSecondsMarkers(track, pixelsPerSecond);
     sequenceTrackLength = sequenceDuration * pixelsPerSecond;
 
     let nowOffset = 50;
@@ -489,8 +512,7 @@ let currentTrackPos = 0;
 function initSequenceSliderTrack(track, isMainSequence = true) {
     console.log("track", track)
     track.addEventListener("mousedown", function(e) {
-        let svgLine = track.getElementsByClassName("sequence-line")[0];
-        if (!(e.target == svgLine || svgLine.contains(e.target)) || isSequenceRunning) {
+        if (!targetIsOnSliderTrack(track, e.target) || isSequenceRunning) {
             return;
         }
         track.classList.add("grabbed");
@@ -512,6 +534,37 @@ function initSequenceSliderTrack(track, isMainSequence = true) {
         }
         e.preventDefault();
     });
+    track.addEventListener("wheel", function(e) {
+        if (!targetIsOnSliderTrack(track, e.target) || isSequenceRunning) {
+            return;
+        }
+        let sensitivity = -0.4;
+        let scrollDelta = e.deltaY * sensitivity;
+        // TODO this logic really doesn't work with dynamic amount of sequences
+        // but realistically we don't need that I don't know why I initially
+        // started designing this feature to work with an arbitrary amount of sliders
+        // that is severely broken in various places anyways.
+        let oldTransitionStyle = track.style.transition;
+        track.style.transition = "transform 0.1s linear";
+        if (isMainSequence) {
+            moveSequenceSlider(currentTrackPos -= scrollDelta);
+        }
+        else {
+            moveStepSequenceSlider(track, currentStepSequencePos -= scrollDelta, false);
+        }
+        setTimeout(function () {
+            track.style.transition = oldTransitionStyle;
+        }, 10000)
+        console.log("scroll", e)
+    })
+}
+
+function targetIsOnSliderTrack(track, target) {
+    let svgLine = track.getElementsByClassName("sequence-line")[0];
+    if (target == svgLine || svgLine.contains(target)) {
+        return true;
+    }
+    return false;
 }
 
 document.addEventListener('mousemove', function(event) {
@@ -531,10 +584,12 @@ document.addEventListener('mousemove', function(event) {
 
 document.addEventListener('mouseup', function() {
     if (trackIsDown) {
+        moveSequenceSlider(Math.round(currentTrackPos));
         sequenceSliderTrack.classList.remove("grabbed");
         trackIsDown = false;
     }
     else if (activeStepTrack != undefined) {
+        moveStepSequenceSlider(activeStepTrack, Math.round(currentStepSequencePos));
         activeStepTrack.classList.remove("grabbed");
         activeStepTrack = undefined;
     }
@@ -551,7 +606,4 @@ function moveSequenceSlider(position) {
 // TODO
 // - swap out with abort sequence
 // - a seconds marker in/on the timeline (overlapping + gradient background)
-// - scroll events for scrubbing through sequences (maybe scroll to go index by index for step sequences)
-// - custom state list
-//   - sequence entries have "safe", "failure" or something like that and show that in sequence slider
 // - spectator mode
