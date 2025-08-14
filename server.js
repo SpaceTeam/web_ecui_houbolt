@@ -832,6 +832,11 @@ app.get('/pnid_config/thresholds', (req, res) => {
 	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'thresholds.json'))
 });
 
+app.get('/pnid_config/state_machines', (req, res) => {
+    console.log("requested state machine definitions");
+	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'stateMachines.json'))
+});
+
 app.get('/pnid_config/grafana', (req, res) => {
     res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'grafanaPanelConfig.json'));
 });

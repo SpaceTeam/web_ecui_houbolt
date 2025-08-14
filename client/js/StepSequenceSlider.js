@@ -2,6 +2,7 @@ let currentStepSequencePos = 0;
 let stepSequenceTrackLength = 0;
 let stepSliderStepDistance = 0;
 let stepSequenceTrack = undefined;
+let stepSliderEnumDict = undefined;
 
 function resetStepSequence() {
     let nodes = stepSequenceTrack.getElementsByClassName("sequence-node");
@@ -12,7 +13,9 @@ function resetStepSequence() {
     }
 }
 
-function createStepSequenceSlider(sequence, stepDistance = 75) {
+function createStepSequenceSlider(sequence, statesLookup, stepDistance = 80) {
+    stepSliderEnumDict = statesLookup;
+
     let container = document.getElementById("custom-sequence-slider-container");
     let nowMarker = container.getElementsByClassName("now-marker")[0];
     container.replaceChildren(nowMarker);
@@ -53,6 +56,13 @@ function createStepSequenceSlider(sequence, stepDistance = 75) {
     initSequenceSliderTrack(track, false);
 }
 
+function moveStepSliderToEnumValue(track, value) {
+    let index = stepSliderEnumDict[value];
+    if (index != undefined) {
+        moveStepSliderToIndex(track, stepSliderEnumDict[value]);
+    }
+}
+
 function moveStepSliderToIndex(track, index) {
     let nodes = track.getElementsByClassName("sequence-node");
     let clampedIndex = Math.min(nodes.length, Math.max(0, index));
@@ -75,12 +85,14 @@ function moveStepSliderToIndex(track, index) {
     nodes[clampedIndex].classList.add("active");
 }
 
-function moveStepSequenceSlider(track, position) {
+function moveStepSequenceSlider(track, position, pauseTransitions = true) {
     if (track == undefined) {
         return;
     }
     currentStepSequencePos = Math.min(stepSequenceTrackLength, Math.max(0, position));
-    track.style.transition = "none";
+    if (pauseTransitions) {
+        track.style.transition = "none";
+    }
     track.style.transform = `translateX(-${currentStepSequencePos}px)`;
 }
 
