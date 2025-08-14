@@ -293,7 +293,7 @@ function createSequenceSlider(sequence, isSpectator, pixelsPerSecond = 25) {
     let lastOffset = undefined;
     let sequenceData = sequence["data"];
     for (let i = 0; i < sequenceData.length; i++) {
-        let isHidden = sequenceData[i]["hiddenFromSpectator"] && isSpectator;
+        let isHidden = sequenceData[i]["hiddenFromSpectator"] && !isSpectator;
         let timestamp = sequenceData[i]["timestamp"];
         timestamp = sanitizeTimestamp(timestamp);
 
