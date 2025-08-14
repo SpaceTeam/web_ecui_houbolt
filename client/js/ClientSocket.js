@@ -149,11 +149,6 @@ function tMinusTimerTick()
 {
     let time = timeMillis/1000;
     $('.timer').text(time.toFixed(1));
-
-    if (Number.isInteger(time))
-    {
-        $('.timer').append('.0');
-    }
 }
 
 function timerTick()
@@ -759,11 +754,7 @@ socket.on('sequence-load', function(jsonSeqsInfo) {
     seqChart = new SequenceChart("sequenceChart", sequences[0]);
     createSequenceSlider(jsonSequence, false);
 
-    $('.timer').text(jsonSequence.globals.startTime);
-    if (Number.isInteger(jsonSequence.globals.startTime))
-    {
-        $('.timer').append('.0')
-    }
+    $('.timer').text(jsonSequence.globals.startTime.toFixed(1));
     $('.timer').css("color", "green");
     console.log('sequence-load:');
     console.log(jsonSequence);
@@ -899,12 +890,9 @@ function timerStop(timeEnd)
 
     seqChart.stop();
 
-    $('.timer').text(timeEnd);
+    $('.timer').text(timeEnd?.toFixed(1));
     clearInterval(intervalDelegate);
-    if (Number.isInteger(timeEnd))
-    {
-        $('.timer').append('.0');
-    }
+
     sequenceButtonStop();
 
     seqChart.reset();
