@@ -562,7 +562,7 @@ function initSequenceSliderTrack(track, isMainSequence = true) {
         setTimeout(function () {
             track.style.transition = oldTransitionStyle;
         }, 10000)
-        console.log("scroll", e)
+        e.preventDefault();
     })
 }
 
