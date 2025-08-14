@@ -234,6 +234,10 @@ function createFullLine(duration, pixelsPerSecond) {
 
 function createSecondsMarkers(track, pixelsPerSecond, minorInterval = 1, majorInterval = 5, alignToZero = true) {
     let timeSinceLastMajor = Number.MIN_SAFE_INTEGER;
+    if (alignToZero) {
+        timeSinceLastMajor = (Math.floor(Math.abs(sequenceStartTime / majorInterval)) + 1) * majorInterval * Math.sign(sequenceStartTime);
+    }
+
     for (let time = sequenceStartTime; time <= sequenceEndTime; time = time + minorInterval)
     {
         let marker = document.getElementById("sequenceSecondsMarkerTemp").cloneNode(true);
