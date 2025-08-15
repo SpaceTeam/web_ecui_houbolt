@@ -428,7 +428,6 @@ function createKeyframeString(percentage, position) {
 }
 
 function stopSequenceSlider() {
-    console.log("current position", getCurrentSequencePosition());
     // add 2 to position since animation runs a tiny touch longer after getting
     // position and it would jump a tiny bit backwards when stopping otherwise
     moveSequenceSlider(getCurrentSequencePosition() + 2);
@@ -530,21 +529,24 @@ function initializeSliderStart() {
     updateCurrentlyActivePopup(undefined);
 }
 
+function animationEndHandler() {
+    // cleaning up keyframes inserted to sync animation position
+    for (let i = 0; i <= 100; i++) {
+        moveRule.deleteRule(`${i}%`);
+    }
+
+    sequenceSliderTrack.classList.remove("active");
+    moveSequenceSlider(sequenceTrackLength);
+}
+
 function startSequenceSlider()
 {
     initializeSliderStart();
 
     getMoveRule();
     getAnimationRule();
-    sequenceSliderTrack.addEventListener("animationend", function() {
-        // cleaning up keyframes inserted to sync animation position
-        for (let i = 0; i <= 100; i++) {
-            moveRule.deleteRule(`${i}%`);
-        }
-
-        sequenceSliderTrack.classList.remove("active");
-        moveSequenceSlider(sequenceTrackLength);
-    });
+    sequenceSliderTrack.removeEventListener("animationend", animationEndHandler);
+    sequenceSliderTrack.addEventListener("animationend", animationEndHandler);
 
     animationRule.style.animationDuration = `${sequenceDuration}s`;
     sequenceSliderTrack.classList.add("active");
