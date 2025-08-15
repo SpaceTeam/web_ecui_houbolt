@@ -437,8 +437,8 @@ function stopSequenceSlider() {
 
 function syncSequenceSliderTime(time)
 {
-    moveRule = getMoveRule();
-    animationRule = getAnimationRule();
+    getMoveRule();
+    getAnimationRule();
 
     if (!isTrackAnimating(sequenceSliderTrack)) {
         startSequenceSlider();
@@ -485,10 +485,9 @@ function getAnimationRule() {
 
     for (let i = 0; i < sequenceStyleSheet.cssRules.length; i++) {
         let rule = sequenceStyleSheet.cssRules[i];
-        if (rule.selectorText == "#sequence-slider-track.active") {
+        if (rule.selectorText == ".slider-track.active") {
             // CSSStyleRule
             animationRule = rule;
-            animationRule.style.animationDuration = `${sequenceDuration}s`;
         }
     }
 }
@@ -512,7 +511,6 @@ function getMoveRule() {
         let rule = sequenceStyleSheet.cssRules[i];
         if (rule.name == "move-track") {
             // CSSKeyframesRule
-            console.log("move rule")
             moveRule = rule;
             moveRule.appendRule(createKeyframeString(1, sequenceTrackLength));
         }
@@ -536,8 +534,8 @@ function startSequenceSlider()
 {
     initializeSliderStart();
 
-    moveRule = getMoveRule();
-    animationRule = getAnimationRule();
+    getMoveRule();
+    getAnimationRule();
     sequenceSliderTrack.addEventListener("animationend", function() {
         // cleaning up keyframes inserted to sync animation position
         for (let i = 0; i <= 100; i++) {
@@ -548,6 +546,7 @@ function startSequenceSlider()
         moveSequenceSlider(sequenceTrackLength);
     });
 
+    animationRule.style.animationDuration = `${sequenceDuration}s`;
     sequenceSliderTrack.classList.add("active");
 }
 
