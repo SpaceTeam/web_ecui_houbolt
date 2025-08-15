@@ -276,6 +276,9 @@ function calcFinalNodeSize(defaultNodeSize, deltaToNext, deltaToPrevious, pixels
 }
 
 function createSequenceSlider(sequence, isSpectator, pixelsPerSecond = 25) {
+    moveRule = undefined;
+    animationRule = undefined;
+
     labelPositionOffset = 0;
     let track = document.getElementById("sequence-slider-track");
     track.replaceChildren();
@@ -413,7 +416,7 @@ function getCurrentSequencePosition() {
     let transformMatrix = getComputedStyle(sequenceSliderTrack).transform;
     let matrixContents = transformMatrix.replace("matrix(", "").replace(")", "");
     let elements = matrixContents.split(", ");
-    return Math.abs(elements[4]);
+    return Math.abs(elements[4]) ?? 0;
 }
 
 function getCurrentSequencePercentage() {
@@ -461,6 +464,7 @@ function syncSequenceSliderTime(time)
 
     moveRule.deleteRule("0%");
     moveRule.appendRule(createKeyframeString(0, newStartPosition))
+    moveRule.appendRule(createKeyframeString(1, sequenceTrackLength));
     setTimeout(function () {
         sequenceSliderTrack.style.transform = '';
         sequenceSliderTrack.style.animation = '';
@@ -511,7 +515,6 @@ function getMoveRule() {
         if (rule.name == "move-track") {
             // CSSKeyframesRule
             moveRule = rule;
-            moveRule.appendRule(createKeyframeString(1, sequenceTrackLength));
         }
     }
 }
@@ -548,6 +551,7 @@ function startSequenceSlider()
     sequenceSliderTrack.removeEventListener("animationend", animationEndHandler);
     sequenceSliderTrack.addEventListener("animationend", animationEndHandler);
 
+    moveRule.appendRule(createKeyframeString(1, sequenceTrackLength));
     animationRule.style.animationDuration = `${sequenceDuration}s`;
     sequenceSliderTrack.classList.add("active");
 }
