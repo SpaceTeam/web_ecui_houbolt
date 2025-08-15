@@ -437,9 +437,8 @@ function stopSequenceSlider() {
 
 function syncSequenceSliderTime(time)
 {
-    if (moveRule == undefined) {
-        return;
-    }
+    moveRule = getMoveRule();
+    animationRule = getAnimationRule();
 
     let percentage = getSequencePercentage(time);
     let currentPercentage = getCurrentSequencePercentage();
@@ -463,6 +462,57 @@ function syncSequenceSliderTime(time)
         sequenceSliderTrack.style.transform = '';
         sequenceSliderTrack.style.animation = '';
     }, 10)
+}
+
+function getAnimationRule() {
+    if (animationRule != undefined) {
+        return animationRule;
+    }
+
+    let stylesheets = document.styleSheets;
+
+    let sequenceStyleSheet = undefined;
+    for (let stylesheet of stylesheets) {
+        if (stylesheet.href.endsWith("sequenceSlider.css")) {
+            sequenceStyleSheet = stylesheet;
+            break;
+        }
+    }
+
+    for (let i = 0; i < sequenceStyleSheet.cssRules.length; i++) {
+        let rule = sequenceStyleSheet.cssRules[i];
+        if (rule.selectorText == "#sequence-slider-track.active") {
+            // CSSStyleRule
+            animationRule = rule;
+            animationRule.style.animationDuration = `${sequenceDuration}s`;
+        }
+    }
+}
+
+function getMoveRule() {
+    if (moveRule != undefined) {
+        return moveRule;
+    }
+
+    let stylesheets = document.styleSheets;
+
+    let sequenceStyleSheet = undefined;
+    for (let stylesheet of stylesheets) {
+        if (stylesheet.href.endsWith("sequenceSlider.css")) {
+            sequenceStyleSheet = stylesheet;
+            break;
+        }
+    }
+
+    for (let i = 0; i < sequenceStyleSheet.cssRules.length; i++) {
+        let rule = sequenceStyleSheet.cssRules[i];
+        if (rule.name == "move-track") {
+            // CSSKeyframesRule
+            console.log("move rule")
+            moveRule = rule;
+            moveRule.appendRule(createKeyframeString(1, sequenceTrackLength));
+        }
+    }
 }
 
 function startSequenceSlider()
