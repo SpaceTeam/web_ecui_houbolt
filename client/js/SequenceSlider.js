@@ -440,6 +440,10 @@ function syncSequenceSliderTime(time)
     moveRule = getMoveRule();
     animationRule = getAnimationRule();
 
+    if (!isTrackAnimating(sequenceSliderTrack)) {
+        startSequenceSlider();
+    }
+
     let percentage = getSequencePercentage(time);
     let currentPercentage = getCurrentSequencePercentage();
     let delta = percentage - currentPercentage;
@@ -515,40 +519,26 @@ function getMoveRule() {
     }
 }
 
-function startSequenceSlider()
-{
+function isTrackAnimating(track) {
+    if (track.classList.contains("active")) {
+        return true;
+    }
+    return false;
+}
+
+function initializeSliderStart() {
     sequenceSliderTrack.style.transform = '';
     currentlyActiveSequenceNodeLabel?.click();
     updateCurrentlyActivePopup(undefined);
+}
 
-    let stylesheets = document.styleSheets;
+function startSequenceSlider()
+{
+    initializeSliderStart();
 
-    let sequenceStyleSheet = undefined;
-    for (let stylesheet of stylesheets) {
-        if (stylesheet.href.endsWith("sequenceSlider.css")) {
-            sequenceStyleSheet = stylesheet;
-            break;
-        }
-    }
-
-    for (let i = 0; i < sequenceStyleSheet.cssRules.length; i++) {
-        let rule = sequenceStyleSheet.cssRules[i];
-        if (rule.selectorText == "#sequence-slider-track.active") {
-            // CSSStyleRule
-            console.log("active rule", rule);
-            animationRule = rule;
-            animationRule.style.animationDuration = `${sequenceDuration}s`;
-        }
-        else if (rule.name == "move-track") {
-            // CSSKeyframesRule
-            console.log("move rule")
-            moveRule = rule;
-            moveRule.appendRule(createKeyframeString(1, sequenceTrackLength));
-        }
-    }
-
+    moveRule = getMoveRule();
+    animationRule = getAnimationRule();
     sequenceSliderTrack.addEventListener("animationend", function() {
-        console.log("animation end");
         // cleaning up keyframes inserted to sync animation position
         for (let i = 0; i <= 100; i++) {
             moveRule.deleteRule(`${i}%`);
