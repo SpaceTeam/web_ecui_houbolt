@@ -463,7 +463,8 @@ function syncSequenceSliderTime(time)
     sequenceSliderTrack.style.animationName = "none";
 
     moveRule.deleteRule("0%");
-    moveRule.appendRule(createKeyframeString(0, newStartPosition))
+    moveRule.appendRule(createKeyframeString(0, newStartPosition));
+    moveRule.deleteRule("100%");
     moveRule.appendRule(createKeyframeString(1, sequenceTrackLength));
     setTimeout(function () {
         sequenceSliderTrack.style.transform = '';
