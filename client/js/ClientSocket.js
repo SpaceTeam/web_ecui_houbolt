@@ -833,6 +833,7 @@ socket.on('sequence-start', function() {
 socket.on('sequence-sync', function(time) {
     if (!isSequenceRunning)
     {
+        console.warn("got timer sync even though sequence wasn't running?");
         startTimer(jsonSequence.globals.startTime, jsonSequence.globals.endTime)
         startSequenceSlider();
     }
