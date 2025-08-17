@@ -49,6 +49,19 @@ function tabberButtonHandler(current, shouldIncrement, subTimestamps, popup, tim
     return current;
 }
 
+function stringifyActionValue(value) {
+    if (Array.isArray(value)) {
+        return [undefined, value.join(", ")];
+    }
+    else if (typeof(value) === 'object' && !Array.isArray(value) && value !== null) {
+        // NOTE this doesn't really cover all use cases, at some point we may need a more
+        // generic solution that manages to properly display all potential keys in one action item
+        let key = Object.keys(value)[0];
+        return [key, value[key].join(", ")];
+    }
+    return [undefined, undefined];
+}
+
 function initializeSequencePopup(popup, data, name, above) {
     if (data["timestamp"] == undefined && data["desc"] == undefined && data.actions == undefined ) {
         popup.remove();
@@ -88,9 +101,10 @@ function initializeSequencePopup(popup, data, name, above) {
                 let actionValue = actionElement.getElementsByClassName("sequence-action-value")[0];
 
                 let splitAction = actionKey.split(":");
+                let values = stringifyActionValue(actionGroup[actionKey]);
                 actionLabel.innerText = splitAction[0];
-                actionLabelSecondary.innerText = splitAction[1];
-                actionValue.innerText = actionGroup[actionKey].join(", ");
+                actionLabelSecondary.innerText = splitAction[1] != undefined ? splitAction[1] : values[0];
+                actionValue.innerText = values[1];
 
                 subContent.appendChild(actionElement);
             }
@@ -235,7 +249,9 @@ function createFullLine(duration, pixelsPerSecond) {
 function createSecondsMarkers(track, pixelsPerSecond, minorInterval = 1, majorInterval = 5, alignToZero = true) {
     let timeSinceLastMajor = Number.MIN_SAFE_INTEGER;
     if (alignToZero) {
-        timeSinceLastMajor = (Math.floor(Math.abs(sequenceStartTime / majorInterval)) + 1) * majorInterval * Math.sign(sequenceStartTime);
+        let sign = Math.sign(sequenceStartTime);
+        sign = sign == 0 ? -1 : 1;
+        timeSinceLastMajor = (Math.floor(Math.abs(sequenceStartTime / majorInterval)) + 1) * majorInterval * sign;
     }
 
     for (let time = Math.floor(sequenceStartTime); time <= sequenceEndTime; time = time + minorInterval)
