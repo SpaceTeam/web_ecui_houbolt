@@ -250,7 +250,7 @@ function createSecondsMarkers(track, pixelsPerSecond, minorInterval = 1, majorIn
     let timeSinceLastMajor = Number.MIN_SAFE_INTEGER;
     if (alignToZero) {
         let sign = Math.sign(sequenceStartTime);
-        sign = sign == 0 ? -1 : 1;
+        sign = sign == 0 ? -1 : sign;
         timeSinceLastMajor = (Math.floor(Math.abs(sequenceStartTime / majorInterval)) + 1) * majorInterval * sign;
     }
 
