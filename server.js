@@ -129,7 +129,7 @@ var onSequenceLoad = function (ioClient, socket)
     console.log(abortSequences);
 
 
-    socket.emit('sequence-load', [sequences, abortSequences, jsonSeq, jsonAbortSeq]);
+    ioClient.emit('sequence-load', [sequences, abortSequences, jsonSeq, jsonAbortSeq]);
 }
 
 var onCommandsLoad = function(ioClient, socket)
