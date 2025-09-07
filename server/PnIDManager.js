@@ -34,7 +34,10 @@ module.exports = class PnIDManager {
             let fileExt = path.split("/").pop().split(".").pop();
             if (fileExt == "kicad_sch" && !path.includes("backup")) {
                 console.log("Found schematic for parsing to PnID:", fileFullName);
-                PnIDManager.parsePnIDs([path]);
+                // timeout necessary because for some reason otherwise the file can read as having no content
+                setTimeout(function () {
+                    PnIDManager.parsePnIDs([path]);
+                }, 100);
             }
         });
         PnIDManager._watcher.on("change", path => {
@@ -42,7 +45,10 @@ module.exports = class PnIDManager {
             let fileExt = path.split("/").pop().split(".").pop();
             if (fileExt == "kicad_sch") {
                 console.log("Detected change in schematic, updating PnID:", fileFullName);
-                PnIDManager.parsePnIDs([path]);
+                // timeout necessary because for some reason otherwise the file can read as having no content
+                setTimeout(function () {
+                    PnIDManager.parsePnIDs([path]);
+                }, 100);
             }
         });
         PnIDManager._watcher.on("unlink", path => {
