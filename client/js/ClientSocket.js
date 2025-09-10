@@ -752,7 +752,7 @@ socket.on('sequence-load', function(jsonSeqsInfo) {
     jsonAbortSequence = jsonSeqsInfo[3];
 
     seqChart = new SequenceChart("sequenceChart", sequences[0]);
-    createSequenceSlider(jsonSequence, false);
+    createSequenceSlider(jsonSequence, params["spectator"]);
 
     $('.timer').text(jsonSequence.globals.startTime.toFixed(1));
     $('.timer').css("color", "green");

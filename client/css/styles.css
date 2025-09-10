@@ -402,6 +402,7 @@ hr {
 .ecui-select {
     width: 100%;
     height: 2.4rem;
+    cursor: pointer;
 }
 
 .btn-secondary {

@@ -4,22 +4,24 @@ $.get('/web_config/main', function(data) {
     //console.log("default:", data);
     ecuiConfig = data;
     let ecuiTitle = ecuiConfig["title"];
-    console.log("ecui config", ecuiConfig);
     if (ecuiTitle != "" || ecuiTitle != undefined)
     {
-        console.log("setting ecui title", ecuiTitle);
         $("#subtitle").text(ecuiTitle);
     }
 });
 
 async function initWebECUI()
 {
-
-
     let themeSwitcherContainer = $(`<div class="themeSwitcher"></div>`).appendTo($(document.body));
     initThemes(themeSwitcherContainer, "theming/", [{theme: "darkTheme", icon: "moon", type: "dark"},{theme: "lightTheme", icon: "brightness-high", type: "light"}]);
 
     themeSubscribe($("#icon"), function(event){logoThemeHandler(event)});
+
+    handleUrlParams(window.location);
+
+    if (params["stream"]) {
+        loadStreamTheme();
+    }
 }
 
 function logoThemeHandler(event)
@@ -53,6 +55,39 @@ function toggleEcuiCommandsPopup(button)
         popup.style.transform = `translate(-${(popup.offsetWidth - button.offsetWidth) / 2}px, 5px)`
         commandsPopupOpen = true;
     }
+}
+
+var params = {};
+
+function handleUrlParams(url)
+{
+    let urlParams = new URL(url.toLocaleString()).searchParams;
+    if (urlParams.get("spectator") != undefined) {
+        params["spectator"] = true;
+    }
+    else {
+        params["spectator"] = false;
+    }
+
+
+    if (urlParams.get("stream") != undefined) {
+        params["stream"] = true;
+    }
+    else {
+        params["stream"] = false;
+    }
+}
+
+function loadStreamTheme() {
+    console.log("Loading stream theme");
+    let head = document.getElementsByTagName('HEAD')[0];
+    let link = document.createElement('link');
+
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = 'css/streamTheme.css';
+
+    head.appendChild(link);
 }
 
 initWebECUI();

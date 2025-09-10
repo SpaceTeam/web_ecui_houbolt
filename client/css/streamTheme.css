@@ -1,0 +1,28 @@
+:root {
+    --background-primary: #000000;
+}
+
+body {
+    margin: 0px auto;
+    overflow: hidden;
+    --pnid-max-height: 100%;
+}
+
+.titleBarButton, #icon, #title-container, #versionLabel, #myTab, .logMenu, .themeSwitcher, .warning-bar {
+    display: none;
+}
+
+.ecui-select {
+    height: 3px;
+    opacity: 0;
+}
+
+.ecui-select::before {
+    content: '';
+    width: 100%;
+    border-top: 1px solid var(--background-secondary);
+}
+
+.sequence-node-name {
+    white-space: nowrap;
+}
