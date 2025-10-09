@@ -255,18 +255,24 @@ function updateCommandList(jsonStates, commandStates)
 	let count2 = 0;
 	let firstNames = {};
 	let secondNames = {};
+    for (let commandState of commandStates["can"])
+    {
+        if (commandState.includes("GSEConnection"))
+        {
+            //console.log("gse:", commandState, statesDict[commandState], jsonStates)
+        }
+    }
 	for (let commandInput of commandStateInputs)
 	{
 		let inputName = commandInput.dataset.commandStateName;
 		if (statesDict[inputName] !== undefined && commandStates["can"].includes(inputName))
 		{
 		    commandInput.value = statesDict[inputName]["value"];
+            hackShowHeartbeat(inputName, statesDict[inputName]["value"]);
 		}
 		else if (statesDict[inputName] !== undefined && commandStates["lora"].includes(inputName))
 		{
 		    commandInput.value = statesDict[inputName]["value"];
 		}
 	}
-
-	hackShowHeartbeat(commandStates);
 }
