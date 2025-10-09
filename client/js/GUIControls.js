@@ -267,4 +267,6 @@ function updateCommandList(jsonStates, commandStates)
 		    commandInput.value = statesDict[inputName]["value"];
 		}
 	}
+
+	hackShowHeartbeat(commandStates);
 }

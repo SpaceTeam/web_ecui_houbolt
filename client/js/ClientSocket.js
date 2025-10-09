@@ -641,6 +641,16 @@ function onChecklistTick(checkbox)
     if(master) socket.emit('checklist-tick', currId);
 }
 
+function sendCommand(name, params, testOnly = false)
+{
+    var commandsMsg = {};
+    commandsMsg["commandName"] = name;
+    commandsMsg["params"] = params;
+    commandsMsg["testOnly"] = false;
+    console.log(commandsMsg);
+    if(master) socket.emit('commands-set', [commandsMsg]);
+}
+
 function onCommandExecute(command)
 {
     var params = [];
@@ -650,13 +660,7 @@ function onCommandExecute(command)
         params.push(Number($(this).val()));
     });
 
-    
-    var commandsMsg = {};
-    commandsMsg["commandName"] = $(command).parent().attr('id');
-    commandsMsg["params"] = params;
-    commandsMsg["testOnly"] = false;
-    console.log(commandsMsg);
-    if(master) socket.emit('commands-set', [commandsMsg]);
+    sendCommand($(command).parent().attr('id'), params);
 }
 
 //-------------------------------------Controls on receiving Socket Messages---------------------------------

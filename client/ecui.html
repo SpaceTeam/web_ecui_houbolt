@@ -281,6 +281,24 @@
         </div>
         <div class="flex-spacer"></div>
         <div class="navbarInteractible">
+            <!-- this is a hack, remove after EuRoC 2025 -->
+            <div style="display: flex; flex-direction: column; align-items: center">
+                <i class="bi bi-activity"></i>
+                <div id="hack-heartbeat-engine">
+                    <span id="hack-heartbeat-engine-enabled" style="width: 2.2em"></span>
+                    <span id="hack-heartbeat-engine-timer"></span>
+                </div>
+                <div id="hack-heartbeat-fuel">
+                    <span id="hack-heartbeat-fuel-enabled" style="width: 2.2em"></span>
+                    <span id="hack-heartbeat-fuel-timer"></span>
+                </div>
+                <div id="hack-heartbeat-ox">
+                    <span id="hack-heartbeat-ox-enabled" style="width: 2.2em"></span>
+                    <span id="hack-heartbeat-ox-timer"></span>
+                </div>
+            </div>
+        </div>
+        <div class="navbarInteractible">
             <button class="btn btn-secondary m-auto titleBarButton" onclick="toggleEcuiCommandsPopup(this)"><i class="bi bi-list"></i></button>
             <div style="display: none" id="ecui-commands-popup">
                 <div>
