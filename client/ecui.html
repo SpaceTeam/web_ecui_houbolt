@@ -284,15 +284,15 @@
             <!-- this is a hack, remove after EuRoC 2025 -->
             <div style="display: flex; flex-direction: column; align-items: center">
                 <i class="bi bi-activity"></i>
-                <div id="hack-heartbeat-engine">
+                <div id="hack-heartbeat-engine" style="background-color: var(--background-secondary); border-radius: 4px; padding: 0.1em 0.2em 0.1em 0.2em; display: flex; font-size: 0.8em">
                     <span id="hack-heartbeat-engine-enabled" style="width: 2.2em"></span>
                     <span id="hack-heartbeat-engine-timer"></span>
                 </div>
-                <div id="hack-heartbeat-fuel">
+                <div id="hack-heartbeat-fuel" style="background-color: var(--background-secondary); border-radius: 4px; padding: 0.1em 0.2em 0.1em 0.2em; display: flex; font-size: 0.8em">
                     <span id="hack-heartbeat-fuel-enabled" style="width: 2.2em"></span>
                     <span id="hack-heartbeat-fuel-timer"></span>
                 </div>
-                <div id="hack-heartbeat-ox">
+                <div id="hack-heartbeat-ox" style="background-color: var(--background-secondary); border-radius: 4px; padding: 0.1em 0.2em 0.1em 0.2em; display: flex; font-size: 0.8em">
                     <span id="hack-heartbeat-ox-enabled" style="width: 2.2em"></span>
                     <span id="hack-heartbeat-ox-timer"></span>
                 </div>
@@ -309,6 +309,9 @@
                 </div>
                 <div>
                     <button class="btn btn-secondary m-auto titleBarButton" onclick="onLLRestart(this);">Restart LL</button>
+                </div>
+                <div>
+                    <button class="btn btn-secondary m-auto titleBarButton" onclick="toggleHeartbeat()">Restart LL</button>
                 </div>
             </div>
         </div>

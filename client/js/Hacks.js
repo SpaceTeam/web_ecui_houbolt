@@ -10,6 +10,19 @@ var fuelHeartbeatTimerElement = $("#hack-heartbeat-fuel-timer")[0];
 var oxHeartbeatEnableElement = $("#hack-heartbeat-ox-enabled")[0];
 var oxHeartbeatTimerElement = $("#hack-heartbeat-ox-timer")[0];
 
+var heartbeatShouldOn = false;
+function toggleHeartbeat()
+{
+    if (heartbeatShouldOn)
+    {
+        setHeartbeatActive(true);
+    }
+    else
+    {
+        setHeartbeatActive(false);
+    }
+}
+
 function startHeartbeatPoll()
 {
     setInterval(pollHeartbeatState, 5000);
@@ -35,41 +48,38 @@ function setHeartbeatActive(active)
 
 function hackShowHeartbeat(name, value)
 {
-    if (name.includes("GSEConnection"))
-    {
-        console.log("found heartbeat", name, value);
-        console.log(engineHeartbeatEnableElement)
-    }
     switch (name)
     {
         case "rocket:GSEConnectionAbortEnable":
             if (value == 0)
             {
-                engineHeartbeatEnableElement.innerText = "Off";
+                heartbeatShouldOn = false;
+                engineHeartbeatEnableElement.innerText = "E: Off";
             }
             else
             {
-                engineHeartbeatEnableElement.innerText = "On";
+                heartbeatShouldOn = true;
+                engineHeartbeatEnableElement.innerText = "E: On";
             }
             break;
         case "fuel_rocket:GSEConnectionAbortEnable":
             if (value == 0)
             {
-                fuelHeartbeatEnableElement.innerText = "Off";
+                fuelHeartbeatEnableElement.innerText = "F: Off";
             }
             else
             {
-                fuelHeartbeatEnableElement.innerText = "On";
+                fuelHeartbeatEnableElement.innerText = "F: On";
             }
             break;
         case "ox_rocket:GSEConnectionAbortEnable":
             if (value == 0)
             {
-                oxHeartbeatEnableElement.innerText = "Off";
+                oxHeartbeatEnableElement.innerText = "O: Off";
             }
             else
             {
-                oxHeartbeatEnableElement.innerText = "On";
+                oxHeartbeatEnableElement.innerText = "O: On";
             }
             break;
         case "rocket:GSEConnectionAbortTimer":
