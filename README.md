@@ -44,10 +44,10 @@ To run ECUI either log into the teststand server VM (can be skipped if run local
 Then run
 
 ```bash
-node server.js port=3001
+node server.js port=3001 config="/path/to/config/repo"
 ```
 
-to start the ECUI webserver. Instead of node it's convenient to use `nodemon` instead, especially during
+to start the ECUI webserver. Instead of `node` it can be convenient to use `nodemon` instead, especially during
 development as nodemon automatically detects changes to files and restarts the server if needed.
 
 It might be necessary to (re)start the LLServer (again, can be skipped for local development), this can be done by
