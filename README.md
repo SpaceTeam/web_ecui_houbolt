@@ -12,16 +12,16 @@ To enable all of these features, multiple Software Layers have been developed.
 
 ## Table of Contents
 
-1. [Run](#run)
-2. [Install](#install)
-3. [Docker](#docker)
-4. [Architecture](#architecture)
-5. [Web-Client](#web-client)
-6. [Web-Server](#web-server)
-7. [LLServer](#llserver-low-level-server)
-8. [ECUI-Protocols](#ecui-protocols)
-9. [JSON-Formats](#json-formats)
-10. [Appendix](#appendix)
+1. [Init](#init)
+2. [Run](#run)
+3. [Architecture](#architecture)
+4. [Web-Client](#web-client)
+5. [Web-Server](#web-server)
+6. [LLServer](#llserver-low-level-server)
+7. [ECUI-Protocols](#ecui-protocols)
+8. [JSON-Formats](#json-formats)
+9. [Appendix](#appendix)
+10. [Legacy Instructions](#legacy-instructions)
 
 ## Init
 
@@ -50,6 +50,8 @@ node server.js port=3001 config="/path/to/config/repo"
 to start the ECUI webserver. Instead of `node` it can be convenient to use `nodemon` instead, especially during
 development as nodemon automatically detects changes to files and restarts the server if needed.
 
+The config parameter is optional, see [Load Configs](#Load Configs) for more information.
+
 It might be necessary to (re)start the LLServer (again, can be skipped for local development), this can be done by
 going to its directory (on the teststand server next to the ECUI directory) and then running `./llserver_ecui_houbolt`
 Then press Enter wherever it asks you to (usually once or twice on init when finding modules) and then it should be running.
@@ -66,66 +68,6 @@ then you can refresh the Webpage in the Browser.
 To view the logs go in FileZilla into the TXV_ECUI_LLServer -> logs folder and download the desired log file
 
 
-## Install
-
-To install the ecui, pull both the TXV_ECUI_WEB and the TXV_ECUI_LLServer Repositories. 
-For the WebServer **node** and **Socket.io** are required. 
-For the LLServer you only need gcc and cmake
-If the Warning Light Neopixel is also desired, ask an avionics guy for help
-
-Commands to run the ecui
-
-In the TXV_ECUI_WEB folder execute
-
-	bash install.sh
-	
-and in TXV_ECUI_LLServer, if no console ouputs are required
-
-	bash install.sh
-	
-else exec
-
-	cmake . -DCMAKE_BUILD_TYPE:STRING=Release
-	make -j 3
-	./TXV_ECUI_LLSERVER
-
-if Warning Light is installed execute
-
-	sudo python3 ../warnlight/testapp_sock.py &
-	
-beforehand
-
-## Docker
-Alternatively TXV_ECUI_WEB (GUI) could be deployed via docker. Use the docker file found in the repo.
-
-NOTE: you need to have a valid github ssh key in order to pull the private repository
-```
-cd web_ecui_houbolt
-DOCKER_BUILDKIT=0 docker build --build-arg branch=dev --build-arg ssh_key_path=<your_private_ssh_key_path> -t web_ecui .
-docker run -p 80:80 -p 5555:5555 -v <path_to_config_repo>/config_ecui/:/home/config_ecui/ -it --rm --name web-ecui web_ecui
-
-```
-
-For subsequent runs you can either create a new container ('docker run' cmd) or reuse the old one (use ls to figure out the name of the container):
-
-```
-docker container ls -a
-docker start <name/of/the/container>
-```
-
-If you end using docker don't forget to change the IP address that LLServer will try to reach the server (config.json)
-
-Finally you will have to setup port forwading using iptables (I couldn't test that, but the commands should be the following) on the RPI:
-
-```
-sudo sysctl -w net.ipv4.ip_forward=1
-sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j DNAT --to 172.17.0.2:80
-sudo iptables -A FORWARD -p tcp -d 172.17.0.2 --dport 80 -j ACCEPT
-```
-
-1. eth0: is the interface to outside
-2. 172.17.0.2: is the address of the docker container
-3. 80: is the port for the webserver
 
 
 ## Architecture
@@ -575,3 +517,70 @@ The Mapping is necessary to map each Device to a port on the Hedgehog Controller
 # Appendix
 
 The LLServer is designed to enable a switch of any Micro-Controller, but the Interface has to be implemented first.
+
+
+# Legacy Instructions
+
+Some instructions that aren't fully relevant anymore, but also aren't fully un-relevant
+
+
+## Install
+
+To install the ecui, pull both the TXV_ECUI_WEB and the TXV_ECUI_LLServer Repositories. 
+For the WebServer **node** and **Socket.io** are required. 
+For the LLServer you only need gcc and cmake
+If the Warning Light Neopixel is also desired, ask an avionics guy for help
+
+Commands to run the ecui
+
+In the TXV_ECUI_WEB folder execute
+
+	bash install.sh
+	
+and in TXV_ECUI_LLServer, if no console ouputs are required
+
+	bash install.sh
+	
+else exec
+
+	cmake . -DCMAKE_BUILD_TYPE:STRING=Release
+	make -j 3
+	./TXV_ECUI_LLSERVER
+
+if Warning Light is installed execute
+
+	sudo python3 ../warnlight/testapp_sock.py &
+	
+beforehand
+
+## Docker
+Alternatively TXV_ECUI_WEB (GUI) could be deployed via docker. Use the docker file found in the repo.
+
+NOTE: you need to have a valid github ssh key in order to pull the private repository
+```
+cd web_ecui_houbolt
+DOCKER_BUILDKIT=0 docker build --build-arg branch=dev --build-arg ssh_key_path=<your_private_ssh_key_path> -t web_ecui .
+docker run -p 80:80 -p 5555:5555 -v <path_to_config_repo>/config_ecui/:/home/config_ecui/ -it --rm --name web-ecui web_ecui
+
+```
+
+For subsequent runs you can either create a new container ('docker run' cmd) or reuse the old one (use ls to figure out the name of the container):
+
+```
+docker container ls -a
+docker start <name/of/the/container>
+```
+
+If you end using docker don't forget to change the IP address that LLServer will try to reach the server (config.json)
+
+Finally you will have to setup port forwading using iptables (I couldn't test that, but the commands should be the following) on the RPI:
+
+```
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j DNAT --to 172.17.0.2:80
+sudo iptables -A FORWARD -p tcp -d 172.17.0.2 --dport 80 -j ACCEPT
+```
+
+1. eth0: is the interface to outside
+2. 172.17.0.2: is the address of the docker container
+3. 80: is the port for the webserver
