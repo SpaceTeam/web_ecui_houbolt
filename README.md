@@ -56,20 +56,6 @@ It might be necessary to (re)start the LLServer (again, can be skipped for local
 going to its directory (on the teststand server next to the ECUI directory) and then running `./llserver_ecui_houbolt`
 Then press Enter wherever it asks you to (usually once or twice on init when finding modules) and then it should be running.
 
-To edit a Sequence or Checklist open FileZilla on your PC and connect to the ECUI
-Then open the TXV_ECUI_WEB -> sequence folder and Rightclick on 
-Sequence.json or Checklist.json and and choose edit
-
-then you can edit the sequence or checklist
-
-when you're done press CTRL+S and go back to FileZilla. Choose "Delete Local File and upload" and click Yes
-then you can refresh the Webpage in the Browser.
-
-To view the logs go in FileZilla into the TXV_ECUI_LLServer -> logs folder and download the desired log file
-
-
-
-
 ## Architecture
 
 The user interface is written in HTML, CSS and JavaScript. This approach helps to generate a dynamic GUI and 
