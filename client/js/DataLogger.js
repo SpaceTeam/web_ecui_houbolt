@@ -32,12 +32,12 @@ function saveLog()
     console.log(JSON.stringify(log));
 }
 
-function logStates(stateList)
+function logTelemetryList(telemetryList)
 {
     if (logStartDateTime != 0) {
         log["log"].push({
             time: new Date() - logStartDateTime,
-            states: stateList,
+            telemetryList: telemetryList,
         });
     }
 }
@@ -74,7 +74,7 @@ function replayLog(fixedDelay = undefined)
     //store actual time before executing this log step for later use
     lastLogStepTime = new Date();
     //display log entry
-    updatePNID(logEntry["states"]); //this is potentially very long compared to the rest of the logging logic
+    updatePNID(logEntry["telemetryList"]); //this is potentially very long compared to the rest of the logging logic
     let executionTime = new Date() - lastLogStepTime;
     executionTimes.push(executionTime);
     

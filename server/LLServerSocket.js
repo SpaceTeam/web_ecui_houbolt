@@ -137,6 +137,10 @@ module.exports = {
                 var msgBuffer = Buffer.concat([Buffer.from([MSB, LSB]),Buffer.from(strMsg, 'ascii')])
                 client.write(msgBuffer);
             }
+            else
+            {
+                console.error("message exceeded max length!", strMsgLen, "/", MAX_MSG_LENGTH)
+            }
         }
         else
         {

@@ -527,48 +527,48 @@ ioClient.on('connection', function(socket){
             eventEmitter.emit('onAutoAbortChange', ioClient, socket, isAutoAbortActive);
         });
 
-        socket.on('rpi-halt', function(){
-            console.log('rpi-halt');
-            if (master === socket.id) {
-                eventEmitter.emit('onRpiHalt', ioClient, socket);
+        //socket.on('rpi-halt', function(){
+        //    console.log('rpi-halt');
+        //    if (master === socket.id) {
+        //        eventEmitter.emit('onRpiHalt', ioClient, socket);
+        //
+        //    }
+        //});
 
-            }
-        });
+        //socket.on('ll-restart', function(){
+        //    console.log('ll-restart');
+        //    if (master === socket.id) {
+        //        eventEmitter.emit('onLLRestart', ioClient, socket);
+        //
+        //    }
+        //});
 
-        socket.on('ll-restart', function(){
-            console.log('ll-restart');
-            if (master === socket.id) {
-                eventEmitter.emit('onLLRestart', ioClient, socket);
+    socket.on('log-export', function(){
+        console.log('export-log');
+        if (master == socket.id) {
+        eventEmitter.emit('onExportLog', ioClient, socket);
+        }
+    });
 
-            }
-        });
-
-	socket.on('log-export', function(){
-	    console.log('export-log');
-	    if (master == socket.id) {
-		eventEmitter.emit('onExportLog', ioClient, socket);
-	    }
-	});
-
-        socket.on('checklist-start', function(msg){
-            console.log('checklist-start');
-            //everyone is allowed to call for checklist
-            eventEmitter.emit('onChecklistStart', ioClient, socket);
-        });
-
-        socket.on('checklist-save', function(msg){
-            console.log('checklist-save');
-            if (master === socket.id) {
-                checklistManMod.saveChecklist(msg);
-            }
-        });
-
-        socket.on('checklist-tick', function(msg){
-            console.log('checklist-tick');
-            if (master === socket.id) {
-                eventEmitter.emit('onChecklistTick', ioClient, socket, msg)
-            }
-        });
+        //socket.on('checklist-start', function(msg){
+        //    console.log('checklist-start');
+        //    //everyone is allowed to call for checklist
+        //    eventEmitter.emit('onChecklistStart', ioClient, socket);
+        //});
+        //
+        //socket.on('checklist-save', function(msg){
+        //    console.log('checklist-save');
+        //    if (master === socket.id) {
+        //        checklistManMod.saveChecklist(msg);
+        //    }
+        //});
+        //
+        //socket.on('checklist-tick', function(msg){
+        //    console.log('checklist-tick');
+        //    if (master === socket.id) {
+        //        eventEmitter.emit('onChecklistTick', ioClient, socket, msg)
+        //    }
+        //});
 
         socket.on('sequence-start', function(msg){
             console.log('sequence-start');
@@ -604,16 +604,18 @@ ioClient.on('connection', function(socket){
             }
         });
 
-        socket.on('states-get', function(jsonStates){
-            console.log('states-get');
-            llServerMod.sendMessage(llServer, 'states-get', jsonStates);
+        // ask for a full set of telemetry values
+        socket.on('get_telemetry', function(jsonStates){
+            console.log('get_telemetry');
+            llServerMod.sendMessage(llServer, 'get_telemetry', {});
             
         });
 
-		socket.on('states-set', function(jsonStates){
-            console.log('states-set');
+        // set individual parameter
+        socket.on('set_parameter', function(jsonStates){
+            console.log('set_parameter');
             if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'states-set', jsonStates);
+                llServerMod.sendMessage(llServer, 'set_parameter', jsonStates);
             }
 
         });
@@ -623,40 +625,40 @@ ioClient.on('connection', function(socket){
             llServerMod.sendMessage(llServer, 'states-load');
         });
 
-        socket.on('states-start', function(jsonStates){
-            console.log('states-start');
-            llServerMod.sendMessage(llServer, 'states-start');
-        });
+        //socket.on('states-start', function(jsonStates){
+        //    console.log('states-start');
+        //    llServerMod.sendMessage(llServer, 'states-start');
+        //});
 
-        socket.on('commands-set', function(jsonCommands){
-            console.log('commands-set');
-            if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'commands-set', jsonCommands);
-            }
+        //socket.on('commands-set', function(jsonCommands){
+        //    console.log('commands-set');
+        //    if (master === socket.id) {
+        //        llServerMod.sendMessage(llServer, 'commands-set', jsonCommands);
+        //    }
+        //
+        //});
+        //
+        //socket.on('commands-load', function(jsonCommands){
+        //    console.log('commands-load');
+        //    eventEmitter.emit('onCommandsLoad', ioClient, socket);
+        //
+        //});
 
-        });
-
-        socket.on('commands-load', function(jsonCommands){
-            console.log('commands-load');
-            eventEmitter.emit('onCommandsLoad', ioClient, socket);
-
-        });
-
-        socket.on('pythonScript-runChecklistItem', function(jsonPythonContent){
-            console.log('pythonScript-runChecklistItem');
-            if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'pythonScript-runChecklistItem', jsonPythonContent);
-            }
-
-        });
-
-        socket.on('pythonScript-start', function(scriptPath){
-            console.log('pythonScript-start');
-            if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'pythonScript-start', scriptPath);
-            }
-
-        });
+        //socket.on('pythonScript-runChecklistItem', function(jsonPythonContent){
+        //    console.log('pythonScript-runChecklistItem');
+        //    if (master === socket.id) {
+        //        llServerMod.sendMessage(llServer, 'pythonScript-runChecklistItem', jsonPythonContent);
+        //    }
+        //
+        //});
+        //
+        //socket.on('pythonScript-start', function(scriptPath){
+        //    console.log('pythonScript-start');
+        //    if (master === socket.id) {
+        //        llServerMod.sendMessage(llServer, 'pythonScript-start', scriptPath);
+        //    }
+        //
+        //});
 
         socket.on('disconnect', function(msg){
             console.log('user disconnected');
@@ -674,8 +676,8 @@ ioClient.on('connection', function(socket){
     
             if (clients.length === 0)
             {
-                llServerMod.sendMessage(llServer, 'abort');
-                llServerMod.sendMessage(llServer, 'states-stop');
+                //llServerMod.sendMessage(llServer, 'abort');
+                //llServerMod.sendMessage(llServer, 'states-stop');
             }
         });
 
@@ -692,79 +694,59 @@ ioClient.on('connection', function(socket){
 var llServerMsg = "";
 
 function processLLServerMessage(data) {
-    // Print received client data and length.
-    llServerMsg += data;
-    let index = llServerMsg.lastIndexOf("\n");
-    if (index !== -1)
-    {
-        dataArr = llServerMsg.split("\n");
-
-        llServerMsg = llServerMsg.substring(index+1);
-        if (llServerMsg !== "")
-            console.log("uncomplete substring msg:", llServerMsg);
-
-        if (dataArr.length > 2)
-        {
-            console.log("multiple messages detected");
-
-        }
-
-        let jsonData;
-        for (let dataInd = 0; dataInd < dataArr.length-1; dataInd++) // ignore last empty string
-        {
-            //console.log(dataArr[dataInd]);
-            jsonData = JSON.parse(dataArr[dataInd]);
-
-            let type = jsonData.type;
-
-            switch (type) {
-                case "TEST":
-                    console.log("hello");
-                    break;
-                case "timer-start":
-                    console.log("timer-start");
-                    eventEmitter.emit('onTimerStart', ioClient);
-                    break;
-                case "timer-sync":
-                    console.log("timer-sync");
-                    let time = Math.round(jsonData.content.toPrecision(3) * 100) / 100;
-                    console.log(jsonData.content.toPrecision(3));
-                    console.log(time);
-                    eventEmitter.emit('onSequenceSync', ioClient, time);
-                    break;
-                case "timer-done":
-                    console.log("timer-done");
-                    eventEmitter.emit('onSequenceDone', ioClient);
-                    break;
-                case "states":
-                    ioClient.emit('states', jsonData.content);
-                    break;
-                case "states-load":
-                    console.log("states-load");
-                    ioClient.emit('states-load', jsonData.content);
-                    break;
-                case "states-init":
-                    console.log("states-init");
-                    ioClient.emit('states-init', jsonData.content);
-                    break;
-                case "commands-load":
-                    console.log("commands-load llserver");
-                    //commandsJson += jsonData.content;
-                    ioClient.emit('commands-load', jsonData.content);
-                    break;
-                case "commands-error":
-                    console.log("commands-error");
-                    ioClient.emit('commands-error', jsonData.content);
-                    break;
-                case "abort":
-                    console.log("abort from llserver");
-                    eventEmitter.emit('sequence-abort', ioClient, jsonData.content);
-                    break;
-                case "auto-abort-change":
-                    console.log("auto abort change from llserver", jsonData.content);
-                    ioClient.emit('auto-abort-change', jsonData.content);
-            }
-        }
+    let jsonData = JSON.parse(data);
+    
+    let type = jsonData.type;
+    
+    switch (type) {
+        case "TEST":
+            console.log("hello");
+            break;
+        case "timer-start":
+            console.log("timer-start");
+            eventEmitter.emit('onTimerStart', ioClient);
+            break;
+        case "timer-sync":
+            console.log("timer-sync");
+            let time = Math.round(jsonData.content.toPrecision(3) * 100) / 100;
+            console.log(jsonData.content.toPrecision(3));
+            console.log(time);
+            eventEmitter.emit('onSequenceSync', ioClient, time);
+            break;
+        case "timer-done":
+            console.log("timer-done");
+            eventEmitter.emit('onSequenceDone', ioClient);
+            break;
+        case "telemetry":
+            ioClient.emit('telemetry', jsonData.content);
+            break;
+        case "telemetry_delta":
+            ioClient.emit('telemetry_delta', jsonData.content);
+            break;
+            //case "states-load":
+            //    console.log("states-load");
+            //    ioClient.emit('states-load', jsonData.content);
+            //    break;
+            //case "states-init":
+            //    console.log("states-init");
+            //    ioClient.emit('states-init', jsonData.content);
+            //    break;
+        case "commands-load":
+            console.log("commands-load llserver");
+            //commandsJson += jsonData.content;
+            ioClient.emit('commands-load', jsonData.content);
+            break;
+        case "commands-error":
+            console.log("commands-error");
+            ioClient.emit('commands-error', jsonData.content);
+            break;
+        case "abort":
+            console.log("abort from llserver");
+            eventEmitter.emit('sequence-abort', ioClient, jsonData.content);
+            break;
+        case "auto-abort-change":
+            console.log("auto abort change from llserver", jsonData.content);
+            ioClient.emit('auto-abort-change', jsonData.content);
     }
 }
 
@@ -777,9 +759,9 @@ function onLLServerConnect()
     {
         console.log('llserver-connect init');
         ioClient.emit("commands-clear");
-        llServerMod.sendMessage(llServer, 'commands-load');
-        llServerMod.sendMessage(llServer, 'states-load');
-        llServerMod.sendMessage(llServer, 'states-start');
+        //llServerMod.sendMessage(llServer, 'commands-load');
+        //llServerMod.sendMessage(llServer, 'states-load');
+        //llServerMod.sendMessage(llServer, 'states-start');
     }
 }
 

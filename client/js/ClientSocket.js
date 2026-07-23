@@ -9,7 +9,6 @@ var jsonSensors = {};
 var jsonStateLabels = [];
 var checklistLoaded = false;
 var isContinousTransmission = true;
-var latestStates = {};
 
 var seqChart = new SequenceChart("sequenceChart", "Sequence");
 
@@ -525,13 +524,8 @@ function onAutoAbortChange(checkbox)
 
 function onInitValues()
 {
-    let states = [];
-    for (state in latestStates)
-    {
-        states.push({"name": state, "value": latestStates[state]["value"], "timestamp": latestStates[state]["timestamp"]});
-    }
-    console.log(latestStates, states);
-    loadValuesPNID(states);
+    let telemetryList = reconstructTelemetryList();
+    loadValuesPNID(telemetryList);
 }
 
 function onRpiHalt()
@@ -702,9 +696,9 @@ socket.on('master-lock', (flag) => {
 socket.on('connect', function() 
 {
     socket.emit('checklist-start'); 
-    socket.emit('commands-load'); 
-    socket.emit('states-load'); 
-    socket.emit('states-start');
+    //socket.emit('commands-load');
+    //socket.emit('states-load');
+    //socket.emit('states-start');
     socket.emit('pythonScript-start', '/home/config_ecui/python/water_cycle_control.py');
     $('#webStatusBar').attr("hidden", "");
     $('#webStatusBar').text(null);
@@ -912,20 +906,22 @@ function timerStop(timeEnd)
 }
 
 var firstSensorFetch = true;
-var statesPrintRegex = /^(:sensor)|gui:/g
+var telemetryPrintRegex = /^(:sensor)|gui:/g;
 
-function onStates(jsonStates)
+function onTelemetry(telemetryList)
 {
-    // console.log('states');
-    //console.log(JSON.stringify(jsonStates, null, 2));
+    //console.log("telemetry list\n",JSON.stringify(telemetryList, null, 2));
 
     //PRINT non sensor values only
-    for (index in jsonStates)
+    for (let node of telemetryList.nodes)
     {
-    	if (jsonStates[index]["name"].match(statesPrintRegex))
-    	{
-    		console.log(JSON.stringify(jsonStates[index], null, 2))		
-    	}
+        for (let telemetry of node.telemetry)
+        {
+            if (telemetry.name.match(telemetryPrintRegex) || telemetry.raw_name.match(telemetryPrintRegex))
+            {
+                console.log(JSON.stringify(telemetry, null, 2));
+            }
+        }
     }
 
     // for (index in jsonStates)
@@ -935,57 +931,59 @@ function onStates(jsonStates)
     // 		console.log(JSON.stringify(jsonStates[index], null, 2))		
     // 	}
     // }
-    updateCommandList(jsonStates, commandStates);
-    updatePNID(jsonStates);
+    //updateCommandList(jsonStates, commandStates);
+    updatePNID(telemetryList);
 }
 
-socket.on('states', function(jsonStates) {
-    for (state of jsonStates)
-    {
-        latestStates[state["name"]] = {"value": state["value"], "timestamp": state["timestamp"]};
-    }
-    onStates(jsonStates);
+socket.on('telemetry', function(telemetryList) {
+    updateTelemetryCache(telemetryList);
+    onTelemetry(telemetryList);
 });
 
-socket.on('states-load', function(jsonStates) {
-    if (!hasLoadedStates) {
-        console.log('states-load');
-        console.log(jsonStates);
-        jsonStateLabels = jsonStates;
-        setStateNamesPNID(jsonStateLabels);
-        if (statesLoadTimer === undefined) {
-            // see comment in commands-load for more info
-            statesLoadTimer = setTimeout(() => {
-                hasLoadedStates = true;
-                statesLoadTimer = undefined;
-            }, 10000);
-        }
-    } else {
-        console.log('states-load skipped because already loaded');
-    }
-    
+socket.on('telemetry_delta', function(telemetryList) {
+    updateTelemetryCache(telemetryList);
+    onTelemetry(telemetryList);
 });
 
-socket.on('states-init', function(jsonStates) {
-    if (!hasInitStates) {
-        console.log('states-init');
-        console.log(jsonStates);
-        for (state of jsonStates)
-        {
-            //console.log(state);
-            latestStates[state["name"]] = {"value": state["value"], "timestamp": state["timestamp"]};
-        }
-        onStates(jsonStates);
-        if (statesInitTimer === undefined) {
-            statesInitTimer = setTimeout(() => {
-                hasInitStates = true;
-                statesInitTimer = undefined;
-            }, 10000);
-        }
-    } else {
-        console.log('states-init skipped because already initialized once');
-    }
-});
+//socket.on('states-load', function(jsonStates) {
+//    if (!hasLoadedStates) {
+//        console.log('states-load');
+//        console.log(jsonStates);
+//        jsonStateLabels = jsonStates;
+//        setStateNamesPNID(jsonStateLabels);
+//        if (statesLoadTimer === undefined) {
+//            // see comment in commands-load for more info
+//            statesLoadTimer = setTimeout(() => {
+//                hasLoadedStates = true;
+//                statesLoadTimer = undefined;
+//            }, 10000);
+//        }
+//    } else {
+//        console.log('states-load skipped because already loaded');
+//    }
+//
+//});
+
+//socket.on('states-init', function(jsonStates) {
+//    if (!hasInitStates) {
+//        console.log('states-init');
+//        console.log(jsonStates);
+//        for (state of jsonStates)
+//        {
+//            //console.log(state);
+//            telemetryCache[state["name"]] = {"value": state["value"], "timestamp": state["timestamp"]};
+//        }
+//        onStates(jsonStates);
+//        if (statesInitTimer === undefined) {
+//            statesInitTimer = setTimeout(() => {
+//                hasInitStates = true;
+//                statesInitTimer = undefined;
+//            }, 10000);
+//        }
+//    } else {
+//        console.log('states-init skipped because already initialized once');
+//    }
+//});
 
 socket.on('script-feedback', function (feedback) {
     onServerScriptFeedback(feedback);
