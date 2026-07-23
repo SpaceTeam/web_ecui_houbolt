@@ -295,10 +295,10 @@ var onTimerStart = function (ioClient) {
 
 var onMasterChange = function (socket) {
     if(master === socket.id){
-	    socket.emit('master-change', 'master');
+        socket.emit('master-change', 'master');
     }
     else {
-	    socket.emit('master-change', 'client');
+        socket.emit('master-change', 'client');
     }
 }
 
@@ -494,9 +494,9 @@ ioClient.on('connection', function(socket){
             if((!masterLocked || (masterSocket != null && socket.handshake.address ===  masterSocket.handshake.address)) && !sequenceRunning) {
                 console.log('change master to ' + socket.id + ' ' + socket.handshake.address);
 
-				//TODO: adapt to states
-				// //disable servos here since old master isn't allowed to do so anymore
-				// llServerMod.sendMessage(llServer, 'servos-disable');
+                //TODO: adapt to states
+                // //disable servos here since old master isn't allowed to do so anymore
+                // llServerMod.sendMessage(llServer, 'servos-disable');
 
                 master = socket.id;
                 eventEmitter.emit('onMasterChange', socket);
@@ -773,15 +773,15 @@ function onLLServerDisconnect()
 }
 
 function getClientSocketById (id) {
-	for(var i = 0; i < clients.length; i++) {
-		if(clients[i].id === id) return clients[i];
-	}
-	return null;
+    for(var i = 0; i < clients.length; i++) {
+        if(clients[i].id === id) return clients[i];
+    }
+    return null;
 }
 
 app.get('/', function(req, res){
     res.sendFile(path + 'ecui.html');
-	//res.sendFile(path + '404.html')
+    //res.sendFile(path + '404.html')
 });
 
 app.get('/pnidList', function(req, res){
@@ -791,32 +791,32 @@ app.get('/pnidList', function(req, res){
 
 app.get('/web_config/main', (req, res) => {
     console.log("requested ecui config");
-	res.sendFile(pathMod.join(configPath, webConfigSubPath, 'ecui_config.json'))
+    res.sendFile(pathMod.join(configPath, webConfigSubPath, 'ecui_config.json'))
 });
 
 app.get('/web_config/scripts', (req, res) => {
     console.log("requested scripts config");
-	res.sendFile(pathMod.join(configPath, webConfigSubPath, 'server_scripts.json'))
+    res.sendFile(pathMod.join(configPath, webConfigSubPath, 'server_scripts.json'))
 });
 
 app.get('/pnid_config/custom', (req, res) => {
     console.log("requested config");
-	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'config.json'))
+    res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'config.json'))
 });
 
 app.get('/pnid_config/default', (req, res) => {
     console.log("requested default config");
-	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'defaultConfig.json'))
+    res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'defaultConfig.json'))
 });
 
 app.get('/pnid_config/thresholds', (req, res) => {
     console.log("requested thresholds definitions");
-	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'thresholds.json'))
+    res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'thresholds.json'))
 });
 
 app.get('/pnid_config/state_machines', (req, res) => {
     console.log("requested state machine definitions");
-	res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'stateMachines.json'))
+    res.sendFile(pathMod.join(configPath, pnidConfigSubPath, 'stateMachines.json'))
 });
 
 app.get('/pnid_config/grafana', (req, res) => {

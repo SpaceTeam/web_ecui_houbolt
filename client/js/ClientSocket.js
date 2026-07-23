@@ -59,10 +59,10 @@ $('#outputAssuranceModal').on('show.bs.modal', function (event) {
 var mouseDown = false;
 $('.servo-slider').mousedown(function() {
     mouseDown = true;
-	console.log('mouse down')
+    console.log('mouse down')
 }).mouseup(function() {
     mouseDown = false;
-	console.log('mouse up')
+    console.log('mouse up')
 });
 
 function onCheckboxModal(checkbox)
@@ -98,35 +98,35 @@ function onModalReject()
 // Set colored progress bar in servo slider for visual feedback
 function refreshServoFeedback(jsonSen, shallSetSliderToFeedbackPosition){
 
-	if(jsonSen.name.includes("Valve")){
-		var sliderId = null;
-		if(jsonSen.name.includes("fuel")){ sliderId = "#fuelMainValve";}
-		else if(jsonSen.name.includes("Supercharge")){ sliderId = "#oxSuperchargeValve"; }
-		else if(jsonSen.name.includes("MainValve")){ sliderId = "#oxMainValve";}
-		
-		if(sliderId != null){
-			// Should probably do something different in production on an out of range feedback value
-			var servoPercent = jsonSen.value;
-			if(jsonSen.value > $(sliderId).prop('max')) servoPercent = $(sliderId).prop('max');
-			if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
+    if(jsonSen.name.includes("Valve")){
+        var sliderId = null;
+        if(jsonSen.name.includes("fuel")){ sliderId = "#fuelMainValve";}
+        else if(jsonSen.name.includes("Supercharge")){ sliderId = "#oxSuperchargeValve"; }
+        else if(jsonSen.name.includes("MainValve")){ sliderId = "#oxMainValve";}
 
-			// Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
-			feedbackValue = Math.trunc(jsonSen.value)
-			
-			if(sliderId != "#oxSuperchargeValve"){
-				var color = "#9C9C9C";
-				if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
-				$(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
+        if(sliderId != null){
+            // Should probably do something different in production on an out of range feedback value
+            var servoPercent = jsonSen.value;
+            if(jsonSen.value > $(sliderId).prop('max')) servoPercent = $(sliderId).prop('max');
+            if(jsonSen.value < $(sliderId).prop('min')) servoPercent = $(sliderId).prop('min');
 
-				if (shallSetSliderToFeedbackPosition)
-				{
-					$(sliderId).val(feedbackValue)
-				}
-			}
-			
-			$(sliderId+"Fb").text(feedbackValue);
-		}
-	}
+            // Set color bar inside the range slider to the servo feeback value (use a linear gradient without linear color distribution)
+            feedbackValue = Math.trunc(jsonSen.value)
+
+            if(sliderId != "#oxSuperchargeValve"){
+                var color = "#9C9C9C";
+                if(document.getElementById("manualEnableCheck1").checked) color = "#522E63";
+                $(sliderId).css('background', '-webkit-gradient(linear, left top, right top, color-stop('+servoPercent+'%, '+color+'), color-stop('+servoPercent+'%, #D7DCDF))');
+
+                if (shallSetSliderToFeedbackPosition)
+                {
+                    $(sliderId).val(feedbackValue)
+                }
+            }
+
+            $(sliderId+"Fb").text(feedbackValue);
+        }
+    }
 }
 
 //-------------------------------------Utility functions for ECUI,Socket,Timing---------------------------------
@@ -454,7 +454,7 @@ function onMasterLockClicked(cbox) {
 }
 
 function onMasterRequestPressed() {
-	socket.emit('request-master');
+    socket.emit('request-master');
 }
 
 function onSendPostSequenceComment()
@@ -544,12 +544,12 @@ function onPopupToggle(checkbox)
 {
     if (checkbox.checked)
     {
-    	showPopups();
+        showPopups();
         console.log("show popups");
     }
     else
     {
-    	hidePopups();
+        hidePopups();
         console.log("hide popups");
     }
 }
@@ -593,9 +593,9 @@ function onManualControlEnable(checkbox)
             }
         });
 
-	$('.servo-slider').each(function (){
-		$(this).css('background', '#D7DCDF');
-	});
+    $('.servo-slider').each(function (){
+        $(this).css('background', '#D7DCDF');
+    });
     }
 }
 
@@ -656,22 +656,22 @@ function onCommandExecute(command)
 //-------------------------------------Controls on receiving Socket Messages---------------------------------
 
 socket.on('master-change', (flag) => {
-	if(flag === 'master'){
+    if(flag === 'master'){
         let selectedSequence = document.getElementById("sequenceSelect").value;
         if (selectedSequence != "") {
             console.log("Selecting sequence on master change", selectedSequence);
             onSequenceSelectChange(selectedSequence);
         }
         socket.emit('pythonScript-start', '/home/config_ecui/python/water_cycle_control.py');
-		master = true;
+        master = true;
         $('.master-only').css('display', 'block');
         $('#masterLock').removeAttr('hidden')
         $('.client-only').css('display', 'none');
         updatePNIDInputsEnabled();
         console.log("master on", master);
-	}
-	else {	
-		master = false;
+    }
+    else {
+        master = false;
         $('.master-only').css('display', 'none');
         $('#masterLock').attr('hidden', '')
         $('.client-only').css('display', 'block');
@@ -681,7 +681,7 @@ socket.on('master-change', (flag) => {
         }
         updatePNIDInputsEnabled();
         console.log("master off", master);
-	}
+    }
 });
 
 socket.on('master-lock', (flag) => {
