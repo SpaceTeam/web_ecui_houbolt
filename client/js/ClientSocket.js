@@ -932,6 +932,14 @@ function onTelemetry(telemetryList)
     updatePNID(telemetryList);
 }
 
+socket.on('nodes', function(nodes) {
+    if (nodeCache === undefined)
+    {
+        nodeCache = new NodeCache();
+    }
+    nodeCache.init(nodes);
+});
+
 socket.on('telemetry', function(telemetryList) {
     updateTelemetryCache(telemetryList);
     onTelemetry(telemetryList);
@@ -988,4 +996,10 @@ socket.on('script-feedback', function (feedback) {
 
 socket.on('script-feedback-file', function (feedback) {
     onServerScriptFileFeedback(feedback);
+});
+
+//----------------------------After Load Inits------------------------------
+
+window.addEventListener("load", function() {
+    socket.emit("get_nodes", {});
 });

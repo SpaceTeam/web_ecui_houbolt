@@ -16,6 +16,8 @@ var ioClient = require('socket.io')(http);
 var clients = [];
 var port = 80;
 
+var nodeCache;
+
 const { exec } = require('child_process');
 
 const bp = require('body-parser');
@@ -71,6 +73,7 @@ var MCSocket = require('./server/ClientSocket');
 var sequenceManMod = require('./server/SequenceManager');
 var pnidManMod = require('./server/PnIDManager');
 var checklistManMod = require('./server/ChecklistManager');
+var nodeCacheMod = require('./server/NodeCache');
 
 const ScriptRunner = require('./server/ScriptRunner');
 
@@ -604,6 +607,18 @@ ioClient.on('connection', function(socket){
             }
         });
 
+        socket.on('get_nodes', function() {
+            if (nodeCache === undefined)
+            {
+                // TODO handle this somehow. error message?
+                console.warn("client asked for nodes, but cache wasn't populated yet");
+            }
+            else
+            {
+                socket.emit('nodes', nodeCache.nodes);
+            }
+        });
+
         // ask for a full set of telemetry values
         socket.on('get_telemetry', function(jsonStates){
             console.log('get_telemetry');
@@ -716,6 +731,14 @@ function processLLServerMessage(data) {
         case "timer-done":
             console.log("timer-done");
             eventEmitter.emit('onSequenceDone', ioClient);
+            break;
+        case "nodes":
+            console.log("nodes");
+            if (nodeCache === undefined)
+            {
+                nodeCache = new nodeCacheMod();
+            }
+            nodeCache.init(jsonData.content.nodes);
             break;
         case "telemetry":
             ioClient.emit('telemetry', jsonData.content);
