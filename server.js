@@ -612,10 +612,10 @@ ioClient.on('connection', function(socket){
         });
 
         // set individual parameter
-        socket.on('set_parameter', function(jsonStates){
+        socket.on('set_parameter', function(content){
             console.log('set_parameter');
             if (master === socket.id) {
-                llServerMod.sendMessage(llServer, 'set_parameter', jsonStates);
+                llServerMod.sendMessage(llServer, 'set_parameter', content);
             }
 
         });

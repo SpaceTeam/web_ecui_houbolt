@@ -36,16 +36,22 @@ var lastModalTriggeredElement = undefined;
 
 //-------------------------------------PNID Events---------------------------------
 
-function onPNIDInput(stateName, value, timestamp)
+function onPNIDInput(telemetryName, value)
 {
-    var stateNameFixed = stateName //.replace(":sensor","");
-    if (!stateNameFixed.includes("gui"))
-    {
-        stateNameFixed = "gui:" + stateNameFixed;
-    }
-    console.log(stateNameFixed, value, timestamp);
-    //TODO: maybe append gui elsewhere (in pnid) but probably the best to change it here
-    socket.emit("states-set", [{"name": stateNameFixed, "value": value, "timestamp": timestamp}]);
+    console.log(telemetryName, value);
+    //TODO hack to make old pnids work for now
+    telemetryName = telemetryName.replace(":sensor", "");
+    //TODO end hack
+    socket.emit("set_parameter", {
+        "field": {
+            "value_type": "mapped",
+            "type": "mapped", // TODO HACK remove later, this is due to incorrect impl in ferroflow, value_type is correct
+            "name": telemetryName
+        },
+        //"value": value
+        //TODO HACK remove later, work around broken ferroflow impl
+        "value": Math.floor(value)
+    });
 }
 
 //-------------------------------------GUI Events---------------------------------
@@ -505,15 +511,6 @@ function onToggleSequenceButton(btn)
 function onSequenceSelectChange(value)
 {
     socket.emit('sequence-set', value);
-}
-
-function sendServo(servoId, servoValue)
-{
-    let jsonServo = {};
-
-    jsonServo.id = servoId;
-    jsonServo.value = servoValue;
-    socket.emit('states-set', [jsonServo]);
 }
 
 function onAutoAbortChange(checkbox)
