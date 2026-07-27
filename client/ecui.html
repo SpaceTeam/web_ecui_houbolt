@@ -10,6 +10,7 @@
     <script src="lib/material.js"></script>
     <script src="lib/animated.js"></script>
     <link href="css/styles.css" rel="stylesheet">
+    <link href="css/nodeview.css" rel="stylesheet">
     <link rel="stylesheet" href="css/sequenceSlider.css">
     </link>
 
@@ -144,6 +145,52 @@
                 </div>
             </div>
         </div>
+        <template id="tempNode">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0 w-100 h-100">
+                        <button class="btn btn-link w-100 h-100 text-left" data-toggle="collapse" data-target="" aria-expanded="false" aria-controls="">
+                            tempTitle
+                        </button>
+                    </h2>
+                </div>
+                <div class="collapse card-body" aria-labelledby="headingOne">
+                </div>
+            </div>
+        </template>
+        <template id="tempTelemetryField">
+            <li class="list-group-item">
+                <div class="row node">
+                    <label class="field-label col-auto">Telemetry Label</label>
+                    <div class="col"></div>
+                    <div class="parameter-group col-auto field-value-container">
+                        <div class="input-group flex-nowrap" style="width: 18rem;">
+                            <div class="input-group-prepend" >
+                                <span class="input-group-text parameter-name">Current Value</span>
+                            </div>
+                            <input type="text" style="width: 2rem; height: auto !important" class="form-control text-center" value="0.0">
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </template>
+        <template id="tempParameterField">
+            <li class="list-group-item">
+                <div class="row node">
+                    <label class="field-label col-auto">Telemetry Label</label>
+                    <div class="col"></div>
+                    <div class="parameter-group col-auto field-value-container">
+                        <div class="input-group flex-nowrap" style="width: 18rem;">
+                            <div class="input-group-prepend" >
+                                <span class="input-group-text parameter-name">Current Value</span>
+                            </div>
+                            <input type="text" style="width: 2rem; height: auto !important" class="form-control text-center" value="0.0">
+                        </div>
+                    </div>
+                    <button class="col-auto float-right btn btn-secondary manual-obj" onclick="onCommandExecute(this);">Execute</button>
+                </div>
+            </li>
+        </template>
         <div id="tempCommand">
             <li class="list-group-item">
                 <div class="row command">
@@ -594,8 +641,10 @@ Notes: Hotfire
     <script src="js/SequenceChart.js"></script>
     <script src="js/SensorChart.js"></script>
     <script src="js/DataLogger.js"></script>
+    <script src="./ts_built/Common.js"></script>
     <script src="./ts_built/TelemetryCache.js"></script>
     <script src="./js/NodeCache.js"></script>
+    <script src="./ts_built/NodeView.js"></script>
     <script src="./js/ClientSocket.js"></script>
     <script src="js/ServerScripts.js"></script>
     <script src="./js/SequenceSlider.js"></script>

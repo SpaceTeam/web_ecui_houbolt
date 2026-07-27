@@ -939,6 +939,12 @@ socket.on('nodes', function(nodes) {
         nodeCache = new NodeCache();
     }
     nodeCache.init(nodes);
+
+    if (nodeView === undefined)
+    {
+        nodeView = new NodeView();
+    }
+    nodeView.load(nodes);
 });
 
 socket.on('telemetry', function(telemetryList) {
