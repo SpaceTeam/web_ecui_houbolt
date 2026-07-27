@@ -929,6 +929,7 @@ function onTelemetry(telemetryList)
     // 	}
     // }
     //updateCommandList(jsonStates, commandStates);
+    telemetryEventRegistrar.callEvents(telemetryList);
     updatePNID(telemetryList);
 }
 
@@ -1001,5 +1002,9 @@ socket.on('script-feedback-file', function (feedback) {
 //----------------------------After Load Inits------------------------------
 
 window.addEventListener("load", function() {
+    if (telemetryEventRegistrar === undefined)
+    {
+        telemetryEventRegistrar = new TelemetryEventRegistrar();
+    }
     socket.emit("get_nodes", {});
 });
