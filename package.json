@@ -9,17 +9,34 @@
   },
   "scripts": {
     "start": "node server.js",
-    "start.dev": "nodemon --ignore sequence/"
+    "dev": "nodemon server.js",
+    "build": "tsc --build ./client"
   },
   "dependencies": {
-    "chokidar": "^3.6.0",
+    "@eslint/js": "^10.0.1",
+    "chokidar": "^5.0.0",
     "dotenv": "^16.0.0",
+    "eslint": "^10.7.0",
     "express": "^4.18.2",
-    "js-yaml": "^4.1.0",
+    "globals": "^17.7.0",
     "kicad_svg_parser": "github:SpaceTeam/kicad_svg_parser",
     "node-fetch": "^2.7.0",
-    "node-html-parser": "^5.3.3",
-    "nodemon": "^2.0.15",
-    "socket.io": "^1.7.4"
+    "socket.io": "^2.5.1",
+    "typescript": "^7.0.2",
+    "undici-types": "^8.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "client/**/*",
+      "server/**/*"
+    ],
+    "ignore": [
+      "client/ts_built/**/*"
+    ],
+    "ext": "js,ts,json",
+    "exec": "tsc --build client; node server.js"
   }
 }

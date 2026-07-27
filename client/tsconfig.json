@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "rootDir": "./ts",
+        "outDir": "./ts_built",
+        "allowJs": true,
+        "target": "es2023",
+    },
+    "include": ["./ts/*"],
+    "moduleResolution": "node20"
+}

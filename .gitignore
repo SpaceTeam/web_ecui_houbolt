@@ -3,5 +3,7 @@ node_modules
 **/.DS_Store
 *.kdev4
 .directory
+*.tsbuildinfo
+ts_built/
 
 configPath.txt
