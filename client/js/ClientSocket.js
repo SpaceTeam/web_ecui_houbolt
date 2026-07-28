@@ -929,7 +929,7 @@ function onTelemetry(telemetryList)
     // 	}
     // }
     //updateCommandList(jsonStates, commandStates);
-    telemetryEventRegistrar.callEvents(telemetryList);
+    eventRegistrar.invokeTelemetryEvents(telemetryList);
     updatePNID(telemetryList);
 }
 
@@ -1008,9 +1008,9 @@ socket.on('script-feedback-file', function (feedback) {
 //----------------------------After Load Inits------------------------------
 
 window.addEventListener("load", function() {
-    if (telemetryEventRegistrar === undefined)
+    if (eventRegistrar === undefined)
     {
-        telemetryEventRegistrar = new TelemetryEventRegistrar();
+        eventRegistrar = new EventRegistrar();
     }
     socket.emit("get_nodes", {});
 });
