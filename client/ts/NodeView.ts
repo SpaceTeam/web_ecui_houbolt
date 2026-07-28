@@ -16,6 +16,12 @@ class NodeView {
         console.log("Loading nodes");
         this.#container.replaceChildren();
 
+        // reset caches
+        this.#nodeNameCache = {};
+        this.#mappedNameCache = {};
+        this.#rawNameCache = {};
+        this.#parentCache = {};
+
         for (let node of nodes)
         {
             this.#initNode(node);
@@ -41,24 +47,26 @@ class NodeView {
 
         for (let field of node.fields)
         {
-            collapse.appendChild(this.#createFieldElement(field, baseId, node.id));
+            collapse.appendChild(this.#createFieldElement(field, baseId, node));
         }
 
         return template;
     }
 
-    #createFieldElement(field: Field, baseId: string, nodeId: number): HTMLElement
+    #createFieldElement(field: Field, baseId: string, node: NodesNode): HTMLElement
     {
         let el: HTMLElement;
         switch (field.type)
         {
             case "telemetry":
                 el = this.#createTelemetryField(field, baseId);
-                let textEl = el.querySelectorAll("input")[0];
-                telemetryEventRegistrar.register(nodeId, field.id, this.#updateTelemetryField, textEl, SubscriptionType.nodeView);
+                let telemCurr = el.querySelectorAll("input.current")[0] as HTMLInputElement;
+                eventRegistrar.register(field.name, this.#updateTelemetryField, telemCurr , SubscriberType.nodeView, EventType.telemetry);
                 break;
             case "parameter":
-                el = this.#createParameterField(field, baseId);
+                el = this.#createParameterField(field, baseId, node.name);
+                let paramCurr = el.querySelectorAll("input.current")[0] as HTMLInputElement;
+                eventRegistrar.register(field.name, this.#updateParameterField, paramCurr, SubscriberType.nodeView, EventType.parameter);
                 break;
             default:
                 throw new Error(`Unknown field type: ${field.type}`);
@@ -78,7 +86,7 @@ class NodeView {
         return template;
     }
 
-    #createParameterField(field: Field, baseId: string): HTMLElement
+    #createParameterField(field: Field, baseId: string, tempNodeName: string): HTMLElement
     {
         let template = cloneTemplateAsHtmlElement("tempParameterField");
         template.id = baseId + "_" + field.name;
@@ -86,14 +94,68 @@ class NodeView {
         let label = template.querySelectorAll("label.field-label")[0] as HTMLElement;
         label.innerText = field.name;
 
+        // TODO I don't love identifying the buttons just by their class
+        let refreshButton = template.querySelectorAll("button.btn-outline-secondary")[0] as HTMLElement;
+        refreshButton.dataset.fieldName = field.name;
+        refreshButton.addEventListener("click", (e: Event): void => {
+            let el = e.target as HTMLElement;
+            let fieldName: string = el.dataset.fieldName!;
+            if (el != refreshButton)
+            {
+                fieldName = (el.parentNode as HTMLElement).dataset.fieldName!;
+            }
+            sendGetField({
+                field: {
+                    value_type: "mapped",
+                    name: fieldName,
+                },
+            });
+        });
+
+        let input = template.querySelectorAll("input:not([disabled])")[0] as HTMLInputElement;
+
+        let setButton = template.querySelectorAll("button.btn-secondary")[0] as HTMLElement;
+        setButton.dataset.fieldName = field.name;
+        setButton.dataset.tempNodeName = tempNodeName;
+        setButton.addEventListener("click", (e: Event): void => {
+            let el = e.target as HTMLElement;
+            sendSetParameter({
+                field: {
+                    value_type: "mapped",
+                    name: el.dataset.fieldName!,
+                    node_name: tempNodeName, // TODO this is a temporary hack due to ferroflow
+                    field_name: el.dataset.fieldName!, // TODO this is a temporary hack due to ferroflow
+                },
+                value: Number.parseInt(input.value),
+            });
+        });
+
         return template;
     }
 
-    #updateTelemetryField(element: HTMLElement, telemetry: Telemetry): void
+    #updateTelemetryField(element: HTMLElement, data: EventData): void
     {
+        let telemetry = data.data as Telemetry;
         if (element instanceof HTMLInputElement)
         {
             element.value = String(telemetry.value.toFixed(2));
+        }
+        else
+        {
+            console.warn("Failed to update nodeview telemetry field because HTMLElement wasn't input element!");
+        }
+    }
+
+    #updateParameterField(element: HTMLElement, data: EventData): void
+    {
+        let fieldGet = data.data as FieldGetResponse;
+        if (element instanceof HTMLInputElement)
+        {
+            element.value = String(fieldGet.value.toFixed(2));
+        }
+        else
+        {
+            console.warn("Failed to update nodeview parameter field because HTMLElement wasn't input element!");
         }
     }
 

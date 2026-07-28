@@ -13,3 +13,8 @@ label.field-label {
 .row.node {
     gap: 0.75rem;
 }
+
+input.parameter-input, input.current {
+    width: 2rem;
+    height: auto !important
+}

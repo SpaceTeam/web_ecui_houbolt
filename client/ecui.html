@@ -168,7 +168,7 @@
                             <div class="input-group-prepend" >
                                 <span class="input-group-text parameter-name">Current Value</span>
                             </div>
-                            <input type="text" style="width: 2rem; height: auto !important" class="form-control text-center" value="0.0">
+                            <input type="text" class="form-control text-center current" value="0.0" disabled>
                         </div>
                     </div>
                 </div>
@@ -179,15 +179,24 @@
                 <div class="row node">
                     <label class="field-label col-auto">Telemetry Label</label>
                     <div class="col"></div>
+                    <button class="col-auto float-right btn btn-outline-secondary manual-obj"><i class="bi bi-arrow-clockwise"></i></button>
                     <div class="parameter-group col-auto field-value-container">
                         <div class="input-group flex-nowrap" style="width: 18rem;">
                             <div class="input-group-prepend" >
                                 <span class="input-group-text parameter-name">Current Value</span>
                             </div>
-                            <input type="text" style="width: 2rem; height: auto !important" class="form-control text-center" value="0.0">
+                            <input type="text" class="form-control text-center current" value="0.0" disabled>
                         </div>
                     </div>
-                    <button class="col-auto float-right btn btn-secondary manual-obj" onclick="onCommandExecute(this);">Execute</button>
+                    <div class="parameter-group col-auto field-value-container">
+                        <div class="input-group flex-nowrap" style="width: 18rem;">
+                            <div class="input-group-prepend" >
+                                <span class="input-group-text parameter-name">Value</span>
+                            </div>
+                            <input type="text" class="form-control text-center parameter-input" value="0.0">
+                        </div>
+                    </div>
+                    <button class="col-auto float-right btn btn-secondary manual-obj">Set</button>
                 </div>
             </li>
         </template>
@@ -641,12 +650,15 @@ Notes: Hotfire
     <script src="js/SequenceChart.js"></script>
     <script src="js/SensorChart.js"></script>
     <script src="js/DataLogger.js"></script>
+    <script src="./js/ClientSocket.js"></script>
     <script src="./ts_built/Common.js"></script>
+    <script src="./ts_built/SocketCommon.js"></script>
+    <script src="./ts_built/SocketSend.js"></script>
+    <script src="./ts_built/SocketReceive.js"></script>
     <script src="./ts_built/EventRegistrar.js"></script>
     <script src="./ts_built/TelemetryCache.js"></script>
     <script src="./js/NodeCache.js"></script>
     <script src="./ts_built/NodeView.js"></script>
-    <script src="./js/ClientSocket.js"></script>
     <script src="js/ServerScripts.js"></script>
     <script src="./js/SequenceSlider.js"></script>
     <script src="./js/StepSequenceSlider.js"></script>

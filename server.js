@@ -626,6 +626,11 @@ ioClient.on('connection', function(socket){
             
         });
 
+        socket.on('get_field', function(data) {
+            console.log('get_field');
+            llServerMod.sendMessage(llServer, 'get_field', data);
+        });
+
         // set individual parameter
         socket.on('set_parameter', function(content){
             console.log('set_parameter');
@@ -740,11 +745,15 @@ function processLLServerMessage(data) {
             }
             nodeCache.init(jsonData.content.nodes);
             break;
+        case "field_get_response":
+            console.log("field_get_response");
+            ioClient.emit(type, jsonData.content);
+            break;
         case "telemetry":
-            ioClient.emit('telemetry', jsonData.content);
+            ioClient.emit(type, jsonData.content);
             break;
         case "telemetry_delta":
-            ioClient.emit('telemetry_delta', jsonData.content);
+            ioClient.emit(type, jsonData.content);
             break;
             //case "states-load":
             //    console.log("states-load");
