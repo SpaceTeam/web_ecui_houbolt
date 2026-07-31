@@ -8,7 +8,64 @@ class NodeView {
 
         this.#container = document.getElementById("command-list")!;
 
-        this.#domCache = {};
+        this.#nodeNameCache = {};
+        this.#mappedNameCache = {};
+        this.#rawNameCache = {};
+
+        this.#parentCache = {};
+    }
+
+    search(str: string): void
+    {
+        if (str == "")
+        {
+            this.#resetSearchResults();
+        }
+        else
+        {
+            let hasMatch = false;
+            let regex  = new RegExp(`.*${str}.*`, "i");
+            let matchedNodes = new Set<string>();
+            for (let node of Object.keys(this.#nodeNameCache))
+            {
+                if (regex.test(node))
+                {
+                    hasMatch = true;
+                    this.#nodeNameCache[node].removeAttribute("hidden");
+                    matchedNodes.add(node);
+                }
+                else
+                {
+                    this.#nodeNameCache[node].setAttribute("hidden", "1");
+                }
+            }
+
+            for (let entry of Object.keys(this.#mappedNameCache))
+            {
+                if (matchedNodes.has(this.#parentCache[entry]) || regex.test(entry))
+                {
+                    hasMatch = true;
+                    this.#mappedNameCache[entry].removeAttribute("hidden");
+                    this.#nodeNameCache[this.#parentCache[entry]].removeAttribute("hidden");
+                }
+                else
+                {
+                    this.#mappedNameCache[entry].setAttribute("hidden", "1");
+                }
+            }
+        }
+    }
+
+    #resetSearchResults(): void
+    {
+        for (let node of Object.keys(this.#nodeNameCache))
+        {
+            this.#nodeNameCache[node].removeAttribute("hidden");
+        }
+        for (let field of Object.keys(this.#mappedNameCache))
+        {
+            this.#mappedNameCache[field].removeAttribute("hidden");
+        }
     }
 
     load(nodes: NodesNode[]): void
@@ -48,6 +105,7 @@ class NodeView {
         for (let field of node.fields)
         {
             collapse.appendChild(this.#createFieldElement(field, baseId, node));
+            this.#parentCache[field.name] = node.name;
         }
 
         return template;
@@ -71,6 +129,9 @@ class NodeView {
             default:
                 throw new Error(`Unknown field type: ${field.type}`);
         }
+
+        this.#mappedNameCache[field.name] = el;
+        this.#rawNameCache[field.raw_name] = field.name;
 
         return el;
     }
@@ -162,15 +223,20 @@ class NodeView {
     #initNode(node: NodesNode): void
     {
         console.log("Init node");
-        if (this.#domCache[node.id] === undefined)
+        if (this.#mappedNameCache[node.name] === undefined)
         {
             let element = this.#createNodeElement(node);
             this.#container.appendChild(element);
-            this.#domCache[node.id] = element;
+            this.#nodeNameCache[node.name] = element;
         }
     }
 
     #searchInput: HTMLInputElement;
     #container: HTMLElement;
-    #domCache: { [key: number]: HTMLElement };
+    // mapped cache contains the actual HTMLElements, the other caches just point to mapped cache to reduce RAM use
+    #nodeNameCache: { [key: string]: HTMLElement };
+    #mappedNameCache: { [key: string]: HTMLElement };
+    #rawNameCache: { [key: string]: string };
+    // cache of field names pointing to their respective node parents
+    #parentCache: { [key: string]: string };
 }

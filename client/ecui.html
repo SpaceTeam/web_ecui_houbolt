@@ -562,12 +562,8 @@ Notes: Hotfire
                         role="tab" aria-controls="server-scripts-tab" aria-selected="false">Server Scripts</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link tab-button active" id="can-command-tab-button" data-toggle="tab" href="#can-command-tab"
-                        role="tab" aria-controls="can-command-tab" aria-selected="true">CAN Commands</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link tab-button" id="lora-command-tab-button" data-toggle="tab" href="#lora-command-tab" role="tab"
-                        aria-controls="lora-command-tab" aria-selected="false">LORA Commands</a>
+                    <a class="nav-link tab-button active" id="node-view-tab-button" data-toggle="tab" href="#node-view"
+                        role="tab" aria-controls="node-view-tab" aria-selected="true">Node List</a>
                 </li>
             </ul>
             <div id="command-container" class="tab-content">
@@ -576,18 +572,11 @@ Notes: Hotfire
                     Script outputs:
                     <div id="server-scripts-feedback" style="max-height: 500px; overflow: scroll; white-space: pre; font-family: monospace;"></div>
                 </div>
-                <div class="tab-pane fade show active" id="can-command-tab" role="tabpanel" aria-labelledby="can-command-tab-button">
+                <div class="tab-pane fade show active" id="node-view" role="tabpanel" aria-labelledby="node-view-tab-button">
                     <div class="form-outline">
-                        <input type="search" id="commandSearch" style="height: auto !important;" class="form-control" placeholder="Search for Command" aria-label="Search" oninput="updateCommandSearch('can', this)"/>
+                        <input type="search" id="commandSearch" style="height: auto !important;" class="form-control" placeholder="Search for Node/Field" aria-label="Search" oninput="nodeView.search(this.value)"/>
                     </div>
                     <div id="command-list" class="accordion">
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="lora-command-tab" role="tabpanel" aria-labelledby="lora-command-tab-button">
-                    <div class="form-outline">
-                        <input type="search" id="commandSearch" style="height: auto !important;" class="form-control" placeholder="Search for Command" aria-label="Search" oninput="updateCommandSearch('lora', this)"/>
-                    </div>
-                    <div id="command-list-lora" class="accordion">
                     </div>
                 </div>
             </div>
